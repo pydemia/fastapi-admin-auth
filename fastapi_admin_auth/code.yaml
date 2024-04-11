@@ -1,0 +1,1354 @@
+##################################
+# ResponseCode Locale Messages
+##################################
+# Created with regex in vscode
+# ------------------------------
+# FROM:
+# ^(\S+)\s*=\s*\(([-]*[\d]+),[\s]*(['"]{1}.+['"])[\s]*\)
+# ------------------------------
+# TO:
+# $1:
+#   code: $2
+#   message:
+#     ko: $3
+#     en: ""
+# ------------------------------
+
+# general(~)
+SUCCESS:
+    code: 1
+    message:
+        ko: "성공"
+        en: "Success"
+FAIL:
+    code: -1
+    message:
+        ko: "실패"
+        en: "Fail"
+UNDEFINED_ERROR:
+    code: -2
+    message:
+        ko: "정의되지 않은 오류입니다."
+        en: "Undefined Error"
+
+RESPONSECODE_NOT_SET:
+    code: -3
+    message:
+        ko: "ErrorResponse에 응답 코드가 정의되지 않았습니다."
+        en: ""
+INVALID_APP_CONFIG_ERROR:
+    code: -4
+    message:
+        ko: "Application의 Config 값에 문제가 있습니다."
+        en: ""
+
+DATASET_NOT_FOUND:
+    code: -10011
+    message:
+        ko: "Dataset을 찾을 수 없습니다."
+        en: ""
+FILESET_NOT_FOUND:
+    code: -10012
+    message:
+        ko: "Fileset을 찾을 수 없습니다."
+        en: ""
+SHARE_SCOPE_CANNOT_BE_EXTENDED:
+    code: -10013
+    message:
+        ko: "수정할 공유 범위는 이전 범위보다 작아야 합니다."
+        en: ""
+NAME_ALREADY_EXISTS:
+    code: -10014
+    message:
+        ko: "같은 이름이 이미 존재합니다."
+        en: ""
+SUBJECT_ALREADY_EXISTS:
+    code: -10015
+    message:
+        ko: "같은 제목이 이미 존재합니다."
+        en: ""
+
+DB_CREATE_TABLENAME_SIZE_ERROR:
+    code: -2900
+    message:
+        ko: "DB에서 해당 테이블이름을 생성할 수 있는 길이를 초과하였습니다."
+        en: ""
+DB_CREATE_COLUMN_SIZE_ERROR:
+    code: -2901
+    message:
+        ko: "DB에서 해당 컬럼을 생성할 수 있는 길이를 초과하였습니다."
+        en: ""
+
+# http message error
+NOT_DEFINED_REQUEST:
+    code: -110
+    message:
+        ko: "시스템에 정의되지 않은 요청입니다."
+        en: ""
+REQUEST_FORMAT_ERROR:
+    code: -120
+    message:
+        ko: "잘못된 요청입니다."
+        en: ""
+
+# Gateway & Account = (-1000 ~ 1099)
+EXPIRED_TOKEN:
+    code: -1002
+    message:
+        ko: "토큰이 만료되었습니다."
+        en: ""
+FORGERY_TOKEN:
+    code: -1003
+    message:
+        ko: "위변조된 토큰입니다."
+        en: ""
+NON_EXISTENT_ACCESS_KEY:
+    code: -1004
+    message:
+        ko: "존재하지 않는 인증키 입니다."
+        en: ""
+INVALID_PASSWORD:
+    code: -1005
+    message:
+        ko: "비밀번호가 일치하지 않습니다."
+        en: ""
+PAUSED_ACCOUNT:
+    code: -1006
+    message:
+        ko: "사용 정지된 계정입니다."
+        en: ""
+NON_EXISTENT_ID:
+    code: -1007
+    message:
+        ko: "로그인에 실패했습니다."
+        en: ""
+ID_ALREADY_EXISTS:
+    code: -1008
+    message:
+        ko: "이미 존재하는 ID 입니다."
+        en: ""
+DELETED_ID:
+    code: -1009
+    message:
+        ko: "삭제된 ID 입니다."
+        en: ""
+DO_NOT_HAVE_PERMISSION:
+    code: -1010
+    message:
+        ko: "권한이 없습니다."
+        en: ""
+WRONG_SORT_TYPE:
+    code: -1011
+    message:
+        ko: "잘못된 정렬 형식입니다."
+        en: ""
+INVALID_OLD_PASSWORD:
+    code: -1012
+    message:
+        ko: "기존 비밀번호가 일치하지 않습니다."
+        en: ""
+NEW_PWD_MUST_BE_DIFFERENT:
+    code: -1013
+    message:
+        ko: "새로운 비밀번호는 기존 비밀번호와 동일할 수 없습니다."
+        en: ""
+REDIS_SERVER_ERROR:
+    code: -1014
+    message:
+        ko: "캐시 서버 접속 실패"
+        en: ""
+INVALID_PWD_REGEX:
+    code: -1015
+    message:
+        ko: "규칙에 어긋나는 비밀번호입니다."
+        en: ""
+INVALID_ID:
+    code: -1016
+    message:
+        ko: "존재하지 않는 ID입니다."
+        en: ""
+
+NON_EXISTENT_COM_CODE:
+    code: -1050
+    message:
+        ko: "존재하지 않는 COM CODE 입니다."
+        en: ""
+WRONG_CRITERIA_TYPE:
+    code: -1051
+    message:
+        ko: "잘못된 검색 기준값입니다."
+        en: ""
+
+KEY_GENERATION_ERROR:
+    code: -1060
+    message:
+        ko: "키 생성 중 에러가 발생했습니다."
+        en: ""
+INVALID_KEY:
+    code: -1061
+    message:
+        ko: "존재 하지 않는 키 입니다."
+        en: ""
+VERIFICATION_FAIL:
+    code: -1062
+    message:
+        ko: "공개키 인증을 실패 했습니다."
+        en: ""
+DUPLICATION_ERROR:
+    code: -1063
+    message:
+        ko: "이미 존재하는 키 정보 입니다."
+        en: ""
+INVALID_CLIENT_TYPE:
+    code: -1064
+    message:
+        ko: "잘못된 Client Type입니다."
+        en: ""
+
+# Predict  = (-1100 ~ -1199)
+#   IFSERVICE_NAME_IS_NULL_OR_EMPTY_IN_HEADER = (1100, "Header에 인퍼런스 서비스 이름이 누락되었습니다.")
+IFSERVICE_NAME_IS_NULL_OR_EMPTY:
+    code: -1101
+    message:
+        ko: "요청한 예측 서비스가 유효하지 않습니다."
+        en: ""
+K8S_NAMESPACE_NAME_IS_NULL_OR_EMPTY:
+    code: -1102
+    message:
+        ko: "K8S 네임스페이스 이름이 설정되지 않았습니다."
+        en: ""
+INVALID_IFSERVICE_NAME:
+    code: -1103
+    message:
+        ko: "에측 서비스 이름이 올바르지 않습니다."
+        en: ""
+INVALID_K8S_NAMESPACE_NAME:
+    code: -1104
+    message:
+        ko: "K8S 네임스페이스 이름이 올바르지 않습니다."
+        en: ""
+NOT_FOUND_IFSERVICE:
+    code: -1105
+    message:
+        ko: "요청하신 에측 서비스를 찾을 수 없습니다."
+        en: ""
+IFSERVICE_STATUS_IS_STOPPED:
+    code: -1106
+    message:
+        ko: "에측 서비스가 정지된 상태입니다."
+        en: ""
+IFSERVICE_STATUS_IS_DELETED:
+    code: -1107
+    message:
+        ko: "삭제된 에측 서비스입니다."
+        en: ""
+IFSERVICE_STATUS_IS_WAITING:
+    code: -1108
+    message:
+        ko: "에측 서비스가 생성 대기중인 상태입니다."
+        en: ""
+IFSERVICE_STATUS_IS_FAILED:
+    code: -1109
+    message:
+        ko: "생성에 실패한 에측 서비스입니다."
+        en: ""
+UNABLE_TO_CONNECT_TO_IFSERVICE:
+    code: -1110
+    message:
+        ko: "에측 서비스와의 연결에 실패하였습니다."
+        en: ""
+IFSERVICE_ENDPOINT_IS_NULL_OR_EMPTY:
+    code: -1111
+    message:
+        ko: "에측 서비스의 Endpoint가 설정되지 않았습니다."
+        en: ""
+IFSERVICE_HOST_IS_NULL_OR_EMPTY:
+    code: -1112
+    message:
+        ko: "에측 서비스의 Host가 설정되지 않았습니다."
+        en: ""
+
+# History  = (-1200 ~ -1299)
+WRONG_DATETIME_TERM:
+    code: -1200
+    message:
+        ko: "잘못된 기간 형식입니다."
+        en: ""
+NON_EXISTENT_SEQ:
+    code: -1201
+    message:
+        ko: "존재하지 않는 SEQ 번호입니다."
+        en: ""
+
+# Monitoring  = (-1300 ~ -1399)
+ENTITY_MONITORING_ID_DOES_NOT_EXIST:
+    code: -1300
+    message:
+        ko: "존재하지 않는 Monitoring_ID 입니다."
+        en: ""
+DOES_NOT_EXIST_ES_INDEX_NAME:
+    code: -1301
+    message:
+        ko: "존재하지 않는 Elasticsearch Index Name 입니다 "
+        en: ""
+TOO_SMALL_DRIFT_DATA:
+    code: -1302
+    message:
+        ko: "DRIFT를 계산하기에 데이터가 너무 적습니다."
+        en: ""
+NOT_SUPPORTED_MONITORING_FREQUENCY:
+    code: -1303
+    message:
+        ko: "지원하지 않는 DRIFT MONITORING 주기입니다"
+        en: ""
+MONITORING_ID_ALREADY_STOPPED:
+    code: -1304
+    message:
+        ko: "이미 중단된 MONITORING_ID 입니다"
+        en: ""
+CALC_INIT_TIME_ERROR:
+    code: -1305
+    message:
+        ko: "다음 예정 실행 시각은 최근 실행시각, 현재시각 보다 이후 시점이어야 합니다."
+        en: ""
+NEEDED_MONITORING_SCHEDULER_DB_INIT:
+    code: -1306
+    message:
+        ko: "database 초기화가 필요합니다."
+        en: ""
+NO_DRIFT_ANALYZED_RESULT:
+    code: -1307
+    message:
+        ko: "분석된 DRIFT Monitoring 결과가 없습니다."
+        en: ""
+MONITORING_ID_ALREADY_RUNNING:
+    code: -1308
+    message:
+        ko: "이미 실행 중인 MONITORING_ID 입니다."
+        en: ""
+NOT_ACCEPTABLE_CRON_EXPRESSION:
+    code: -1309
+    message:
+        ko: "허용되지 않는 cron 형식입니다."
+        en: ""
+SCHEMA_NOT_PROVIDED:
+    code: -1310
+    message:
+        ko: "feature 정보가 없습니다."
+        en: ""
+TRAINING_DATA_NOT_PROVIDED:
+    code: -1311
+    message:
+        ko: "학습 Data 정보가 없어 학습데이터 기반 모니터링 등록을 할 수 없습니다."
+        en: ""
+
+# Utility error code  = (-1900 ~ -1999)
+MICRO_SERVICE_NO_AVAILABLE:
+    code: -1901
+    message:
+        ko: "해당 마이크로 서비스를 찾을 수 없습니다."
+        en: ""
+CONNECTION_ERROR:
+    code: -1902
+    message:
+        ko: "마이크로 서비스 연결에 문제가 발생했습니다."
+        en: ""
+
+# CORE  = (-2000 ~ -2999) -------------------------------------------------
+# Common Error = (-2000 ~ -2159)
+NOT_IMPLEMENTED:
+    code: -2000
+    message:
+        ko: "구현되지 않은 동작입니다."
+        en: ""
+NULL_VALUE_DETECTED:
+    code: -2001
+    message:
+        ko: "전달된 값이 없습니다."
+        en: ""
+INVALID_INPUT_VALUE:
+    code: -2002
+    message:
+        ko: "INPUT 값이 올바르지 않습니다."
+        en: ""
+INSUFFICIENT_INPUT:
+    code: -2003
+    message:
+        ko: "필수 값이 빠져 있습니다."
+        en: ""
+UNAUTHORIZED:
+    code: -2004
+    message:
+        ko: "접근 권한이 없습니다."
+        en: ""
+UNAUTHENTICATED:
+    code: -2005
+    message:
+        ko: "사용자 인증이 실패하였습니다."
+        en: ""
+METHOD_NOT_ALLOWED:
+    code: -2006
+    message:
+        ko: "허가되지 않은 요청입니다."
+        en: ""
+JSON_CANNOT_PARSED:
+    code: -2007
+    message:
+        ko: "Json Parsing 중 문제가 발생했습니다."
+        en: ""
+JSON_CANNOT_BUILDED:
+    code: -2008
+    message:
+        ko: "Json Build 중 문제가 발생했습니다."
+        en: ""
+YAML_CANNOT_PARSED:
+    code: -2009
+    message:
+        ko: "Yaml Parsing 중 문제가 발생했습니다."
+        en: ""
+YAML_CANNOT_BUILDED:
+    code: -2010
+    message:
+        ko: "Yaml Build 중 문제가 발생했습니다."
+        en: ""
+INVALID_NEGATIVE_VALUE:
+    code: -2011
+    message:
+        ko: "INPUT 값은 음수를 입력할 수 없습니다."
+        en: ""
+URL_CANNOT_PARSED:
+    code: -2012
+    message:
+        ko: "URL 값이 올바르지 않습니다."
+        en: ""
+INVALID_VALUE_IN_REQUEST:
+    code: -2013
+    message:
+        ko: "요청에 사용한 값이 올바르지 않습니다."
+        en: ""
+
+# graphql error  = (-2160 ~ -2199)
+GQL_UNDEFINED_ERROR:
+    code: -2160
+    message:
+        ko: "쿼리 중 정의되지 않은 오류가 발생했습니다."
+        en: ""
+
+# Value Error  = (-2200 ~ -2299)
+INVALID_ACCOUT_ID_FORMAT:
+    code: -2200
+    message:
+        ko: "잘못된 ACCOUNT_ID 형식입니다."
+        en: ""
+ACCOUT_ID_NOT_INT_FORMAT:
+    code: -2201
+    message:
+        ko: "ACCOUNT_ID는 숫자 값 형태이어야 합니다."
+        en: ""
+INVALID_INTEGER_STRING:
+    code: -2202
+    message:
+        ko: "잘못된 정수값 문자열입니다."
+        en: ""
+INVALID_FLOAT_STRING:
+    code: -2203
+    message:
+        ko: "잘못된 소수값 문자열입니다."
+        en: ""
+INVALID_FRAMEWORK_TYPE:
+    code: -2204
+    message:
+        ko: "잘못된 프레임워크 타입입니다."
+        en: ""
+INVALID_GPU_FRAMEWORK_TYPE:
+    code: -2205
+    message:
+        ko: "GPU를 사용할 수 없는 프레임워크 타입입니다."
+        en: ""
+INVALID_NAME_FORMAT:
+    code: -2206
+    message:
+        ko: "서비스 네임 형식이 올바르지 않습니다."
+        en: ""
+INVALID_CONCURRENT_FORMAT:
+    code: -2207
+    message:
+        ko: "Concurrent 형식이 올바르지 않습니다."
+        en: ""
+INVALID_CAN_PERCENT_FORMAT:
+    code: -2208
+    message:
+        ko: "Canary Traffic Percent 형식이 올바르지 않습니다."
+        en: ""
+INVALID_CONTAINER_PORTS:
+    code: -2209
+    message:
+        ko: "Container Ports는 0 ~ 65535 사이의 정수만 입력할 수 있습니다."
+        en: ""
+INSUFFICIENT_CANARY_SPEC_INPUT:
+    code: -2210
+    message:
+        ko: "Canary Traffic Percent 또는 Canary Spec 정보가 없습니다"
+        en: ""
+INSUFFICIENT_PREDICTOR_SPEC_INPUT:
+    code: -2211
+    message:
+        ko: "Predictor Spec에 프레임워크 정보가 없습니다"
+        en: ""
+INSUFFICIENT_GPU_INPUT:
+    code: -2212
+    message:
+        ko: "GPU 프레임워크 타입에는 GPU 리소스 요청이 필요합니다."
+        en: ""
+
+# Kubernetes error code  = (-2300 ~ -2599)
+K8S_UNDEFINED_ERROR:
+    code: -2300
+    message:
+        ko: "Kubernetes 클러스터 요청 도중 정의되지 않은 문제가 발생했습니다."
+        en: ""
+K8S_CLIENT_IO_ERROR:
+    code: -2301
+    message:
+        ko: "Kubernetes 클러스터 요청 도중 IO 문제가 발생했습니다."
+        en: ""
+K8S_CLIENT_ACTION_ERROR:
+    code: -2302
+    message:
+        ko: "Kubernetes 클라이언트에서 문제가 발생했습니다."
+        en: ""
+K8S_CANNOT_START_CLIENT:
+    code: -2303
+    message:
+        ko: "Kubernetes 클라이언트 시작에 실패했습니다."
+        en: ""
+K8S_CANNOT_LOAD_CONFIG:
+    code: -2304
+    message:
+        ko: "Kubernetes Configuration을 읽을 수 없습니다."
+        en: ""
+K8S_MISSING_PROPERTIES:
+    code: -2305
+    message:
+        ko: "Kubernetes Property를 찾을 수 없습니다."
+        en: ""
+K8S_CANNOT_LOAD_PROPERTIES:
+    code: -2306
+    message:
+        ko: "Kubernetes 리소스 접근 권한이 없습니다."
+        en: ""
+K8S_UNAUTHORIZED:
+    code: -2307
+    message:
+        ko: "Kubernetes 클러스터 접근 권한이 없습니다."
+        en: ""
+NAMESPACE_NOT_FOUND:
+    code: -2308
+    message:
+        ko: "NAMESPACE를 찾을 수 없습니다."
+        en: ""
+NAMESPACE_ALREADY_EXISTS:
+    code: -2309
+    message:
+        ko: "이미 존재하는 Namespace입니다."
+        en: ""
+INVALID_NAMESPACE_FORMAT:
+    code: -2310
+    message:
+        ko: "Namespace의 형식이 올바르지 않습니다.\n(Namespace에는 알파벳, 숫자, '-'만 사용가능하며 시작과 끝이 알파벳 또는 숫자입니다.)"
+        en: ""
+K8S_SERVICE_NOT_FOUND:
+    code: -2311
+    message:
+        ko: "KFServing의 Service를 찾을 수 없습니다."
+        en: ""
+K8S_IFSVC_INGRESS_NAMESPACE_NOT_FOUND:
+    code: -2312
+    message:
+        ko: "Ingress Namespace를 찾을 수 없습니다."
+        en: ""
+K8S_IFSVC_INGRESS_NOT_FOUND:
+    code: -2313
+    message:
+        ko: "Ingress Service를 찾을 수 없습니다."
+        en: ""
+K8S_IFSVC_UNAVAILABLE:
+    code: -2314
+    message:
+        ko: "KFServing의 서비스를 사용할 수 없습니다."
+        en: ""
+K8S_IFSVC_GW_TIMEOUT:
+    code: -2315
+    message:
+        ko: "KFServing 요청이 너무 오래 걸립니다."
+        en: ""
+K8S_RESOURCE_NOT_FOUND:
+    code: -2316
+    message:
+        ko: "Kubernetes Resource를 찾을 수 없습니다."
+        en: ""
+K8S_INGRESS_PORT_NOT_FOUND:
+    code: -2317
+    message:
+        ko: "Ingress HTTP2 Port를 찾을 수 없습니다."
+        en: ""
+K8S_INGRESS_NODEPORT_IP_NOT_GIVEN:
+    code: -2318
+    message:
+        ko: "NodePort Type일 경우, `k8s.ingress.spec.nodePort.ip`에 IP를 명시해야 합니다."
+        en: ""
+K8S_INGRESS_TYPE_NOT_SUPPORTED:
+    code: -2319
+    message:
+        ko: "Ingress Service Type이 지원하지 않는 형식입니다.[not in (LoadBalancer, NodePort)]"
+        en: ""
+K8S_CONFIG_SATOKEN_NOT_FOUND:
+    code: -2320
+    message:
+        ko: "serviceAccount Token(`k8s.serviceAccount.token`)을 찾을 수 없습니다. 'k8s.isIntra=false' 일 때, 반드시 적절한 token을 부여해야 합니다."
+        en: ""
+
+# ModelRepo error code  = (-2600 ~ -2999)
+MODEL_ID_NOT_MATCHED:
+    code: -2600
+    message:
+        ko: "MODEL_ID가 일치하지 않습니다."
+        en: ""
+MODEL_NM_ALREADY_EXISTS:
+    code: -2601
+    message:
+        ko: "이미 존재하는 모델 이름입니다."
+        en: ""
+MODEL_NOT_EXISTS:
+    code: -2602
+    message:
+        ko: "모델이 존재하지 않습니다."
+        en: ""
+MODEL_VERSION_NOT_EXISTS:
+    code: -2603
+    message:
+        ko: "모델에 사용 가능한 버전 정보가 존재하지 않습니다."
+        en: ""
+UNABLE_TO_VERSION_DELETE:
+    code: -2604
+    message:
+        ko: "버전을 삭제할 수 없습니다. 최소 1개의 버전이 존재해야 합니다."
+        en: ""
+OBJECT_STORAGE_KEY_NOT_FOUND:
+    code: -2605
+    message:
+        ko: |
+            Project에 사용 가능한 Object Storage 정보가 없습니다.
+            Bucket과 AccessKey를 추가하여 주시기 바랍니다.
+        en: ""
+CONTAINER_REGISTRY_KEY_NOT_FOUND:
+    code: -2606
+    message:
+        ko: |
+            Project에 사용 가능한 Container Registry 정보가 없습니다.
+            Registry Project와 Log-in 정보를 추가하여 주시기 바랍니다.
+        en: ""
+BUCKET_ID_IN_PROJECT_ALREADY_EXISTS:
+    code: -2617
+    message:
+        ko: "해당 Project에 이미 Bucket이 존재합니다."
+        en: ""
+CANNOT_CONVERT_MULTIPARTFILE_TO_FILE:
+    code: -2621
+    message:
+        ko: "MultipartFile 작업 중 문제가 발생했습니다."
+        en: ""
+
+S3_CLIENT_ERROR:
+    code: -2700
+    message:
+        ko: "S3 Client 동작 중 문제가 발생했습니다."
+        en: ""
+S3_CLIENT_CANNOT_LIST_BUCKET:
+    code: -2700
+    message:
+        ko: "Bucket 조회 중 문제가 발생했습니다. Bucket을 조회할 수 없습니다."
+        en: ""
+S3_CLIENT_CANNOT_CREATE_BUCKET:
+    code: -2701
+    message:
+        ko: "Bucket 생성 중 문제가 발생했습니다. Bucket을 생성할 수 없습니다."
+        en: ""
+S3_CLIENT_CANNOT_DELETE_BUCKET:
+    code: -2702
+    message:
+        ko: "Bucket 삭제 중 문제가 발생했습니다. Bucket을 삭제할 수 없습니다."
+        en: ""
+S3_CLIENT_BUCKET_ALREADY_EXISTS:
+    code: -2703
+    message:
+        ko: "Bucket이 이미 존재합니다."
+        en: ""
+S3_CLIENT_BUCKET_NOT_FOUND:
+    code: -2704
+    message:
+        ko: "Bucket을 찾을 수 없습니다."
+        en: ""
+S3_CLIENT_UPLOAD_ERROR:
+    code: -2705
+    message:
+        ko: "Bucket에 File Upload 중 문제가 발생했습니다."
+        en: ""
+S3_CLIENT_MULTIPARTFILE_TO_FILE_IO_ERROR:
+    code: -2706
+    message:
+        ko: "MultipartFile을 처리하는 도중 문제가 발생했습니다."
+        en: ""
+S3_CLIENT_CANNOT_LIST_OBJECT:
+    code: -2707
+    message:
+        ko: "Object 조회 중 문제가 발생했습니다. Object를 조회할 수 없습니다."
+        en: ""
+S3_CLIENT_CANNOT_UPLOAD_OBJECT:
+    code: -2708
+    message:
+        ko: "Object Upload 중 문제가 발생했습니다. Object를 Upload할 수 없습니다."
+        en: ""
+S3_CLIENT_CANNOT_DELETE_OBJECT:
+    code: -2709
+    message:
+        ko: "Object 삭제 중 문제가 발생했습니다. Object를 삭제할 수 없습니다."
+        en: ""
+S3_CLIENT_OBJECT_NOT_FOUND:
+    code: -2709
+    message:
+        ko: "Object를 찾을 수 없습니다."
+        en: ""
+
+HARBOR_CLIENT_ERROR:
+    code: -2720
+    message:
+        ko: "Harbor Client 동작 중 문제가 발생했습니다."
+        en: ""
+HARBOR_CLIENT_USER_NOT_EXIST:
+    code: -2721
+    message:
+        ko: "Harbor User가 존재하지 않습니다."
+        en: ""
+HARBOR_CLIENT_USER_ALREADY_EXISTS:
+    code: -2722
+    message:
+        ko: "Harbor User가 이미 존재합니다."
+        en: ""
+HARBOR_CLIENT_CANNOT_CREATE_USER:
+    code: -2723
+    message:
+        ko: "Harbor User를 생성할 수 없습니다."
+        en: ""
+HARBOR_CLIENT_CANNOT_DELETE_USER:
+    code: -2724
+    message:
+        ko: "Harbor User를 삭제할 수 없습니다."
+        en: ""
+HARBOR_CLIENT_PROJECT_NOT_EXIST:
+    code: -2725
+    message:
+        ko: "Harbor Project가 존재하지 않습니다."
+        en: ""
+HARBOR_CLIENT_PROJECT_ALREADY_EXISTS:
+    code: -2726
+    message:
+        ko: "Harbor Project가 이미 존재합니다."
+        en: ""
+HARBOR_CLIENT_CANNOT_CREATE_PROJECT:
+    code: -2727
+    message:
+        ko: "Harbor Project를 생성할 수 없습니다."
+        en: ""
+HARBOR_CLIENT_CANNOT_DELETE_PROJECT:
+    code: -2728
+    message:
+        ko: "Harbor Project를 삭제할 수 없습니다."
+        en: ""
+
+CEPH_CLIENT_ERROR:
+    code: -2740
+    message:
+        ko: "Ceph Client 연결 중 문제가 발생했습니다."
+        en: ""
+CEPH_CLIENT_USER_NOT_EXIST:
+    code: -2741
+    message:
+        ko: "Ceph User가 존재하지 않습니다."
+        en: ""
+CEPH_CLIENT_USER_ALREADY_EXISTS:
+    code: -2742
+    message:
+        ko: "Ceph User가 이미 존재합니다."
+        en: ""
+
+TEKTON_SECRET_NOT_FOUND:
+    code: -2760
+    message:
+        ko: "Secret이 존재하지 않습니다."
+        en: ""
+TEKTON_CONFIGMAP_NOT_FOUND:
+    code: -2761
+    message:
+        ko: "ConfigMap이 존재하지 않습니다."
+        en: ""
+TEKTON_STORAGE_CONFIGMAP_COMPATIBILITY_ERROR:
+    code: -2762
+    message:
+        ko: "ConfigMap 'config-artifact-bucket'이 S3 사용을 위해 설정되어 있지 않습니다."
+        en: ""
+TEKTON_STORAGE_CONFIGMAP_BUCKETNAME_ERROR:
+    code: -2763
+    message:
+        ko: "ConfigMap 'config-artifact-bucket'의 Bucket 명이 주어진 s3 URL 경로와 다릅니다."
+        en: ""
+TEKTON_TASK_NOT_FOUND:
+    code: -2764
+    message:
+        ko: "Task가 존재하지 않습니다."
+        en: ""
+TEKTON_PIPELINE_NOT_FOUND:
+    code: -2765
+    message:
+        ko: "Pipeline이 존재하지 않습니다."
+        en: ""
+TEKTON_PIPELINERESOURCE_NOT_FOUND:
+    code: -2766
+    message:
+        ko: "PipelineResource가 존재하지 않습니다."
+        en: ""
+TEKTON_PIPELINERUN_NOT_FOUND:
+    code: -2767
+    message:
+        ko: "PipelineRun이 존재하지 않습니다."
+        en: ""
+TEKTON_PIPELINERUN_FAILED_WITH_TIMEOUT:
+    code: -2768
+    message:
+        ko: "PipelineRun이 실패하였습니다. 작업시간이 초과하였습니다."
+        en: ""
+TEKTON_PIPELINERUN_FAILED_WITH_ERROR:
+    code: -2769
+    message:
+        ko: "PipelineRun이 실패하였습니다. 동작 오류로 종료되었습니다."
+        en: ""
+TEKTON_PIPELINERUN_FAILED_WITH_INTERRUPTED:
+    code: -2769
+    message:
+        ko: "PipelineRun이 실패하였습니다. 작업이 비정상적으로 중단되었습니다."
+        en: ""
+
+# EndpointDeploy error code  = (-3600 ~ -3699)
+IFSVC_ALREADY_EXISTS:
+    code: -3606
+    message:
+        ko: "이미 존재하는 InferenceService 입니다."
+        en: ""
+IFSVC_NOT_FOUND:
+    code: -3607
+    message:
+        ko: "InferenceService가 존재하지 않습니다."
+        en: ""
+IFSVC_DEPLOY_FAILED:
+    code: -3608
+    message:
+        ko: "InferenceService 배포 작업이 실패하였습니다."
+        en: ""
+IFSVC_DEPLOY_TIMEOUT:
+    code: -3609
+    message:
+        ko: "InferenceService 배포 작업 시간이 초과되었습니다."
+        en: ""
+UNDEFINED_CUSTOM_SPEC:
+    code: -3610
+    message:
+        ko: "정의되지 않은 custom spec 입니다."
+        en: ""
+
+# EndpointManage error code  = (-3700 ~ -3799)
+INVALID_YN_FORMAT:
+    code: -3700
+    message:
+        ko: "YN 값은 '0' 또는 '1' 중 하나 여야 합니다."
+        en: ""
+DB_QUERY_ERROR:
+    code: -3701
+    message:
+        ko: "DB에서 값을 조회하는 과정에서 문제가 발생했습니다."
+        en: ""
+ENTITY_NOT_FOUND:
+    code: -3702
+    message:
+        ko: "DB에서 주어진 조건에 해당하는 값을 찾을 수 없습니다."
+        en: ""
+ENTITY_IFSVC_NOT_FOUND:
+    code: -3703
+    message:
+        ko: "DB에서 해당 InferenceService를 찾을 수 없습니다."
+        en: ""
+ENTITY_PRD_NOT_FOUND:
+    code: -3704
+    message:
+        ko: "DB에서 해당 Predictor를 찾을 수 없습니다."
+        en: ""
+ENTITY_TRS_NOT_FOUND:
+    code: -3705
+    message:
+        ko: "DB에서 해당 Transformer를 찾을 수 없습니다."
+        en: ""
+ENTITY_CANARY_PRD_NOT_FOUND:
+    code: -3706
+    message:
+        ko: "DB에서 해당 CANARY Predictor를 찾을 수 없습니다."
+        en: ""
+ENTITY_CANARY_TRS_NOT_FOUND:
+    code: -3707
+    message:
+        ko: "DB에서 해당 CANARY Transformer를 찾을 수 없습니다."
+        en: ""
+IFSVC_UNAVAILABLE_TO_DELETE:
+    code: -3708
+    message:
+        ko: "InferenceService를 삭제할 수 없습니다."
+        en: ""
+IFSVC_ALREADY_DELETED:
+    code: -3709
+    message:
+        ko: "이미 삭제된 InferenceService 입니다."
+        en: ""
+IFSVC_UNAVAILABLE_TO_STOP:
+    code: -3710
+    message:
+        ko: "InferenceService를 정지할 수 없습니다."
+        en: ""
+IFSVC_ALREADY_STOPPED:
+    code: -3711
+    message:
+        ko: "이미 정지된 InferenceService 입니다."
+        en: ""
+IFSVC_UNAVAILABLE_TO_RESTART:
+    code: -3712
+    message:
+        ko: "InferenceService를 재시작할 수 없습니다."
+        en: ""
+IFSVC_ALREADY_RUNNING:
+    code: -3713
+    message:
+        ko: "현재 운영 중인 InferenceService 입니다."
+        en: ""
+IFSVC_UNAVAILABLE_TO_MODIFY:
+    code: -3714
+    message:
+        ko: "InferenceService를 수정할 수 없습니다."
+        en: ""
+IFSVC_NO_SERVICE_EXISTS:
+    code: -3715
+    message:
+        ko: "서비스가 존재하지 않습니다."
+        en: ""
+IFSVC_NO_RUNNING_SERVICE:
+    code: -3716
+    message:
+        ko: "실행 중인 서비스가 없습니다."
+        en: ""
+INVALID_JSON_FORMAT:
+    code: -3717
+    message:
+        ko: "JSON 형식이 올바르지 않습니다."
+        en: ""
+IFSVC_INVALID_REPLICA_FORMAT:
+    code: -3718
+    message:
+        ko: "레플리카는 정수만 입력할 수 있습니다."
+        en: ""
+IFSVC_INVALID_REPLICA_RELATION:
+    code: -3719
+    message:
+        ko: "최소 레플리카 수는 최대 레플리카 수보다 작거나 같아야 합니다."
+        en: ""
+IFSVC_INVALID_MEMORY_FORMAT:
+    code: -3720
+    message:
+        ko: "Memory는 정수(단위: G)만 입력할 수 있습니다."
+        en: ""
+IFSVC_INVALID_CPU_FORMAT:
+    code: -3721
+    message:
+        ko: "CPU는 실수만 입력할 수 있습니다."
+        en: ""
+IFSVC_INVALID_GPU_FORMAT:
+    code: -3722
+    message:
+        ko: "GPU는 정수만 입력할 수 있습니다."
+        en: ""
+IFSVC_INVALID_RESOURCE_RELATION:
+    code: -3723
+    message:
+        ko: "요청 자원은 제한된 자원보다 작아야 합니다."
+        en: ""
+IFSVC_DB_SAVE_ERROR:
+    code: -3724
+    message:
+        ko: "DBdp 저장하는 과정에서 문제가 발생했습니다."
+        en: ""
+IFSVC_INVALID_RESTART_INPUT:
+    code: -3725
+    message:
+        ko: "서비스를 재시작하려면 1 이상의 레플리카 값을 입력해야 합니다."
+        en: ""
+IFSVC_CANNOT_ADD_EXISTING_VERSION_TO_CANARY:
+    code: -3726
+    message:
+        ko: "현재 배포 중인 버전을 Canary 배포로 등록할 수 없습니다."
+        en: ""
+
+# EndpointExplain error code  = (-3800 ~ -3899)
+UNKNOWN_HOST:
+    code: -3800
+    message:
+        ko: "알 수 없는 Service Host 입니다."
+        en: ""
+INVALID_JSON_ENCODING:
+    code: -3801
+    message:
+        ko: "지원하지 않는 Json Encoding 입니다."
+        en: ""
+HTTP_CLIENT_IO_ERROR:
+    code: -3802
+    message:
+        ko: "HTTP 요청 도중 IO 문제가 발생했습니다."
+        en: ""
+INTERRUPTED_THREAD:
+    code: -3803
+    message:
+        ko: "Service Endpoint 생성을 기다리는 도중 문제가 발생했습니다."
+        en: ""
+TRANSFORMER_NOT_NULL:
+    code: -3804
+    message:
+        ko: "Transformer 정보가 있는 InferenceService만 해석할 수 있습니다."
+        en: ""
+FILE_IO_ERROR:
+    code: -3805
+    message:
+        ko: "해석 결과 File을 저장하는 도중 문제가 발생했습니다."
+        en: ""
+EXPLAIN_UNDEFINED_ERROR:
+    code: -3806
+    message:
+        ko: "모델 해석 도중 정의되지 않은 문제가 발생했습니다."
+        en: ""
+HTTP_UNDEFINED_ERROR:
+    code: -3807
+    message:
+        ko: "HTTP 요청 도중 정의되지 않은 문제가 발생했습니다."
+        en: ""
+EXP_DEPLOY_UNDEFINED_ERROR:
+    code: -3808
+    message:
+        ko: "해석 모델 배포 도중 정의되지 않은 문제가 발생했습니다."
+        en: ""
+HTTP_SERVICE_UNAVAILABLE:
+    code: -3809
+    message:
+        ko: "API 서비스를 사용할 수 없습니다."
+        en: ""
+HTTP_GW_TIMEOUT:
+    code: -3810
+    message:
+        ko: "HTTP 요청 처리가 너무 오래 걸립니다."
+        en: ""
+UNABLE_TO_CREATE_PVC:
+    code: -3811
+    message:
+        ko: "종료 중인 PVC가 있어 PVC를 생성할 수 없습니다."
+        en: ""
+UNABLE_TO_CREATE_SVC_ENDPT:
+    code: -3812
+    message:
+        ko: "Service Endpoint를 생성하는 도중 문제가 발생했습니다."
+        en: ""
+DATASET_FILE_ERROR:
+    code: -3813
+    message:
+        ko: "데이터셋 파일 접근 시 문제가 발생했습니다."
+        en: ""
+LABELS_NOT_DEFINED:
+    code: -3814
+    message:
+        ko: "해석 요청 시 필요한 Label 이 정의되지 않았습니다."
+        en: ""
+INSTANCES_HAS_NULL:
+    code: -3815
+    message:
+        ko: "해석 요청 데이터에 null 값이 포함되어 있습니다. null 값이 있으면 해석이 불가합니다."
+        en: ""
+
+# Etc.(Reserved) error code  = (-3900 ~ -3999)
+EXCEPTION_IN_TEST:
+    code: -3999
+    message:
+        ko: "예외 처리 테스트를 위한 항목입니다."
+        en: ""
+
+# RestClientException  = (-4000 ~ -4100)
+RESTCLIENT_CANNOT_LOAD_CACERT:
+    code: -4000
+    message:
+        ko: "ca.crt 를 로드하는 과정에서 문제가 발생하였습니다."
+        en: ""
+RESTCLIENT_CANNOT_GET_KEYSTORE:
+    code: -4001
+    message:
+        ko: "CA_KEYSTORE을 정의하는 도중 문제가 발생하였습니다."
+        en: ""
+RESTCLIENT_CANNOT_CREATE_SSLCONTEXT:
+    code: -4002
+    message:
+        ko: "SSL 접속 구성 중 문제가 발생하였습니다."
+        en: ""
+RESTCLIENT_CANNOT_PARSE_RESPONSE_CONTENT:
+    code: -4003
+    message:
+        ko: "Response의 Content를 가져오는 도중 문제가 발생하였습니다."
+        en: ""
+RESTCLIENT_WRONG_URI_FORMAT:
+    code: -4004
+    message:
+        ko: "URI 형식이 맞지 않습니다."
+        en: ""
+RESTCLIENT_REQUEST_ERROR:
+    code: -4005
+    message:
+        ko: "내부 RequestClient가 다른 API를 대상으로 요청 중 문제가 발생하였습니다."
+        en: ""
+
+# AsyncThreadPoolTaskException = (-9000 ~ -9099)
+ASYNC_TASK_UNEXPECTEDLY_CLOSED:
+    code: -9000
+    message:
+        ko: "비동기 작업이 비정상 종료되었습니다."
+        en: ""
+ASYNC_TASK_WATCH_PIPELINERUN_UNEXPECTEDLY_CLOSED:
+    code: -9001
+    message:
+        ko: "비동기 작업: Tekton PipelineRun Watch 작업이 비정상 종료되었습니다."
+        en: ""
+ASYNC_TASK_WATCH_IFSVC_UNEXPECTEDLY_CLOSED:
+    code: -9002
+    message:
+        ko: "비동기 작업: InferenceService Watch 작업이 비정상 종료되었습니다."
+        en: ""
+ASYNC_TASK_TIMEOUT:
+    code: -9003
+    message:
+        ko: "비동기 작업이 Timeout 되었습니다."
+        en: ""
+
+# AttributeConvertException = (-9100 ~ -9199)
+CANNOT_CONVERT_DB_ENTRY_TO_ATTRIBUTE:
+    code: -9100
+    message:
+        ko: "지원하지 않는 값이 입력되어 처리할 수 없습니다."
+        en: ""
+
+INVALID_FILE_EXTENSION:
+    code: -10010
+    message:
+        ko: "잘못된 Extension Type이 주어졌습니다."
+        en: "The given extension type is wrong."
+
+MODEL_NOT_FOUND:
+    code: -10001
+    message:
+        ko: "모델을 찾을 수 없습니다."
+        en: "MODEL_NOT_FOUND"
+MODEL_NOT_SET:
+    code: -10002
+    message:
+        ko: "모델이 설정되지 않았습니다."
+        en: "MODEL_NOT_SET"
+MODEL_NOT_SUPPORTED:
+    code: -10003
+    message:
+            ko: "해당 모델은 지원하지 않습니다."
+            en: "MODEL_NOT_SUPPORTED"
+MODEL_ALREADY_EXISTS:
+    code: -10004
+    message:
+        ko: "해당 모델은 이미 존재합니다."
+        en: "MODEL_ALREADY_EXISTS"
+MODEL_TYPE_NOT_SUPPORTED:
+    code: -10005
+    message:
+        ko: "해당 모델 타입은 지원하지 않습니다."
+        en: "MODEL_TYPE_NOT_SUPPORTED"
+MODEL_TYPE_NOT_VALID:
+    code: -10006
+    message:
+        ko: "해당 모델 타입이 올바르지 않습니다."
+        en: "MODEL_TYPE_NOT_VALID"
+MODEL_ENDPOINT_NOT_VALID:
+    code: -10007
+    message:
+        ko: "모델 API endpoint가 올바르지 않습니다."
+        en: "MODEL_ENDPOINT_NOT_VALID"
+MODEL_ENDPOINT_ERROR:
+    code: -10008
+    message:
+        ko: "모델 API ERROR"
+        en: "MODEL_ENDPOINT_ERROR"
+MODEL_ENDPOINT_NOT_JSON:
+    code: -10009
+    message:
+        ko: "모델 API ERROR (NOT JSON)"
+        en: "MODEL_ENDPOINT_NOT_JSON"
+MODEL_ENDPOINT_CALL_ERROR:
+    code: -10010
+    message:
+        ko: "모델 API CALL ERROR"
+        en: "MODEL_ENDPOINT_CALL_ERROR"
+MODEL_ENDPOINT_RESP_ERROR:
+    code: -10011
+    message:
+        ko: "모델 API CALL RESP ERROR (NOT JSON)"
+        en: "MODEL_ENDPOINT_RESP_ERROR"
+
+LLM_CONTENT_IS_EMPTY:
+    code: -10101
+    message:
+        ko: "빈 값입니다."
+        en: "LLM_CONTENT_IS_EMPTY"
+LLM_CONTENT_PROCESS_STOPPED_IN_INTENT:
+    code: -10102
+    message:
+        ko: "LLM 처리 로직에 따라 작업을 중단하였습니다."
+        en: "LLM_CONTENT_PROCESS_STOPPED_IN_INTENT"
+LLM_CONTENT_PROCESS_ERROR:
+    code: -10103
+    message:
+        ko: "LLM Content 처리 중 에러가 발생하였습니다."
+        en: "LLM_CONTENT_PROCESS_ERROR"
+LLM_CONTENT_PREPROCESS_ERROR:
+    code: -10111
+    message:
+        ko: "LLM Content 전처리 중 에러가 발생하였습니다."
+        en: "LLM_CONTENT_PREPROCESS_ERROR"
+LLM_CONTENT_PREPROCESS_FUNC_NOT_FOUND:
+    code: -10112
+    message:
+        ko: "LLM Content 전처리 함수를 찾을 수 없습니다."
+        en: "LLM_CONTENT_PREPROCESS_FUNC_NOT_FOUND"
+LLM_CONTENT_PREPROCESS_FUNC_NOT_CALLABLE:
+    code: -10113
+    message:
+        ko: "LLM Content 전처리 함수가 잘못 선언되었습니다."
+        en: "LLM_CONTENT_PREPROCESS_FUNC_NOT_CALLABLE"
+LLM_CONTENT_PREPROCESS_FUNC_ARGS_ERROR:
+    code: -10114
+    message:
+        ko: "LLM Content 전처리 함수 argument가 맞지 않습니다."
+        en: "LLM_CONTENT_PREPROCESS_FUNC_ARGS_ERROR"
+LLM_CONTENT_PREPROCESS_FUNC_ERROR:
+    code: -10115
+    message:
+        ko: "LLM Content 전처리 함수 동작 중 에러가 발생하였습니다."
+        en: "LLM_CONTENT_PREPROCESS_FUNC_ERROR"
+LLM_CONTENT_POSTPROCESS_ERROR:
+    code: -10121
+    message:
+        ko: "LLM Content 후처리 중 에러가 발생하였습니다."
+        en: "LLM_CONTENT_POSTPROCESS_ERROR"
+LLM_CONTENT_POSTPROCESS_FUNC_NOT_FOUND:
+    code: -10122
+    message:
+        ko: "LLM Content 후처리 함수를 찾을 수 없습니다."
+        en: "LLM_CONTENT_POSTPROCESS_FUNC_NOT_FOUND"
+LLM_CONTENT_POSTPROCESS_FUNC_NOT_CALLABLE:
+    code: -10123
+    message:
+        ko: "LLM Content 후처리 함수가 잘못 선언되었습니다."
+        en: "LLM_CONTENT_POSTPROCESS_FUNC_NOT_CALLABLE"
+LLM_CONTENT_POSTPROCESS_FUNC_ARGS_ERROR:
+    code: -10124
+    message:
+        ko: "LLM Content 후처리 함수 argument가 맞지 않습니다."
+        en: "LLM_CONTENT_POSTPROCESS_FUNC_ARGS_ERROR"
+LLM_CONTENT_POSTPROCESS_FUNC_ERROR:
+    code: -10125
+    message:
+        ko: "LLM Content 후처리 함수 동작 중 에러가 발생하였습니다."
+        en: "LLM_CONTENT_POSTPROCESS_FUNC_ERROR"
+CONTENT_IS_EMPTY:
+    code: -10199
+    message:
+        ko: "빈 값입니다."
+        en: "CONTENT_IS_EMPTY"
+
+PROMPT_NOT_SET:
+    code: -10201
+    message:
+        ko: "PROMPT가 설정되지 않았습니다."
+        en: "PROMPT_NOT_SET"
+PROMPT_NOT_FOUND:
+    code: -10202
+    message:
+        ko: "PROMPT를 찾을 수 없습니다."
+        en: "PROMPT_NOT_FOUND"
+PROMPT_FOR_COMPLETION_NOT_SET:
+    code: -10203
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: Completion"
+        en: "PROMPT_FOR_COMPLETION_NOT_SET"
+PROMPT_FOR_COMMENT_NOT_SET:
+    code: -10204
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: Comment"
+        en: "PROMPT_FOR_COMMENT_NOT_SET"
+PROMPT_FOR_REFACTOR_NOT_SET:
+    code: -10205
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: Refactor"
+        en: "PROMPT_FOR_REFACTOR_NOT_SET"
+PROMPT_FOR_EXPLANATION_NOT_SET:
+    code: -10206
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: Explanation"
+        en: "PROMPT_FOR_EXPLANATION_NOT_SET"
+PROMPT_FOR_TRANSLATION_NOT_SET:
+    code: -10207
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: Translation"
+        en: "PROMPT_FOR_TRANSLATION_NOT_SET"
+PROMPT_FOR_ANSISQL_TRANSLATION_NOT_SET:
+    code: -10208
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: Translation(ANSI SQL)"
+        en: "PROMPT_FOR_ANSISQL_TRANSLATION_NOT_SET"
+PROMPT_FOR_SQL_NOT_SET:
+    code: -10209
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: SQL"
+        en: "PROMPT_FOR_SQL_NOT_SET"
+PROMPT_FOR_SECURECODING_NOT_SET:
+    code: -10210
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: SecureCoding"
+        en: "PROMPT_FOR_SECURECODING_NOT_SET"
+PROMPT_FOR_TEST_GENERATION_NOT_SET:
+    code: -10211
+    message:
+        ko: "PROMPT가 설정되지 않았습니다.: TestGen"
+        en: "PROMPT_FOR_TEST_GENERATION_NOT_SET"
+
+AZURE_SERVICE_IS_NULL_OR_EMPTY:
+    code: -10301
+    message:
+            ko: "요청한 서비스가 유효하지 않습니다."
+            en: "AZURE_SERVICE_IS_NULL_OR_EMPTY"
+
+TOKEN_IS_TOO_LONG:
+    code: -10302
+    message:
+        ko: "토큰의 길이가 허용치를 초과했습니다."
+        en: "TOKEN_IS_TOO_LONG"

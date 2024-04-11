@@ -1,0 +1,78 @@
+app:
+  root_path: ""
+  allowed_hosts:
+    - "*"
+    - "app.corus-ai.net"
+    - "corus-backend.corus.svc.cluster.local"
+    - "corus-backend.corus"
+    - "corus-backend"
+  version: "${APP_VERSION}"
+  locale: "en" # ko, en
+  # log_level: debug  #
+  profile: "development"
+  log_level: "debug"
+  static_dir: "static"
+  jwt:
+    # algorithm: RS256
+    algorithm: HS256 # for `use_test_token`
+    public_key: |
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnj9NCeZ3bhRR4dvuvMiE
+      3eIq2D+44n3ML3UGmXxbophjrGEPLcqK3wb0eOwqtGbyLgzVL2S7OI0jWTDc6IiD
+      ZjhfVvuAkrs5eiO0KmFNDdUdvBuk2olmG7FXdkBHlzc4WnidkKPN14Q1nU/It1jG
+      hcFkdc46Kw+nK8XcxChAM+JwQUewT8cODAOgj7cf1rw5Ppgo1p5IU+GDiguFLMhQ
+      fGFP3Bha+mCbMqzaPgR8wad4QN6FaKo4dTxjDOUNuSLsaImenG669HmC0dSvGq6u
+      Zkl0x4iBL8K4n+HsJ3USjC4UEs/3593BV+rH7j6qbkYTIrgDoHITpsWnfExwckbP
+      lQIDAQAB
+      -----END PUBLIC KEY-----
+    default_userid: 0
+    default_username: "corus-admin"
+    default_usergroup: 0
+    use_test_token: True
+
+database:
+  driver: "mysql"  # posgresql=psycopg
+  host: "${DATABASE__HOST}"
+  port: "${DATABASE__PORT}"
+  dbname: "${DATABASE__DBNAME}"
+  username: "${DATABASE__USERNAME}"
+  password: "${DATABASE__PASSWORD}"
+
+  # POSTGRES: See: https://www.psycopg.org/psycopg3/docs/advanced/pool.html#pool-stats
+  # pool_min:
+  # pool_max:
+  # pool_size: 5
+  # pool_available: 5
+  # requests_waiting: 0
+  # usage_ms: 100
+  # requests_num:
+  # requests_queued:
+  # requests_wait_ms:
+  # returns_bad:
+  # connections_num: 5
+  # connections_ms: 100
+  # connections_errors:
+  # connections_lost:
+
+  # MYSQL
+  # echo: True
+  # echo_pool: False
+  # # case_sensitive: False
+  # # encoding: utf-8
+  # isolation_level: SERIALIZABLE
+  # pool_reset_on_return: rollback # rollback, commit, None
+  # pool_timeout: 100
+  # pool_pre_ping: True
+  # pool_recycle: 270
+  # pool_size: 5
+  # max_overflow: 10
+  # implicit_returning: True
+  # hide_parameters: False
+
+# websocket:
+#   host: "http://localhost"
+#   port: 8080
+#   username: "corus" #"${ WEBSOCKET_USERNAME}"
+#   password: "corus" #"${ WEBSOCKET_PASSWORD}"
+# #  username: "airuntime"
+# #  password: "radulkebpdjpbivh"
