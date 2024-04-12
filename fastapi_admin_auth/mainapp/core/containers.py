@@ -1,6 +1,5 @@
 # from types import ModuleType
 # from collections import namedtuple
-import importlib
 import os
 from functools import lru_cache
 
@@ -15,7 +14,7 @@ from dependency_injector.wiring import Provide, inject
 # # from corusapi import history
 # # from corusapi.history import base as historyclient
 # from corusapi.api import services
-# from corusapi.core import config as core_config
+from mainapp.core import config as core_config
 # from corusapi.llm import endpoints
 
 # from ..database.crud import (
@@ -53,24 +52,9 @@ class Container(containers.DeclarativeContainer):
 
     config = providers.Configuration()
 
-    # db_config = providers.Factory(
-    #     core_config.DBConfig,
-    #     config=config,
-    # )
-
-    faiss_config = providers.Factory(
-        core_config.FaissConfig,
+    db_config = providers.Factory(
+        core_config.DBConfig,
         config=config,
-    )
-
-    redis_config = providers.Factory(
-        core_config.RedisConfig,
-        config=config,
-    )
-
-    redis = providers.ThreadSafeSingleton(
-        database.RedisDataBase,
-        redis_config=redis_config,
     )
 
     # db = providers.ThreadSafeSingleton(
@@ -86,96 +70,20 @@ class Container(containers.DeclarativeContainer):
         core_config.AppConfig,
         config=config,
     )
-    opensearch_config = providers.Factory(
-        core_config.OpensearchConfig,
-        config=config,
-    )
-    crypto_config = providers.Factory(
-        core_config.CryptoConfig,
-        config=config,
-    )
-    websocket_config = providers.Factory(
-        core_config.WebsocketConfig,
-        config=config,
-    )
-    llm_endpoint_config = providers.Factory(
-        core_config.LLMEndpointConfig,
-        config=config,
-    )
-    model_engine_config = providers.Factory(
-        core_config.ModelEngineConfig,
-        config=config,
-    )
-    outputs_git_config = providers.Factory(
-        core_config.OutputsGitConfig,
-        config=config,
-    )
-    # SMTP Config, add 2023.9.1 kim dong-hun
-    smtp_config = providers.Factory(
-        core_config.SMTPConfig,
-        config=config,
-    )
-    # add 2024.2.10 kim dong-hun
-    orchestration_config = providers.Factory(
-        core_config.OrchestrationConfig,
-        config=config,
-    )
 
-    llm_endpoint = providers.Factory(
-        endpoints.LLMEndpoint,
-        llm_endpoint_config=llm_endpoint_config,
-        model_engine_config=model_engine_config,
-    )
-
-    debug_service = providers.Factory(
-        services.DebugService,
-        app_config=app_config,
-    )
-    chat_service = providers.Factory(
-        services.ChatService,
-        app_config=app_config,
-        llm_endpoint_config=llm_endpoint_config,
-        model_engine_config=model_engine_config,
-        # redis_config=redis_config,
-        # redis=redis,
-        llm_endpoint=llm_endpoint,
-    )
-    # llm_endpoint_config_repository = providers.Factory(
-    #     LlmEndpointConfigRepository,
-    #     session_factory=db.provided.session
+    # debug_service = providers.Factory(
+    #     services.DebugService,
+    #     app_config=app_config,
     # )
-    # code_req_history_repository = providers.Factory(
-    #     CodeRequestHistoryRepository,
-    #     session_factory=db.provided.session
+    # chat_service = providers.Factory(
+    #     services.ChatService,
+    #     app_config=app_config,
+    #     llm_endpoint_config=llm_endpoint_config,
+    #     model_engine_config=model_engine_config,
+    #     # redis_config=redis_config,
+    #     # redis=redis,
+    #     llm_endpoint=llm_endpoint,
     # )
-    # user_response_analytics_repository = providers.Factory(
-    #     UserResponseAnalyticsRepository,
-    #     session_factory=db.provided.session
-    # )
-    code_req_service = providers.Factory(
-        services.CodeService,
-        # code_req_history_repo=code_req_history_repository,
-        llm_endpoint_config=llm_endpoint_config,
-        outputs_git_config=outputs_git_config,
-        faiss_config=faiss_config,
-    )
-    user_response_analytics_service = providers.Factory(
-        services.UserResponseAnalyticsService,
-        # user_response_analytics_repo=user_response_analytics_repository
-    )
-    # 계정 생성/패스워드 초기화 서비스, add 2023.9.1 kim dong-hun
-    user_service = providers.Factory(
-        services.UserService,
-        smtp_config=smtp_config,
-    )
-    orchestration_service = providers.Factory(
-        services.OrchestrationService,
-    )
-
-    projectrepo_service = providers.Factory(
-        services.ProjectRepoService,
-    )
-
 
 def hash_list(l: list) -> int:
     __hash = 0
@@ -234,55 +142,46 @@ def get_container(wire_modules=[]) -> Container:
 
 @logged
 @inject
-# def include_routers_by_mode(
 def include_routers(
     app: fastapi.FastAPI,
+    routers: list[fastapi.APIRouter],
     app_config: core_config.AppConfig = Provide[Container.app_config],
 ) -> fastapi.FastAPI:
-    from corusapi.api import routers
-    from corusapi.utils.common import is_installed_app
+    # from corusapi.api import routers
+    # from mainapp.core import iam
+    # # from corusapi.utils.common import is_installed_app
 
-    included_routers: list[fastapi.APIRouter]
-    included_routers = [
-        routers.auth.router,
-        routers.auth.router_ver,
-        routers.debug.router,
-        routers.debug.router_ver,
-        routers.health.router,
-        routers.health.router_ver,
-        routers.llm.router,
-        routers.prompt.router,
-        routers.prompt.router_ver,
-        routers.orchestration.router,
-        routers.flow.router_ver,
-    ]
-    if is_installed_app("corusadmin.project"):
-        included_routers += [
-            routers.project.router,
-            routers.project.router_ver,
-        ]
+    # included_routers: list[fastapi.APIRouter]
+    # included_routers = [
+    #     iam.view.router,
+    # ]
+    # if is_installed_app("corusadmin.project"):
+    #     included_routers += [
+    #         routers.project.router,
+    #         routers.project.router_ver,
+    #     ]
 
-    if is_installed_app("corusadmin.code"):
-        code_routers = [
-            routers.code.router,
-            routers.code.router_ver,
-            routers.tabby.router,
-        ]
-    else:
-        code_routers = []
+    # if is_installed_app("corusadmin.code"):
+    #     code_routers = [
+    #         routers.code.router,
+    #         routers.code.router_ver,
+    #         routers.tabby.router,
+    #     ]
+    # else:
+    #     code_routers = []
 
-    if is_installed_app("corusadmin.chat"):
-        chat_routers = [
-            routers.chat.router,
-            routers.chat.router_ver,
-            routers.tabby.router,
-        ]
-    else:
-        chat_routers = []
+    # if is_installed_app("corusadmin.chat"):
+    #     chat_routers = [
+    #         routers.chat.router,
+    #         routers.chat.router_ver,
+    #         routers.tabby.router,
+    #     ]
+    # else:
+    #     chat_routers = []
 
-    user_routers = [routers.user.router, routers.user.router_ver] if is_installed_app("corusadmin.iam") else []
+    # user_routers = [routers.user.router, routers.user.router_ver] if is_installed_app("corusadmin.iam") else []
 
-    prompt_routers = [routers.prompt.router, routers.prompt.router_ver] if is_installed_app("corusadmin.prompt") else []
+    # prompt_routers = [routers.prompt.router, routers.prompt.router_ver] if is_installed_app("corusadmin.prompt") else []
 
     #     if app_config.mode == AppMode.ALL:
     #         included_routers += code_routers
@@ -299,36 +198,12 @@ def include_routers(
     #         included_routers += prompt_routers
 
     # Add ALL routers
-    included_routers += code_routers
-    included_routers += chat_routers
-    included_routers += user_routers
-    included_routers += prompt_routers
+    # included_routers += code_routers
+    # included_routers += chat_routers
+    # included_routers += user_routers
+    # included_routers += prompt_routers
 
-    for router in included_routers:
+    for router in routers:
         app.include_router(router)
-
-    container: Container = get_container()
-
-    if container.orchestration_config().vertical_apps is not None:
-        for ap in container.orchestration_config().vertical_apps:
-            try:
-                if ap["type"] == "fastapi":
-                    files = os.listdir(os.getcwd() + "/" + ap["name"].replace(".", "/"))
-                    modules = [m.removesuffix(".py") for m in files if m not in ("__init__.py", "__pycache__")]
-                    for m in modules:
-                        v_module = importlib.import_module(f"{ap['name']}.{m}")
-                        app.include_router(v_module.router)
-            except (ModuleNotFoundError, ImportError, AttributeError):  # noqa: PERF203
-                include_routers._log.exception(f"Failed to include router for {ap['name']}")
-
-    for app_name in settings.INSTALLED_APPS:
-        if app_name.startswith("apps."):
-            try:
-                router_mod = importlib.import_module(f"{app_name}.routers")
-                router = router_mod.router
-                app.include_router(router)
-
-            except (ModuleNotFoundError, ImportError, AttributeError):
-                include_routers._log.exception(f"Failed to include router for {app_name}")
 
     return app
