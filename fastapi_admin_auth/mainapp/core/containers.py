@@ -8,15 +8,15 @@ import fastapi
 from autologging import logged
 from dependency_injector import containers, providers
 from dependency_injector.wiring import Provide, inject
-from django.conf import settings
 
-from corusapi import database
 
-# from corusapi import history
-# from corusapi.history import base as historyclient
-from corusapi.api import services
-from corusapi.core import config as core_config
-from corusapi.llm import endpoints
+# from corusapi import database
+
+# # from corusapi import history
+# # from corusapi.history import base as historyclient
+# from corusapi.api import services
+# from corusapi.core import config as core_config
+# from corusapi.llm import endpoints
 
 # from ..database.crud import (
 #     CodeRequestHistoryRepository,

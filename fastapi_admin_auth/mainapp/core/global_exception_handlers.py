@@ -6,34 +6,19 @@ from functools import partial
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.exception_handlers import (
-    http_exception_handler,
     request_validation_exception_handler,
 )
-from fastapi.exceptions import FastAPIError, HTTPException, WebSocketRequestValidationError
+from fastapi.exceptions import HTTPException, WebSocketRequestValidationError
 from fastapi.exceptions import RequestValidationError as HTTPRequestValidationError
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.status import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
-from autologging import traced, logged
-from corusapi.types.response import ErrorResponse
-from corusapi.types.exceptions import (
-    AIRuntimeException,
+from autologging import logged
+from mainapp.core.types.schema.response import ErrorResponse
+from mainapp.core.types.exceptions import (
     HandledException,
     UnHandledException,
-    AuthenticationException,
-    URLParseException,
-    JsonException,
-    FormatterException,
-    HarborClientException,
-    CephClientException,
-    S3ClientException,
-    RestClientException,
-    TektonClientException,
-    KubernetesActionException,
-    AttributeConverterException,
-    AsyncThreadPoolTaskException,
     BackgroundTaskException,
 )
 

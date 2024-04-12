@@ -8,3 +8,9 @@ docker run --rm \
     start-dev
 
 ```
+
+```bash
+mkdir certs && cd certs
+
+
+```

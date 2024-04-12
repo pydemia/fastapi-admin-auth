@@ -20,8 +20,8 @@
 
 # from starlette.middleware.exceptions import ExceptionMiddleware
 
-# from corusapi.types.exceptions import ResponseCode, HandledException
-# from corusapi.core.global_exception_handlers import get_request_info
+# from mainapp.core.types.exceptions import ResponseCode, HandledException
+# from mainapp.core.global_exception_handlers import get_request_info
 
 
 # __all__ = [

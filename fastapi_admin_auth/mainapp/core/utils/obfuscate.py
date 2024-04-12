@@ -7,9 +7,6 @@ import os
 import string
 from corusadmin.wordfilter.models import FilterPolicy
 from django.contrib.auth.models import User
-from corusapi.types.response.chat import ForbiddenMessages, ForbiddenMessageResponse
-from corusadmin.wordfilter.models import FilterPolicy
-from django.contrib.auth.models import User
 
 
 def masking_forbidden(code, table, user):
@@ -279,7 +276,7 @@ def obfuscate_code_python(code, table):
 
     try:
         parsed = ast.parse(renamed_code)
-    except SyntaxError as e:
+    except SyntaxError:
         raise Exception("코드의 문법이 맞지 않습니다.")
 
     funcs = { node for node in ast.walk(parsed) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) }

@@ -73,3 +73,6 @@ App단위 관리: 개발주체가 외부 팀이 될 수도 있음. 대신 관계
 * etc.
 
 
+```bash
+docker network create local
+```

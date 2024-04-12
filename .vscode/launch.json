@@ -1,0 +1,44 @@
+
+{
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "[💻]run-backend: app-only",
+      "configurations": [
+        "[🌱]backend: uvicorn: app-only",
+        // "[🚪]frontend: debug with browser",
+      ]
+      // "preLaunchTask": "${defaultBuildTask}"
+  }
+  ],
+  "configurations": [
+      {
+          "name": "[🌱🌱]backend: gunicorn: app-only",
+          "type": "python",
+          "request": "launch",
+          "module": "gunicorn",
+          "args": [
+          "mainapp.main:app",
+          "-k=uvicorn.workers.UvicornWorker",
+          "--log-config=${workspaceFolder}/fastapi_admin_auth/logging.conf",
+          "-c=${workspaceFolder}/fastapi_admin_auth/gunicorn_conf.py"
+          ],
+          "cwd": "${workspaceFolder}/fastapi_admin_auth",
+          "console": "internalConsole",
+          "envFile": "${workspaceFolder}/.env",
+          "justMyCode": false,
+      },
+      {
+          "name": "[🌱]backend: uvicorn: app-only",
+          "type": "python",
+          "request": "launch",
+          "module": "uvicorn",
+          "args": [
+              "mainapp.main:app",
+              "--log-config=${workspaceFolder}/fastapi_admin_auth/logging.conf"
+          ],
+          "cwd": "${workspaceFolder}/fastapi_admin_auth",
+          "console": "internalConsole",
+          "envFile": "${workspaceFolder}/.env",
+          "justMyCode": false
+      },

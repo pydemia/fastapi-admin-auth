@@ -1,10 +1,10 @@
 import datetime as dt
 import logging
 
-from pydantic import BaseModel, Extra, root_validator
+from pydantic.v1 import BaseModel, Extra, root_validator
 from pydantic.json import timedelta_isoformat
 
-from ...utils.misc import dt_to_timemilis
+from mainapp.core.utils.misc import dt_to_timemilis
 
 __all__ = [
     "CODE_FIELD_MAX_LENGTH",

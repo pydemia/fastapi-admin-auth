@@ -27,3 +27,4 @@ sqladmin[full]
 fastapi-authz
 
 starlette-admin
+fastapi-keycloak

@@ -6,11 +6,9 @@ from fastapi import Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 
-from corusapi.core.global_exception_handlers import _handled_exception_handler, get_request_info
-from corusapi.types.exceptions import AuthenticationException, HandledException, ResponseCode
-from corusapi.utils.uuid_gen import gen_transaction_id
-
-# from corusapi.core.global_exception_handlers import get_request_info
+from mainapp.core.global_exception_handlers import _handled_exception_handler, get_request_info
+from mainapp.core.types.exceptions import AuthenticationException, HandledException, ResponseCode
+from mainapp.core.utils.uuid_gen import gen_transaction_id
 
 
 __all__ = [

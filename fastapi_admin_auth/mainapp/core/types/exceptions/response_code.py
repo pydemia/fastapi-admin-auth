@@ -6,7 +6,7 @@ from typing import Any
 
 import yaml
 from autologging import logged
-from pydantic import (
+from pydantic.v1 import (
     BaseModel,
     BaseSettings,
     Extra,
@@ -15,7 +15,7 @@ from pydantic import (
     root_validator,
     validator,
 )
-from pydantic.env_settings import SettingsSourceCallable
+from pydantic.v1.env_settings import SettingsSourceCallable
 
 # from pydantic.v1 import (
 #     BaseModel,
@@ -31,7 +31,7 @@ from pydantic.env_settings import SettingsSourceCallable
 #     EnvSettingsSource,
 #     PydanticBaseSettingsSource,
 # )
-from ..enums import Locale
+from mainapp.core.types.enums import Locale
 
 __all__ = [
     "ResponseCode",
@@ -175,7 +175,7 @@ class CodeMessages(BaseSettings):
     #     env_settings: PydanticBaseSettingsSource,
     #     dotenv_settings: PydanticBaseSettingsSource,
     #     file_secret_settings: PydanticBaseSettingsSource,
-    # ) -> Tuple[PydanticBaseSettingsSource, ...]:
+    # ) -> tuple[PydanticBaseSettingsSource, ...]:
     #     return (LoadCodeYamlSettingsSource(settings_cls),)
 
     def find_by_code(self, code: int) -> CodeMessage | None:

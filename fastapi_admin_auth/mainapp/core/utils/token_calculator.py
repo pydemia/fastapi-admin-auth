@@ -2,7 +2,6 @@ from tiktoken import encoding_for_model
 from asgiref.sync import async_to_sync, sync_to_async
 
 
-from corusapi.types.enums.model import ModelType
 
 
 class TokenCalculator:

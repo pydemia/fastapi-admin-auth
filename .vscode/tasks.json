@@ -1,0 +1,139 @@
+{
+    "version": "2.0.0",
+    "options": {
+        "env":{
+            "PYTHONPATH": "${workspaceFolder}/app/backend:${PYTHONPATH}",
+        }
+    },
+    "tasks": [
+        {
+            "label": "database-launch --stateless",
+            "type": "docker-run",
+            "dockerRun": {
+                "containerName": "systemdb",
+                "image": "bitnami/postgresql:14.8.0",
+                "env": {
+                    "POSTGRESQL_DATABASE": "backend",
+                    "POSTGRESQL_USERNAME": "admin",
+                    "POSTGRESQL_PASSWORD": "admin"
+                },
+                // "network": "host",
+                "network": "local",
+                // "network": "bridge",
+                "ports": [
+                    {
+                        "containerPort": 5432,
+                        "hostPort": 5432
+                    }
+                ],
+                "volumes": [
+                    {
+                        "localPath": "${workspaceFolder}/db/init_scripts",
+                        "containerPath": "/docker-entrypoint-initdb.d/",
+                        "permissions": "ro"
+                    }
+                ],
+                "remove": true
+            }
+        },
+        {
+            "label": "database-wait-for-ready",
+            "type": "shell",
+            "command": "bash -c 'command -v pg_isready >/dev/null 2>&1 || { echo >&2 \"\"pg_isready\" does not exist.\"; exit 1; } && until [ $COUNT_SEC -eq $TIMEOUT_SEC ] || pg_isready --host=$DB_HOST --port=$DB_PORT --dbname=$DB_DATABASE --username=$DB_USERNAME --timeout=$PING_TIMEOUT > /dev/null 2>&1; do printf \"\\r$(( COUNT_SEC++ +1))s/${TIMEOUT_SEC}s\" && sleep 1; done; [ $(( COUNT_SEC++ )) -lt $TIMEOUT_SEC ] && printf \"\ndatabase($DB_USERNAME@$DB_HOST:$DB_PORT/$DB_DATABASE) READY!\\n\" || printf \"\ndatabase($DB_USERNAME@$DB_HOST:$DB_PORT/$DB_DATABASE) NOT READY: TIMEOUT!\\n\"'",
+            "options": {
+                "env": {
+                    "DB_HOST": "127.0.0.1",
+                    "DB_PORT": "5432",
+                    "DB_DATABASE": "backend",
+                    "DB_USERNAME": "admin",
+                    "COUNT_SEC": "1",
+                    "TIMEOUT_SEC": "60",
+                    "PING_TIMEOUT": "10"
+                }
+            },
+            "group": "test"
+        },
+        {
+            "label": "database-launch",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "database-shutdown",
+                "database-launch --stateless",
+                "database-wait-for-ready"
+            ],
+            "group": "test"
+        },
+        {
+            "label": "database-shutdown",
+            "type": "shell",
+            "command": "docker container stop systemdb || true",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "revealProblems": "onProblem",
+                "close": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "keycloak-launch",
+            "type": "docker-run",
+            "dockerRun": {
+                "containerName": "keycloak",
+                "image": "quay.io/keycloak/keycloak:24.0.2",
+                "command": "start",
+                "envFiles": [
+                    "${workspaceFolder}/.env"
+                ],
+                // "network": "host",
+                "network": "local",
+                "ports": [
+                    {
+                        "containerPort": 10000,
+                        "hostPort": 10000
+                    }
+                ],
+                "volumes": [
+                    {
+                        "localPath": "${workspaceFolder}/keycloak/conf/keycloak-dev-http.conf",
+                        "containerPath": "/opt/keycloak/conf/keycloak.conf",
+                        "permissions": "ro"
+                    }
+                ],
+                "remove": true
+            }
+        },
+        {
+            "label": "keycloak-shutdown",
+            "type": "shell",
+            "command": "docker container stop keycloak || true",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "revealProblems": "onProblem",
+                "close": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "all-run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "keycloak-shutdown",
+                "database-shutdown",
+                "database-launch --stateless",
+                "database-wait-for-ready",
+                "keycloak-launch"
+            ],
+            "group": "test"
+        },
+    ]
+}

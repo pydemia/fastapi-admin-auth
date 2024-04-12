@@ -6,12 +6,9 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, Header, Request
 from typing_extensions import Annotated
 
-from dependency_injector.wiring import inject, Provide
 
-from .config import AppConfig
-from .containers import Container
-from corusapi.types.enums.code import ClientType
-from corusapi.types.exceptions import ResponseCode, HandledException
+from mainapp.core.types.enums.code import ClientType
+from mainapp.core.types.exceptions import ResponseCode, HandledException
 
 
 __all__ = [
