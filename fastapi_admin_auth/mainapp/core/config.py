@@ -1,12 +1,11 @@
+from typing import Literal, Any
 import os
 from pathlib import Path
 # from typing import Literal
-from functools import partial
 
-import pydantic
 from autologging import logged
-from pydantic.v1 import BaseSettings, Extra, Field, validator
-from pydantic.v1.env_settings import SettingsSourceCallable
+# from pydantic.v1 import BaseSettings, Extra, Field, validator
+# from pydantic.v1.env_settings import SettingsSourceCallable
 
 # # from pydantic.v1 import Field, validator, Extra
 # # from pydantic.v1 import FilePath, DirectoryPath
@@ -16,21 +15,52 @@ from pydantic.v1.env_settings import SettingsSourceCallable
 #     EnvSettingsSource,
 #     PydanticBaseSettingsSource,
 # )
+
+
+from pydantic import Field, field_validator, model_validator
+from typing import Type
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    YamlConfigSettingsSource,
+)
+from pydantic_settings.sources import import_yaml
+import yaml
+import re
+
 from mainapp.core.types.enums import Locale
 
 __all__ = [
     "AppConfig",
 ]
 
+class EnvYamlConfigSettingsSource(YamlConfigSettingsSource):
+
+    def _read_file(self, file_path: Path) -> dict[str, Any]:
+        import_yaml()
+        with open(file_path, encoding=self.yaml_file_encoding) as yaml_file:
+            yaml_str = yaml_file.read()
+            env_pattern = re.compile(".*?\${(\w+)}.*?")
+            enved = env_pattern.findall(yaml_str)
+            if enved:
+                for env in enved:
+                    yaml_str = yaml_str.replace(
+                        f"${{{env}}}", os.environ.get(env, f"${{{env}}}")
+                    )
+
+            # return yaml.safe_load(yaml_file)
+            return yaml.safe_load(yaml_str)
+
 
 @logged
 class AppSettings(BaseSettings):
     _root_key: str | None = None
 
-    @pydantic.root_validator(pre=True)
+    @model_validator(mode="before")
     def _filter_by_root_key(cls, values):
         try:
-            root_key = cls._root_key
+            root_key = cls._root_key.get_default()
         except AttributeError:
             root_key = None
 
@@ -41,25 +71,33 @@ class AppSettings(BaseSettings):
         if root_key is not None and str(root_key):
             values_to_use = values_to_use.get(str(root_key), {})
 
-        values.update(values_to_use)
+        # values.update(values_to_use)
+        values = values_to_use
         return values
 
-    class Config:
-        underscore_attrs_are_private = False
-        allow_mutation = False
-        validate_all = True
-        extra = Extra.ignore
-        arbitrary_types_allowed = True
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_prefix="",
+        env_nested_delimiter="__",
+        yaml_file=os.getenv("APP_CONFIG", "config.yaml"),
+        frozen=False,
+        validate_default=True,
+        arbitrary_types_allowed=True,
+        case_sensitive=True,
+        extra="ignore",
+    )
 
-        @classmethod
-        def customise_sources(
-            cls,
-            init_settings: SettingsSourceCallable,
-            env_settings: SettingsSourceCallable,
-            file_secret_settings: SettingsSourceCallable,
-        ) -> tuple[SettingsSourceCallable, ...]:
-            return env_settings, init_settings, file_secret_settings
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: Type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        return env_settings, init_settings, file_secret_settings, EnvYamlConfigSettingsSource(settings_cls)
+
+
 
     # @classmethod
     # def settings_customise_sources(
@@ -92,20 +130,23 @@ def to_dotted(string: str, prefix="database") -> str:
 
 class DBConfig(AppSettings):
     _root_key: str = "database"
-    host: str = Field(os.getenv("DATABASE__HOST", os.getenv("SYSTEMDB__HOST", "quickdraw-admin")))
-    port: int = Field(os.getenv("DATABASE__PORT", os.getenv("SYSTEMDB__PORT", "3306")))
-    username: str = Field(os.getenv("DATABASE__USERNAME", os.getenv("SYSTEMDB__USERNAME", None)))
-    password: str = Field(os.getenv("DATABASE__PASSWORD", os.getenv("SYSTEMDB__PASSWORD", None)))
-    dbname: str = Field(os.getenv("DATABASE__DBNAME", os.getenv("SYSTEMDB__DBNAME", None)))
+    driver: Literal["mysql", "postgresql"] = Field("mysql")
+    host: str = Field(os.getenv("DATABASE__HOST", "localhost"))
+    port: int = Field(os.getenv("DATABASE__PORT", "3306"))
+    username: str = Field(os.getenv("DATABASE__USERNAME", "admin"))
+    password: str = Field(os.getenv("DATABASE__PASSWORD", "admin"))
+    dbname: str = Field(os.getenv("DATABASE__DBNAME", "backend"))
 
-    class Config(AppSettings.Config):
-        # env_prefix = "DATABASE__"
-        extra = Extra.allow
-        alias_generator = partial(to_dotted, prefix="database")
+    AppSettings.model_config.update(
+        dict(
+            extra="allow",
+            # alias_generator=partial(to_dotted, prefix="database"),
+        )
+    )
 
     @property
     def extra_fields(self) -> set[str]:
-        return set(self.__dict__) - set(self.__fields__)
+        return set(self.__dict__) - set(self.model_fields)
 
 
 class JWTConfig(AppSettings):
@@ -157,7 +198,7 @@ class AppConfig(AppSettings):
     static_dir: Path = Field(Path(os.getenv("APP__STATIC_DIR", "static")))
     # mode: AppMode = AppMode(os.getenv("APP_MODE", "all")) # Literal["all", "gencode", "chatbot"]
 
-    @validator("log_level", pre=True, always=True, allow_reuse=True)
+    @field_validator("log_level", mode="before")
     def set_log_level(cls, v):
         import logging
 

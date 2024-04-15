@@ -1,40 +1,27 @@
 """Database module."""
 
-from typing import Any
+from typing import Any, Callable, ContextManager
+from contextlib import contextmanager
 
+from sqlalchemy import orm
+from sqlalchemy.engine import engine_from_config
+from sqlalchemy.orm import declarative_base, Session
+
+from dependency_injector.wiring import inject
 # import pandas as pd
 
-from sqlalchemy.ext.declarative import declarative_base
 # from langchain_community.embeddings import HuggingFaceEmbeddings
 
 # from ..core.config import DBConfig
 
 __all__ = [
     "Base",
-    "RedisDataBase",
+    # "RedisDataBase",
     "Database",
 ]
 
 Base = declarative_base()
 
-from sqlalchemy.orm import declarative_base
-
-
-# Base = declarative_base()
-# engine = create_engine(
-#     "sqlite:///example.db",
-#     connect_args={"check_same_thread": False},
-# )
-
-
-# class User(Base):
-#     __tablename__ = "users"
-
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String)
-
-
-# Base.metadata.create_all(engine)  # Create tables
 
 # @inject
 # class RedisDataBase:
@@ -69,105 +56,105 @@ from sqlalchemy.orm import declarative_base
     #     finally:
     #         session.close()
 
-# @inject
-# class Database:
-#     def __init__(
-#             self,
-#             db_config: DBConfig = Provide["db_config"],
-#             ) -> None:
-#     # def __init__(self, db_config: Dict[str, Any]) -> None:
-#         """
-#         """
-#         db_config_dict = db_config.dict(by_alias=False)
-#         db_extra_config_dict = {
-#             f"database.{k}": v for k, v in db_config_dict.items()
-#             if k in db_config.extra_fields
-#         }
-#         db_extra_config_dict["database.url"] = 'mysql+pymysql://{username}:{password}@{host}:{port}/{dbname}'.format(
-#             username=db_config.username,
-#             password=db_config.password,
-#             host=db_config.host,
-#             port=db_config.port,
-#             dbname=db_config.dbname,
-#         )
+@inject
+class Database:
+    def __init__(
+            self,
+            db_config: DBConfig = Provide["db_config"],
+            ) -> None:
+    # def __init__(self, db_config: Dict[str, Any]) -> None:
+        """
+        """
+        db_config_dict = db_config.dict(by_alias=False)
+        db_extra_config_dict = {
+            f"database.{k}": v for k, v in db_config_dict.items()
+            if k in db_config.extra_fields
+        }
+        db_extra_config_dict["database.url"] = 'mysql+pymysql://{username}:{password}@{host}:{port}/{dbname}'.format(
+            username=db_config.username,
+            password=db_config.password,
+            host=db_config.host,
+            port=db_config.port,
+            dbname=db_config.dbname,
+        )
 
-#         # dotted = pd.json_normalize(db_config, sep=".").to_dict(orient='records')[0]
-#         # dotted['database.url'] = 'mysql+pymysql://{username}:{password}@{host}:{port}/{dbname}'.format(
-#         #     username=os.getenv("DATABASE__USERNAME", os.getenv("SYSTEMDB__USERNAME", dotted.pop("database.username", None))),
-#         #     password=os.getenv("DATABASE__PASSWORD", os.getenv("SYSTEMDB__PASSWORD", dotted.pop("database.password", None))),
-#         #     host=os.getenv("SYSTEMDB__HOST", os.getenv("DATABASE__HOST", dotted.pop("database.host", None))),
-#         #     port=os.getenv("SYSTEMDB__PORT", os.getenv("DATABASE__PORT", dotted.pop("database.port", None))),
-#         #     dbname=os.getenv("SYSTEMDB__DBNAME", os.getenv("DATABASE__DBNAME", dotted.pop("database.dbname", None))),
-#         # )
-#         # self._engine = engine_from_config(dotted, prefix="database.")
-#         self._engine = engine_from_config(db_extra_config_dict, prefix="database.")
-#         self._session_factory = orm.scoped_session(
-#             orm.sessionmaker(
-#                 autocommit=False,
-#                 autoflush=False,
-#                 bind=self._engine,
-#             ),
-#         )
+        # dotted = pd.json_normalize(db_config, sep=".").to_dict(orient='records')[0]
+        # dotted['database.url'] = 'mysql+pymysql://{username}:{password}@{host}:{port}/{dbname}'.format(
+        #     username=os.getenv("DATABASE__USERNAME", os.getenv("SYSTEMDB__USERNAME", dotted.pop("database.username", None))),
+        #     password=os.getenv("DATABASE__PASSWORD", os.getenv("SYSTEMDB__PASSWORD", dotted.pop("database.password", None))),
+        #     host=os.getenv("SYSTEMDB__HOST", os.getenv("DATABASE__HOST", dotted.pop("database.host", None))),
+        #     port=os.getenv("SYSTEMDB__PORT", os.getenv("DATABASE__PORT", dotted.pop("database.port", None))),
+        #     dbname=os.getenv("SYSTEMDB__DBNAME", os.getenv("DATABASE__DBNAME", dotted.pop("database.dbname", None))),
+        # )
+        # self._engine = engine_from_config(dotted, prefix="database.")
+        self._engine = engine_from_config(db_extra_config_dict, prefix="database.")
+        self._session_factory = orm.scoped_session(
+            orm.sessionmaker(
+                autocommit=False,
+                autoflush=False,
+                bind=self._engine,
+            ),
+        )
 
-#     def create_database(self) -> None:
-#         """
-#         """
-#         try:
-#             Base.metadata.create_all(bind=self._engine)
-#         except Exception as e:
-#             raise e
+    def create_database(self) -> None:
+        """
+        """
+        try:
+            Base.metadata.create_all(bind=self._engine)
+        except Exception as e:
+            raise e
 
-#     # def migration(self, template_dir: Path = None) -> None:
-#     #     """
-#     #     """
-#     #     try:
-#     #         def mig_templates():
-#     #             import os
-#     #             # from .models import CustomTemplateList
-#     #             # from .crud import CustomTemplateListRepository
-#     #             # from ..types.enums.nodes import TemplateType, ShareScope
+    # def migration(self, template_dir: Path = None) -> None:
+    #     """
+    #     """
+    #     try:
+    #         def mig_templates():
+    #             import os
+    #             # from .models import CustomTemplateList
+    #             # from .crud import CustomTemplateListRepository
+    #             # from ..types.enums.nodes import TemplateType, ShareScope
 
-#     #             custom_template_list = template_dir.glob("**/*.py")
-#     #             for path in custom_template_list:
-#     #                 with open(path, "r") as f:
-#     #                     line_skip = f.readline()
-#     #                     line_skip = f.readline()
-#     #                     subject = f.readline().replace("- Subject:","").strip()
-#     #                     description = f.readline().replace("- Description:","").strip()
-#     #                     line_skip = f.readline()
-#     #                     code = f.read()
-#     #                 custom_template = CustomTemplateList()
-#     #                 custom_template.template_id = path.stem
-#     #                 custom_template.template_type = int(TemplateType.TEMPLATE)
-#     #                 custom_template.subject = subject
-#     #                 custom_template.description = description
-#     #                 custom_template.default_yn = True
-#     #                 custom_template.share_scope = int(ShareScope.GLOBAL)
-#     #                 custom_template.project_id = 1
-#     #                 custom_template.code = code
-#     #                 custom_template.create_user = "system"
-#     #                 custom_template.update_user = "system"
-#     #                 custom_template.use_yn = True
+    #             custom_template_list = template_dir.glob("**/*.py")
+    #             for path in custom_template_list:
+    #                 with open(path, "r") as f:
+    #                     line_skip = f.readline()
+    #                     line_skip = f.readline()
+    #                     subject = f.readline().replace("- Subject:","").strip()
+    #                     description = f.readline().replace("- Description:","").strip()
+    #                     line_skip = f.readline()
+    #                     code = f.read()
+    #                 custom_template = CustomTemplateList()
+    #                 custom_template.template_id = path.stem
+    #                 custom_template.template_type = int(TemplateType.TEMPLATE)
+    #                 custom_template.subject = subject
+    #                 custom_template.description = description
+    #                 custom_template.default_yn = True
+    #                 custom_template.share_scope = int(ShareScope.GLOBAL)
+    #                 custom_template.project_id = 1
+    #                 custom_template.code = code
+    #                 custom_template.create_user = "system"
+    #                 custom_template.update_user = "system"
+    #                 custom_template.use_yn = True
 
-#     #                 repo = CustomTemplateListRepository(self._session_factory)
-#     #                 repo.add_or_update(custom_template)
-#     #         mig_templates()
+    #                 repo = CustomTemplateListRepository(self._session_factory)
+    #                 repo.add_or_update(custom_template)
+    #         mig_templates()
 
-#     #     except Exception as e:
-#     #         raise e
+    #     except Exception as e:
+    #         raise e
 
-#     @contextmanager
-#     def session(self) -> Callable[..., ContextManager[Session]]:
-#         """
-#         """
-#         session: Session = self._session_factory()
-#         try:
-#             yield session
-#         except Exception:
-#             session.rollback()
-#             raise
-#         finally:
-#             session.close()
+    @contextmanager
+    def session(self) -> Callable[..., ContextManager[sa.orm.Session]]:
+        """
+        """
+        session: Session = self._session_factory()
+        try:
+            yield session
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
 
 ## pagination.py
 

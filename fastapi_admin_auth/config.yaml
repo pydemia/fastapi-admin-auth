@@ -55,19 +55,19 @@ database:
   # connections_lost:
 
   # MYSQL
-  # echo: True
-  # echo_pool: False
-  # # case_sensitive: False
-  # # encoding: utf-8
-  # isolation_level: SERIALIZABLE
-  # pool_reset_on_return: rollback # rollback, commit, None
-  # pool_timeout: 100
-  # pool_pre_ping: True
-  # pool_recycle: 270
-  # pool_size: 5
-  # max_overflow: 10
-  # implicit_returning: True
-  # hide_parameters: False
+  echo: True
+  echo_pool: False
+  # case_sensitive: False
+  # encoding: utf-8
+  isolation_level: SERIALIZABLE
+  pool_reset_on_return: rollback # rollback, commit, None
+  pool_timeout: 100
+  pool_pre_ping: True
+  pool_recycle: 270
+  pool_size: 5
+  max_overflow: 10
+  implicit_returning: True
+  hide_parameters: False
 
 # websocket:
 #   host: "http://localhost"

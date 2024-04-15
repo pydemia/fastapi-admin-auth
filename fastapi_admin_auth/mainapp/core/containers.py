@@ -132,11 +132,17 @@ def _lru_cache(*opts, **kwopts):
 @_lru_cache(maxsize=None)
 def get_container(wire_modules=[]) -> Container:
     container = Container()
-    container.config.from_yaml(os.getenv("APP_CONFIG", "config.yaml"), envs_required=False)
+    yaml_file = os.getenv("APP_CONFIG", "config.yaml")
+    container.config.from_yaml(yaml_file, envs_required=False)
+    # aa = container.config()
     container.init_resources()
 
     container.wire(modules=[__name__] + wire_modules)
 
+    from mainapp.core.config import DBConfig
+
+    # ss = AppSettings()
+    dd = DBConfig()
     return container
 
 

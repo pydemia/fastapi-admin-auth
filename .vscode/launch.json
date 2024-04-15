@@ -25,7 +25,7 @@
           ],
           "cwd": "${workspaceFolder}/fastapi_admin_auth",
           "console": "internalConsole",
-          "envFile": "${workspaceFolder}/.env",
+          "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
           "justMyCode": false,
       },
       {
@@ -39,6 +39,6 @@
           ],
           "cwd": "${workspaceFolder}/fastapi_admin_auth",
           "console": "internalConsole",
-          "envFile": "${workspaceFolder}/.env",
+          "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
           "justMyCode": false
       },
