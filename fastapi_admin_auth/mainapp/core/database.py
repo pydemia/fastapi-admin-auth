@@ -7,7 +7,7 @@ from sqlalchemy import orm
 from sqlalchemy.engine import engine_from_config
 from sqlalchemy.orm import declarative_base, Session
 
-from dependency_injector.wiring import inject
+
 # import pandas as pd
 
 # from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -56,21 +56,45 @@ Base = declarative_base()
     #     finally:
     #         session.close()
 
-@inject
+def flatten_json(y):
+    out = {}
+
+    def flatten(x, name=""):
+        if type(x) is dict:
+            for a in x:
+                flatten(x[a], name + a + '_')
+        elif type(x) is list:
+            i = 0
+            for a in x:
+                flatten(a, name + str(i) + '_')
+                i += 1
+        else:
+            out[name[:-1]] = x
+
+    flatten(y)
+    return out
+
+# @inject
 class Database:
     def __init__(
             self,
-            db_config: DBConfig = Provide["db_config"],
+            # db_config: DBConfig = Provide["db_config"],
+            db_config: dict[str, Any],
             ) -> None:
     # def __init__(self, db_config: Dict[str, Any]) -> None:
         """
         """
-        db_config_dict = db_config.dict(by_alias=False)
+        db_config_dict = db_config.model_dump(by_alias=False)
         db_extra_config_dict = {
             f"database.{k}": v for k, v in db_config_dict.items()
-            if k in db_config.extra_fields
+            if k in db_config.model_extra
         }
-        db_extra_config_dict["database.url"] = 'mysql+pymysql://{username}:{password}@{host}:{port}/{dbname}'.format(
+        if db_config.driver == "mysql":
+            connector = "mysql+pymysql"
+        elif db_config.driver == "postgresql":
+            connector = "postgresql+psycopg"
+        db_extra_config_dict["database.url"] = '{connector}://{username}:{password}@{host}:{port}/{dbname}'.format(
+            connector=connector,
             username=db_config.username,
             password=db_config.password,
             host=db_config.host,
@@ -144,7 +168,7 @@ class Database:
     #         raise e
 
     @contextmanager
-    def session(self) -> Callable[..., ContextManager[sa.orm.Session]]:
+    def session(self) -> Callable[..., ContextManager[Session]]:
         """
         """
         session: Session = self._session_factory()

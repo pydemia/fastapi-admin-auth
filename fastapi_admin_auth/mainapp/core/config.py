@@ -95,33 +95,7 @@ class AppSettings(BaseSettings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
-        return env_settings, init_settings, file_secret_settings, EnvYamlConfigSettingsSource(settings_cls)
-
-
-
-    # @classmethod
-    # def settings_customise_sources(
-    #     cls,
-    #     settings_cls: Type[BaseSettings],
-    #     init_settings: PydanticBaseSettingsSource,
-    #     env_settings: PydanticBaseSettingsSource,
-    #     dotenv_settings: PydanticBaseSettingsSource,
-    #     file_secret_settings: PydanticBaseSettingsSource,
-    # ) -> Tuple[PydanticBaseSettingsSource, ...]:
-    #     """
-    #     Define the sources and their order for loading the settings values.
-
-    #     Args:
-    #         settings_cls: The Settings class.
-    #         init_settings: The `InitSettingsSource` instance.
-    #         env_settings: The `EnvSettingsSource` instance.
-    #         dotenv_settings: The `DotEnvSettingsSource` instance.
-    #         file_secret_settings: The `SecretsSettingsSource` instance.
-
-    #     Returns:
-    #         A tuple containing the sources and their order for loading the settings values.
-    #     """
-    #     return init_settings, env_settings, dotenv_settings, file_secret_settings
+        return init_settings, env_settings, file_secret_settings, EnvYamlConfigSettingsSource(settings_cls)
 
 
 def to_dotted(string: str, prefix="database") -> str:
@@ -148,6 +122,16 @@ class DBConfig(AppSettings):
     def extra_fields(self) -> set[str]:
         return set(self.__dict__) - set(self.model_fields)
 
+
+class KeycloakConfig(AppSettings):
+    _root_key: str = "keycloak"
+    server_url: str = Field("http://localhost:8080")
+    client_id: str = Field("fastapi-admin-auth-app")
+    client_secret: str = Field("iRJRjyNKZ3zqbwW3NXHJLhTgbMT20SPM")
+    admin_client_id: str = Field("admin-cli")
+    admin_client_secret: str = Field("WJmdud32rsQ4TzbPuGiU1V6pPWhOH8pq")
+    realm: str = "fastapi-admin-auth"
+    callback_uri: str = "http://localhost:8000/callback"
 
 class JWTConfig(AppSettings):
     sso_url: str = Field(os.getenv("JWT__SSO_URL", "http://localhost:3001/dashboard/iam/checkUser/"))

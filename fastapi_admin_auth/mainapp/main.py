@@ -4,17 +4,24 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from autologging import logged
-from mainapp.core.iam.view import add_swagger_config
-from mainapp.core import iam
-from mainapp.core.containers import Container, get_container
-
+from mainapp.core.iam import view as iam_view
+from mainapp.domain.health import view as health_view
+from mainapp.core import dependencies
+from mainapp.core.dependencies import (
+    Container,
+    get_container,
+    include_routers_by_config,
+)
+from mainapp.core.iam.idp import idp
 
 @logged
 def create_app() -> FastAPI:
 
     container: Container = get_container(
         wire_modules=list(set([
-            iam.view,
+            # idp,
+            iam_view,
+            dependencies,
         ])),
     )
 
@@ -25,14 +32,23 @@ def create_app() -> FastAPI:
         root_path=container.app_config().root_path,
         dependencies=[],
     )
-    app = add_swagger_config(app)
+    idp.add_swagger_config(app)
+    # from mainapp.core.dependencies import add_swagger_config
+    # app = add_swagger_config(app)
 
-    # app.include_router(router)
-    routers = [
-        iam.view.router,
-    ]
-    for router in routers:
-        app.include_router(router)
+    # routers = [
+    #     iam_view.router,
+    #     health_view.router,
+    # ]
+    # for router in routers:
+    #     app.include_router(router)
+    app = include_routers_by_config(
+        app,
+        routers=[
+            iam_view.router,
+            health_view.router,
+        ],
+    )
     
     origins = ["*"]
     app.add_middleware(

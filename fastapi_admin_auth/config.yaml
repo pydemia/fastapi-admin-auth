@@ -69,6 +69,15 @@ database:
   implicit_returning: True
   hide_parameters: False
 
+keycloak:
+  server_url: http://localhost:10000
+  client_id: "fastapi-admin-auth-app"
+  client_secret: "iRJRjyNKZ3zqbwW3NXHJLhTgbMT20SPM"
+  admin_client_id: "admin-cli"
+  admin_client_secret: "WJmdud32rsQ4TzbPuGiU1V6pPWhOH8pq"
+  realm: "fastapi-admin-auth"
+  callback_uri: "http://localhost:8000/callback"
+
 # websocket:
 #   host: "http://localhost"
 #   port: 8080

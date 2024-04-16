@@ -16,8 +16,8 @@ def teardown():
     pass
 
 @pytest.mark.usefixtures("setup", "teardown")
-def test_load_dbconfig():
-    from mainapp.core.containers import get_container
+def test_load_config():
+    from mainapp.core.dependencies import get_container
 
     container = get_container()
     container
