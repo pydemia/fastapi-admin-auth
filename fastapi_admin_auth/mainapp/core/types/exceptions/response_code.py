@@ -319,33 +319,6 @@ class ResponseCode(Enum):
         + "`k8s.isIntra=false` 일 때, 반드시 적절한 token을 부여해야 합니다.",
     )
 
-    S3_CLIENT_ERROR = (-2700, "S3 Client 동작 중 문제가 발생했습니다.")
-    S3_CLIENT_CANNOT_LIST_BUCKET = (-2700, "Bucket 조회 중 문제가 발생했습니다. Bucket을 조회할 수 없습니다.")
-    S3_CLIENT_CANNOT_CREATE_BUCKET = (-2701, "Bucket 생성 중 문제가 발생했습니다. Bucket을 생성할 수 없습니다.")
-    S3_CLIENT_CANNOT_DELETE_BUCKET = (-2702, "Bucket 삭제 중 문제가 발생했습니다. Bucket을 삭제할 수 없습니다.")
-    S3_CLIENT_BUCKET_ALREADY_EXISTS = (-2703, "Bucket이 이미 존재합니다.")
-    S3_CLIENT_BUCKET_NOT_FOUND = (-2704, "Bucket을 찾을 수 없습니다.")
-    S3_CLIENT_UPLOAD_ERROR = (-2705, "Bucket에 File Upload 중 문제가 발생했습니다.")
-    S3_CLIENT_MULTIPARTFILE_TO_FILE_IO_ERROR = (-2706, "MultipartFile을 처리하는 도중 문제가 발생했습니다.")
-    S3_CLIENT_CANNOT_LIST_OBJECT = (-2707, "Object 조회 중 문제가 발생했습니다. Object를 조회할 수 없습니다.")
-    S3_CLIENT_CANNOT_UPLOAD_OBJECT = (-2708, "Object Upload 중 문제가 발생했습니다. Object를 Upload할 수 없습니다.")
-    S3_CLIENT_CANNOT_DELETE_OBJECT = (-2709, "Object 삭제 중 문제가 발생했습니다. Object를 삭제할 수 없습니다.")
-    S3_CLIENT_OBJECT_NOT_FOUND = (-2709, "Object를 찾을 수 없습니다.")
-
-    HARBOR_CLIENT_ERROR = (-2720, "Harbor Client 동작 중 문제가 발생했습니다.")
-    HARBOR_CLIENT_USER_NOT_EXIST = (-2721, "Harbor User가 존재하지 않습니다.")
-    HARBOR_CLIENT_USER_ALREADY_EXISTS = (-2722, "Harbor User가 이미 존재합니다.")
-    HARBOR_CLIENT_CANNOT_CREATE_USER = (-2723, "Harbor User를 생성할 수 없습니다.")
-    HARBOR_CLIENT_CANNOT_DELETE_USER = (-2724, "Harbor User를 삭제할 수 없습니다.")
-    HARBOR_CLIENT_PROJECT_NOT_EXIST = (-2725, "Harbor Project가 존재하지 않습니다.")
-    HARBOR_CLIENT_PROJECT_ALREADY_EXISTS = (-2726, "Harbor Project가 이미 존재합니다.")
-    HARBOR_CLIENT_CANNOT_CREATE_PROJECT = (-2727, "Harbor Project를 생성할 수 없습니다.")
-    HARBOR_CLIENT_CANNOT_DELETE_PROJECT = (-2728, "Harbor Project를 삭제할 수 없습니다.")
-
-    CEPH_CLIENT_ERROR = (-2740, "Ceph Client 연결 중 문제가 발생했습니다.")
-    CEPH_CLIENT_USER_NOT_EXIST = (-2741, "Ceph User가 존재하지 않습니다.")
-    CEPH_CLIENT_USER_ALREADY_EXISTS = (-2742, "Ceph User가 이미 존재합니다.")
-
     # Etc.(Reserved) error code  = (-3900 ~ -3999)
     EXCEPTION_IN_TEST = (-3999, "예외 처리 테스트를 위한 항목입니다.")
 
@@ -356,6 +329,9 @@ class ResponseCode(Enum):
     RESTCLIENT_CANNOT_PARSE_RESPONSE_CONTENT = (-4003, "Response의 Content를 가져오는 도중 문제가 발생하였습니다.")
     RESTCLIENT_WRONG_URI_FORMAT = (-4004, "URI 형식이 맞지 않습니다.")
     RESTCLIENT_REQUEST_ERROR = (-4005, "내부 RequestClient가 다른 API를 대상으로 요청 중 문제가 발생하였습니다.")
+
+    # Keycloak Error:
+    KEYCLOCK_REALM_NOT_FOUND = (-5000, "Keycloak 설정이 잘못되었습니다. URL 또는 realm이 존재하는 지 확인이 필요합니다.")
 
     # AsyncThreadPoolTaskException = (-9000 ~ -9099)
     ASYNC_TASK_UNEXPECTEDLY_CLOSED = (-9000, "비동기 작업이 비정상 종료되었습니다.")
@@ -371,70 +347,6 @@ class ResponseCode(Enum):
 
     # AttributeConvertException = (-9100 ~ -9199)
     CANNOT_CONVERT_DB_ENTRY_TO_ATTRIBUTE = (-9100, "지원하지 않는 값이 입력되어 처리할 수 없습니다.")
-
-    # LLM Model
-    MODEL_NOT_FOUND = (-10001, "모델을 찾을 수 없습니다.")
-    MODEL_NOT_SET = (-10002, "모델이 설정되지 않았습니다.")
-    MODEL_NOT_SUPPORTED = (-10003, "해당 모델은 지원하지 않습니다.")
-    MODEL_ALREADY_EXISTS = (-10004, "해당 모델은 이미 존재합니다.")
-    MODEL_TYPE_NOT_SUPPORTED = (-10005, "해당 모델 타입은 지원하지 않습니다.")
-    MODEL_TYPE_NOT_VALID = (-10006, "해당 모델 타입이 올바르지 않습니다.")
-    MODEL_ENDPOINT_NOT_VALID = (-10007, "모델 API endpoint가 올바르지 않습니다.")
-    MODEL_ENDPOINT_ERROR = (-10008, "모델 API ERROR")
-    MODEL_ENDPOINT_NOT_JSON = (-10009, "모델 API ERROR (NOT JSON)")
-    MODEL_ENDPOINT_CALL_ERROR = (-10010, "모델 API CALL ERROR")
-    MODEL_ENDPOINT_RESP_ERROR = (-10011, "모델 API CALL RESP ERROR (NOT JSON)")
-
-    # LLM Process
-    LLM_CONTENT_IS_EMPTY = (-10101, "빈 값입니다.")
-    LLM_CONTENT_PROCESS_STOPPED_IN_INTENT = (-10102, "LLM 처리 로직에 따라 작업을 중단하였습니다.")
-    LLM_CONTENT_PROCESS_ERROR = (-10103, "LLM Content 처리 중 에러가 발생하였습니다.")
-    LLM_CONTENT_PREPROCESS_ERROR = (-10111, "LLM Content 전처리 중 에러가 발생하였습니다.")
-    LLM_CONTENT_PREPROCESS_FUNC_NOT_FOUND = (-10112, "LLM Content 전처리 함수를 찾을 수 없습니다.")
-    LLM_CONTENT_PREPROCESS_FUNC_NOT_CALLABLE = (-10113, "LLM Content 전처리 함수가 잘못 선언되었습니다.")
-    LLM_CONTENT_PREPROCESS_FUNC_ARGS_ERROR = (-10114, "LLM Content 전처리 함수 argument가 맞지 않습니다.")
-    LLM_CONTENT_PREPROCESS_FUNC_ERROR = (-10115, "LLM Content 전처리 함수 동작 중 에러가 발생하였습니다.")
-    LLM_CONTENT_POSTPROCESS_ERROR = (-10121, "LLM Content 후처리 중 에러가 발생하였습니다.")
-    LLM_CONTENT_POSTPROCESS_FUNC_NOT_FOUND = (-10122, "LLM Content 후처리 함수를 찾을 수 없습니다.")
-    LLM_CONTENT_POSTPROCESS_FUNC_NOT_CALLABLE = (-10123, "LLM Content 후처리 함수가 잘못 선언되었습니다.")
-    LLM_CONTENT_POSTPROCESS_FUNC_ARGS_ERROR = (-10124, "LLM Content 후처리 함수 argument가 맞지 않습니다.")
-    LLM_CONTENT_POSTPROCESS_FUNC_ERROR = (-10125, "LLM Content 후처리 함수 동작 중 에러가 발생하였습니다.")
-    CONTENT_IS_EMPTY = (-10199, "빈 값입니다.")
-
-    # Prompt
-    PROMPT_NOT_SET = (-10201, "PROMPT가 설정되지 않았습니다.")
-    PROMPT_NOT_FOUND = (-10202, "PROMPT를 찾을 수 없습니다.")
-    PROMPT_FOR_COMPLETION_NOT_SET = (-10203, "PROMPT가 설정되지 않았습니다.: Completion")
-    PROMPT_FOR_COMMENT_NOT_SET = (-10204, "PROMPT가 설정되지 않았습니다.: Comment")
-    PROMPT_FOR_REFACTOR_NOT_SET = (-10205, "PROMPT가 설정되지 않았습니다.: Refactor")
-    PROMPT_FOR_EXPLANATION_NOT_SET = (-10206, "PROMPT가 설정되지 않았습니다.: Explanation")
-    PROMPT_FOR_TRANSLATION_NOT_SET = (-10207, "PROMPT가 설정되지 않았습니다.: Translation")
-    PROMPT_FOR_ANSISQL_TRANSLATION_NOT_SET = (-10208, "PROMPT가 설정되지 않았습니다.: Translation(ANSI SQL)")
-    PROMPT_FOR_SQL_NOT_SET = (-10209, "PROMPT가 설정되지 않았습니다.: SQL")
-    PROMPT_FOR_SECURECODING_NOT_SET = (-10210, "PROMPT가 설정되지 않았습니다.: SecureCoding")
-    PROMPT_FOR_TEST_GENERATION_NOT_SET = (-10211, "PROMPT가 설정되지 않았습니다.: TestGen")
-    PROMPT_TYPE_NOT_SUPPORTED = (-10212, "해당 PROMPT 타입은 지원하지 않습니다.")
-
-    # SERVICE
-    AZURE_SERVICE_IS_NULL_OR_EMPTY = (-10301, "요청한 서비스가 유효하지 않습니다.")
-    TOKEN_IS_TOO_LONG = (-10302, "토큰의 길이가 허용치를 초과했습니다.")
-    TOKEN_OVERFLOW = (-10303, "가용 토큰을 모두 사용하였습니다. 관리자에게 문의하세요.")
-
-    # EMBEDDING
-    EMBEDDING_FILE_NOT_EXIST = (-10900, "파일을 찾을 수 없습니다.")
-    EMBEDDING_VECTOR_NOT_EXIST = (-10901, "uploading 대상 Vector가 없습니다.")
-    EMBEDDING_INDEX_NOT_EXIST = (-10902, "Index를 찾을 수 없습니다.")
-    EMBEDDING_FILE_FORMAT_NOT_SUPPORTED = (-10903, "지원하지 않는 파일 포맷입니다.")
-
-    # Custom Code
-    CUSTOM_CODE_ERROR = (-10400, "사용자 코드 실행 오류가 발생하였습니다.")
-
-    # FINETUNE
-    FINETUNE_MODEL_NOT_FOUND = (-11000, "FineTune 모델을 찾을 수 없습니다.")
-    FINETUNE_MODEL_ALREADY_EXISTS = (-11001, "FineTune 모델이 이미 존재합니다.")
-    FINETUNE_REPO_NOT_EXISTS = (-11002, "FineTune Repository를 찾을 수 없습니다.")
-    FINETUNE_DATA_PATH_NOT_EXISTS = (-11003, "Finetune에 사용할 dataset path 가 없습니다.")
-    FINETUNE_DATA_PATH_FILE_NOT_EXISTS = (-11004, "Finetune에 사용할 dataset file이 없습니다..")
 
     def __init__(self, code: int, message: str):
         self.code = code

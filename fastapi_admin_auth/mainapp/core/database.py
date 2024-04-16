@@ -1,18 +1,14 @@
 """Database module."""
 
-from typing import Any, Callable, ContextManager
-from contextlib import contextmanager
+from typing import Any
 
-from sqlalchemy import orm
-from sqlalchemy.engine import engine_from_config
-from sqlalchemy.orm import declarative_base, Session
-
-
-# import pandas as pd
-
-# from langchain_community.embeddings import HuggingFaceEmbeddings
-
-# from ..core.config import DBConfig
+# from sqlalchemy import orm
+# from sqlalchemy.engine import engine_from_config
+# from sqlalchemy.orm import Session
+from sqlmodel import SQLModel, engine_from_config # create_engine
+from sqlmodel import Session
+from mainapp.core.config import DBConfig, db_config
+import urllib.parse
 
 __all__ = [
     "Base",
@@ -20,7 +16,7 @@ __all__ = [
     "Database",
 ]
 
-Base = declarative_base()
+# Base = declarative_base()
 
 
 # @inject
@@ -74,20 +70,18 @@ def flatten_json(y):
     flatten(y)
     return out
 
-# @inject
+
 class Database:
     def __init__(
             self,
-            # db_config: DBConfig = Provide["db_config"],
-            db_config: dict[str, Any],
+            db_config: DBConfig,
             ) -> None:
-    # def __init__(self, db_config: Dict[str, Any]) -> None:
         """
         """
         db_config_dict = db_config.model_dump(by_alias=False)
         db_extra_config_dict = {
             f"database.{k}": v for k, v in db_config_dict.items()
-            if k in db_config.model_extra
+            if (k in db_config.model_extra) and (v is not None)
         }
         if db_config.driver == "mysql":
             connector = "mysql+pymysql"
@@ -96,38 +90,47 @@ class Database:
         db_extra_config_dict["database.url"] = '{connector}://{username}:{password}@{host}:{port}/{dbname}'.format(
             connector=connector,
             username=db_config.username,
-            password=db_config.password,
+            password=urllib.parse.quote_plus(db_config.password),
             host=db_config.host,
             port=db_config.port,
             dbname=db_config.dbname,
         )
 
-        # dotted = pd.json_normalize(db_config, sep=".").to_dict(orient='records')[0]
-        # dotted['database.url'] = 'mysql+pymysql://{username}:{password}@{host}:{port}/{dbname}'.format(
-        #     username=os.getenv("DATABASE__USERNAME", os.getenv("SYSTEMDB__USERNAME", dotted.pop("database.username", None))),
-        #     password=os.getenv("DATABASE__PASSWORD", os.getenv("SYSTEMDB__PASSWORD", dotted.pop("database.password", None))),
-        #     host=os.getenv("SYSTEMDB__HOST", os.getenv("DATABASE__HOST", dotted.pop("database.host", None))),
-        #     port=os.getenv("SYSTEMDB__PORT", os.getenv("DATABASE__PORT", dotted.pop("database.port", None))),
-        #     dbname=os.getenv("SYSTEMDB__DBNAME", os.getenv("DATABASE__DBNAME", dotted.pop("database.dbname", None))),
-        # )
-        # self._engine = engine_from_config(dotted, prefix="database.")
-        self._engine = engine_from_config(db_extra_config_dict, prefix="database.")
-        self._session_factory = orm.scoped_session(
-            orm.sessionmaker(
-                autocommit=False,
-                autoflush=False,
-                bind=self._engine,
-            ),
+        self.engine = engine_from_config(
+            db_extra_config_dict,
+            prefix="database.",
         )
 
-    def create_database(self) -> None:
+    def get_session(self):
+        with Session(
+            bind=self.engine,
+            autocommit=False,
+            autoflush=False,
+        ) as session:
+            yield session
+            # try:
+            #     yield session
+            # except Exception:
+            #     session.rollback()
+            # finally:
+            #     session.close()
+
+    def create_database(self, model_modules=[]) -> None:
         """
+        Arguments
+        ---------
+
+            model_modules: List[module]
+                This argument is not used internally,
+                but It enforces importing ORM models of SQLModel before calling `create_all`.
         """
         try:
-            Base.metadata.create_all(bind=self._engine)
+            # Base.metadata.create_all(bind=self._engine)
+            SQLModel.metadata.create_all(self.engine)
         except Exception as e:
             raise e
 
+    # db.migration(template_dir=container.app_config().template_dir)
     # def migration(self, template_dir: Path = None) -> None:
     #     """
     #     """
@@ -167,21 +170,22 @@ class Database:
     #     except Exception as e:
     #         raise e
 
-    @contextmanager
-    def session(self) -> Callable[..., ContextManager[Session]]:
-        """
-        """
-        session: Session = self._session_factory()
-        try:
-            yield session
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+    # @contextmanager
+    # def session(self) -> Callable[..., ContextManager[Session]]:
+    #     """
+    #     """
+    #     session: Session = self._session_factory()
+    #     try:
+    #         yield session
+    #     except Exception:
+    #         session.rollback()
+    #         raise
+    #     finally:
+    #         session.close()
 
 ## pagination.py
 
+db = Database(db_config=db_config)
 
 # from sqlalchemy.orm.query import Query
 import sqlalchemy

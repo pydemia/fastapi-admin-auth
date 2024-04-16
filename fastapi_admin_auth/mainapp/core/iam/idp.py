@@ -1,6 +1,8 @@
+from functools import lru_cache
 from mainapp.core.config import KeycloakConfig
 
 from fastapi_keycloak import FastAPIKeycloak
+from mainapp.core.types.exceptions import HandledException, ResponseCode
 
 # @logged
 # class IDProvider:
@@ -24,15 +26,21 @@ from fastapi_keycloak import FastAPIKeycloak
 
 # # idp = IDProvider(core_config.KeycloakConfig())
 keycloak_config = KeycloakConfig()
-idp = FastAPIKeycloak(
-    server_url=keycloak_config.server_url,
-    client_id=keycloak_config.client_id,
-    client_secret=keycloak_config.client_secret,
-    admin_client_id=keycloak_config.admin_client_id,
-    admin_client_secret=keycloak_config.admin_client_secret,
-    realm=keycloak_config.realm,
-    callback_uri=keycloak_config.callback_uri,
-)
 
+@lru_cache
 def get_idp() -> FastAPIKeycloak:
+    try:
+        idp = FastAPIKeycloak(
+            server_url=keycloak_config.server_url,
+            client_id=keycloak_config.client_id,
+            client_secret=keycloak_config.client_secret,
+            admin_client_id=keycloak_config.admin_client_id,
+            admin_client_secret=keycloak_config.admin_client_secret,
+            realm=keycloak_config.realm,
+            callback_uri=keycloak_config.callback_uri,
+        )
+    except "requests.exceptions.MissingSchema":
+        raise HandledException(ResponseCode.KEYCLOCK_REALM_NOT_FOUND)
     return idp
+
+idp = get_idp()

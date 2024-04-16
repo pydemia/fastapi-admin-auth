@@ -31,7 +31,8 @@ app:
     use_test_token: True
 
 database:
-  driver: "mysql"  # posgresql=psycopg
+  # driver: "mysql"  # posgresql=psycopg
+  driver: "postgresql"
   host: "${DATABASE__HOST}"
   port: "${DATABASE__PORT}"
   dbname: "${DATABASE__DBNAME}"
@@ -54,7 +55,7 @@ database:
   # connections_errors:
   # connections_lost:
 
-  # MYSQL
+  # # MYSQL
   echo: True
   echo_pool: False
   # case_sensitive: False

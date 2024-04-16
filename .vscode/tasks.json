@@ -10,7 +10,7 @@
             "label": "database-launch --stateless",
             "type": "docker-run",
             "dockerRun": {
-                "containerName": "systemdb",
+                "containerName": "db",
                 "image": "bitnami/postgresql:14.8.0",
                 "env": {
                     "POSTGRESQL_DATABASE": "backend",
@@ -23,7 +23,7 @@
                 "ports": [
                     {
                         "containerPort": 5432,
-                        "hostPort": 5432
+                        "hostPort": 15432
                     }
                 ],
                 "volumes": [
@@ -43,7 +43,7 @@
             "options": {
                 "env": {
                     "DB_HOST": "127.0.0.1",
-                    "DB_PORT": "5432",
+                    "DB_PORT": "15432",
                     "DB_DATABASE": "backend",
                     "DB_USERNAME": "admin",
                     "COUNT_SEC": "1",

@@ -4,7 +4,7 @@ psycopg  # asyncpg
 sqlmodel
 pydantic
 python-dotenv
-dependency_injector
+# dependency_injector
 alembic
 autologging
 python-jose

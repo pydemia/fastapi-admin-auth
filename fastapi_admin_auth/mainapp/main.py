@@ -1,52 +1,54 @@
 import os
 import logging
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from autologging import logged
-from mainapp.core.iam import view as iam_view
-from mainapp.domain.health import view as health_view
-from mainapp.core import dependencies
+from mainapp.core import config
 from mainapp.core.dependencies import (
-    Container,
-    get_container,
     include_routers_by_config,
 )
 from mainapp.core.iam.idp import idp
+from mainapp.core.database import db
+
+
+from mainapp.core.iam import view as iam_view
+from mainapp.domain.health import view as health_view
+from mainapp.domain.item import view as item_view
+
+
+from mainapp.domain.health import models as health_models
+from mainapp.domain.item import models as item_models
 
 @logged
 def create_app() -> FastAPI:
 
-    container: Container = get_container(
-        wire_modules=list(set([
-            # idp,
-            iam_view,
-            dependencies,
-        ])),
+    db.create_database(
+        [
+            health_models,
+            item_models,
+        ]
     )
 
+    ROOT_PATH = config.app_config.root_path
     app = FastAPI(
         title="FastAPI-Admin-Auth",
         description="""This is a sample FastAPI application with authentication and authorization features.
         """,
-        root_path=container.app_config().root_path,
+        root_path=ROOT_PATH,
         dependencies=[],
     )
     idp.add_swagger_config(app)
-    # from mainapp.core.dependencies import add_swagger_config
-    # app = add_swagger_config(app)
 
-    # routers = [
-    #     iam_view.router,
-    #     health_view.router,
-    # ]
-    # for router in routers:
-    #     app.include_router(router)
     app = include_routers_by_config(
         app,
         routers=[
             iam_view.router,
             health_view.router,
+            item_view.router,
         ],
     )
     
@@ -59,6 +61,22 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    app.mount(
+        "/static",
+        StaticFiles(directory=Path(__file__).parent.joinpath("static")),
+        name="static",
+    )
+
+    @app.get("/", include_in_schema=False)
+    async def redirect_root():
+        return RedirectResponse(url=f"{ROOT_PATH}/docs")
+
+    @app.get("/iam", include_in_schema=False)
+    async def redirect_iam():
+        return RedirectResponse(url=config.keyclock_config.server_url)
+
+
+    logging.config.fileConfig("logging.conf", disable_existing_loggers=False,)
     log_level = os.getenv("APP_PROFILE", os.getenv("LOG_LEVEL", "INFO")).upper()
     for logger_name in logging.root.manager.loggerDict:
         logger = logging.getLogger(logger_name)

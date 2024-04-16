@@ -122,6 +122,7 @@ class DBConfig(AppSettings):
     def extra_fields(self) -> set[str]:
         return set(self.__dict__) - set(self.model_fields)
 
+db_config = DBConfig()
 
 class KeycloakConfig(AppSettings):
     _root_key: str = "keycloak"
@@ -132,6 +133,8 @@ class KeycloakConfig(AppSettings):
     admin_client_secret: str = Field("WJmdud32rsQ4TzbPuGiU1V6pPWhOH8pq")
     realm: str = "fastapi-admin-auth"
     callback_uri: str = "http://localhost:8000/callback"
+
+keyclock_config = KeycloakConfig()
 
 class JWTConfig(AppSettings):
     sso_url: str = Field(os.getenv("JWT__SSO_URL", "http://localhost:3001/dashboard/iam/checkUser/"))
@@ -190,3 +193,5 @@ class AppConfig(AppSettings):
         for logger_name in logging.root.manager.loggerDict:
             logger = logging.getLogger(logger_name)
             logger.setLevel(log_level)
+
+app_config = AppConfig()

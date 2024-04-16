@@ -10,7 +10,7 @@ class AESCrypto:
     
     def __init__(self):
         self.block_size = 16
-        self.passphrase = "accuinsight+ pipeline sk".encode()
+        self.passphrase = "fastapi_admin_auth".encode()
         
     def pad(self, data):
         length = self.block_size - (len(data) % self.block_size)
