@@ -23,6 +23,8 @@ from mainapp.domain.item import view as item_view
 from mainapp.domain.health import models as health_models
 from mainapp.domain.item import models as item_models
 
+from mainapp.core.admin import admin
+
 @logged
 def create_app() -> FastAPI:
     app_config = config.AppConfig()
@@ -76,6 +78,9 @@ def create_app() -> FastAPI:
     async def redirect_iam():
         return RedirectResponse(url=config.keyclock_config.server_url)
 
+
+    admin.add_view(item_models.ItemModelView)
+    admin.mount_to(app)
 
     logging.config.fileConfig("logging.conf", disable_existing_loggers=False,)
     log_level = os.getenv("APP_PROFILE", os.getenv("LOG_LEVEL", "INFO")).upper()

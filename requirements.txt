@@ -28,3 +28,4 @@ fastapi-authz
 
 starlette-admin
 fastapi-keycloak
+authlib
