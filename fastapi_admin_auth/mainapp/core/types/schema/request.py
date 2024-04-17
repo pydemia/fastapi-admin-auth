@@ -1,7 +1,8 @@
 from autologging import logged
 from fastapi import Header
 from httpx import URL
-from pydantic.v1 import BaseModel, Extra, validator
+# from pydantic.v1 import BaseModel, Extra, validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from ..common.fields import CPUField, GPUField, MEMField
 
@@ -16,9 +17,14 @@ __all__ = [
 
 
 class BaseRequest(BaseModel):
-    class Config:
-        extra = Extra.allow
-        allow_mutation = False
+
+    model_config: ConfigDict = ConfigDict(
+        extra="allow",
+        frozen=True,
+    )
+    # class Config:
+    #     extra = Extra.allow
+    #     allow_mutation = False
 
 
 class PredictorSpec(BaseModel):
@@ -42,7 +48,7 @@ class ResourceSpec(BaseModel):
     # replica_min: int                # 최소 Replica
     # replica_max: int                # 최대 Replica
 
-    @validator("res_cpu_limit", always=True)
+    @field_validator("res_cpu_limit", mode="before")
     def validate_cpu_minmax(cls, v, values, **kwargs):
         if v < values["res_cpu_req"]:
             cls._ResourceSpec__log.warn(
@@ -53,7 +59,7 @@ class ResourceSpec(BaseModel):
         else:
             return float(v)
 
-    @validator("res_mem_limit", always=True)
+    @field_validator("res_mem_limit", mode="before")
     def validate_mem_minmax(cls, v, values, **kwargs):
         cls._ResourceSpec__log.info(values)
         if v < values["res_mem_req"]:
@@ -65,7 +71,7 @@ class ResourceSpec(BaseModel):
         else:
             return v
 
-    @validator("res_gpu_limit", always=False)
+    @field_validator("res_gpu_limit", mode="plain")
     def validate_gpu_minmax(cls, v, values, **kwargs):
         if v < values["res_gpu_req"]:
             cls._ResourceSpec__log.warn(

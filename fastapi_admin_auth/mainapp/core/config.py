@@ -105,11 +105,11 @@ def to_dotted(string: str, prefix="database") -> str:
 class DBConfig(AppSettings):
     _root_key: str = "database"
     driver: Literal["mysql", "postgresql"] = Field("mysql")
-    host: str = Field(os.getenv("DATABASE__HOST", "localhost"))
-    port: int = Field(os.getenv("DATABASE__PORT", "3306"))
-    username: str = Field(os.getenv("DATABASE__USERNAME", "admin"))
-    password: str = Field(os.getenv("DATABASE__PASSWORD", "admin"))
-    dbname: str = Field(os.getenv("DATABASE__DBNAME", "backend"))
+    host: str = Field("localhost")
+    port: int = Field("3306")
+    username: str = Field("admin")
+    password: str = Field("admin")
+    dbname: str = Field("backend")
 
     AppSettings.model_config.update(
         dict(
@@ -174,7 +174,7 @@ class JWTConfig(AppSettings):
 class AppConfig(AppSettings):
     _root_key: str = "app"
     name: str = "backend"
-    version: str = "latest"
+    version: str = "1.0.0"
     root_path: str = "/api"
     log_level: str | None = Field(os.getenv("APP_PROFILE", os.getenv("LOG_LEVEL", "INFO")).upper())
     allowed_hosts: list[str] = ["*"]

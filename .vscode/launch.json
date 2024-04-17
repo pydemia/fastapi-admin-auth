@@ -12,33 +12,48 @@
   }
   ],
   "configurations": [
-      {
-          "name": "[🌱🌱]backend: gunicorn: app-only",
-          "type": "python",
-          "request": "launch",
-          "module": "gunicorn",
-          "args": [
-          "mainapp.main:app",
-          "-k=uvicorn.workers.UvicornWorker",
-          "--log-config=${workspaceFolder}/fastapi_admin_auth/logging.conf",
-          "-c=${workspaceFolder}/fastapi_admin_auth/gunicorn_conf.py"
-          ],
-          "cwd": "${workspaceFolder}/fastapi_admin_auth",
-          "console": "internalConsole",
-          "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
-          "justMyCode": false,
-      },
-      {
-          "name": "[🌱]backend: uvicorn: app-only",
-          "type": "python",
-          "request": "launch",
-          "module": "uvicorn",
-          "args": [
-              "mainapp.main:app",
-              "--log-config=${workspaceFolder}/fastapi_admin_auth/logging.conf"
-          ],
-          "cwd": "${workspaceFolder}/fastapi_admin_auth",
-          "console": "internalConsole",
-          "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
-          "justMyCode": false
-      },
+    {
+      "name": "[🌱🌱]backend: gunicorn: app-only",
+      "type": "python",
+      "request": "launch",
+      "module": "gunicorn",
+      "args": [
+      "mainapp.main:app",
+      "-k=uvicorn.workers.UvicornWorker",
+      "--log-config=${workspaceFolder}/fastapi_admin_auth/logging.conf",
+      "-c=${workspaceFolder}/fastapi_admin_auth/gunicorn_conf.py"
+      ],
+      "cwd": "${workspaceFolder}/fastapi_admin_auth",
+      "console": "internalConsole",
+      "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
+      "justMyCode": false,
+    },
+    {
+        "name": "[🌱]backend: uvicorn: app-only",
+        "type": "python",
+        "request": "launch",
+        "module": "uvicorn",
+        "args": [
+            "mainapp.main:app",
+            "--log-config=${workspaceFolder}/fastapi_admin_auth/logging.conf"
+        ],
+        "cwd": "${workspaceFolder}/fastapi_admin_auth",
+        "console": "internalConsole",
+        "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
+        "justMyCode": false
+    },
+    {
+      "name": "Python test runner: debug",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "purpose": [
+        "debug-test",
+      ],
+      "console": "internalConsole",
+      // "envFile": "${workspaceFolder}/fastapi_admin_auth/test/.env",
+      "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
+      "justMyCode": false
+    },
+  ]
+}

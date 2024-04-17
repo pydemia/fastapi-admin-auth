@@ -108,6 +108,39 @@
             }
         },
         {
+            "label": "keycloak-launch --with-realm",
+            "type": "docker-run",
+            "dockerRun": {
+                "containerName": "keycloak",
+                "image": "quay.io/keycloak/keycloak:24.0.2",
+                "command": "start --import-realm",
+                "envFiles": [
+                    "${workspaceFolder}/.env"
+                ],
+                // "network": "host",
+                "network": "local",
+                "ports": [
+                    {
+                        "containerPort": 10000,
+                        "hostPort": 10000
+                    }
+                ],
+                "volumes": [
+                    {
+                        "localPath": "${workspaceFolder}/keycloak/conf/keycloak-dev-http.conf",
+                        "containerPath": "/opt/keycloak/conf/keycloak.conf",
+                        "permissions": "ro"
+                    },
+                    {
+                        "localPath": "${workspaceFolder}/keycloak/data/import/fastapi-admin-auth-realm.json",
+                        "containerPath": "/opt/keycloak/data/import/fastapi-admin-auth-realm.json",
+                        "permissions": "ro"
+                    }
+                ],
+                "remove": true
+            }
+        },
+        {
             "label": "keycloak-shutdown",
             "type": "shell",
             "command": "docker container stop keycloak || true",
@@ -131,7 +164,7 @@
                 "database-shutdown",
                 "database-launch --stateless",
                 "database-wait-for-ready",
-                "keycloak-launch"
+                "keycloak-launch --with-realm"
             ],
             "group": "test"
         },

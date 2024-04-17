@@ -6,7 +6,7 @@ app:
     - "corus-backend.corus.svc.cluster.local"
     - "corus-backend.corus"
     - "corus-backend"
-  version: "${APP_VERSION}"
+  version: "${APP__VERSION}"
   locale: "en" # ko, en
   # log_level: debug  #
   profile: "development"
@@ -71,7 +71,7 @@ database:
   hide_parameters: False
 
 keycloak:
-  server_url: http://localhost:10000
+  server_url: "${KEYCLOAK__HOST}:${KEYCLOAK__PORT}"  # http://localhost:10000
   client_id: "fastapi-admin-auth-app"
   client_secret: "iRJRjyNKZ3zqbwW3NXHJLhTgbMT20SPM"
   admin_client_id: "admin-cli"

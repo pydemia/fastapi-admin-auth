@@ -1,5 +1,5 @@
 import os
-import logging
+import logging.config
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -25,7 +25,7 @@ from mainapp.domain.item import models as item_models
 
 @logged
 def create_app() -> FastAPI:
-
+    app_config = config.AppConfig()
     db.create_database(
         [
             health_models,
@@ -40,6 +40,7 @@ def create_app() -> FastAPI:
         """,
         root_path=ROOT_PATH,
         dependencies=[],
+        version=app_config.version,
     )
     idp.add_swagger_config(app)
 

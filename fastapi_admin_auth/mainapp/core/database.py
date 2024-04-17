@@ -101,7 +101,8 @@ class Database:
             prefix="database.",
         )
 
-    def get_session(self):
+    # @asynccontextmanager
+    async def get_session(self):
         with Session(
             bind=self.engine,
             autocommit=False,
