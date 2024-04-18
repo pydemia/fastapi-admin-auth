@@ -79,6 +79,10 @@ def create_app() -> FastAPI:
         return RedirectResponse(url=config.keyclock_config.server_url)
 
 
+    # @app.get("/dashboard/static", include_in_schema=False)
+    # async def redirect_admin_static():
+    #     return RedirectResponse(url="/static")
+
     admin.add_view(item_models.ItemModelView)
     admin.mount_to(app)
 

@@ -1,11 +1,13 @@
 from typing import List, Optional
-from fastapi import Depends, Query, Body, APIRouter
+from fastapi import Depends, Query, Body, APIRouter, Request
 from pydantic import SecretStr
 # from dependency_injector.wiring import inject, Provide
 from fastapi_keycloak import FastAPIKeycloak, OIDCUser, UsernamePassword, HTTPMethod, KeycloakUser
 
 from mainapp.core.exception_routers import HandledExceptionLoggingRoute
 
+from mainapp.core.iam.idp import idp
+from mainapp.core.iam.oauth import oauth_client
 
 
 # @logged
@@ -88,7 +90,7 @@ from mainapp.core.exception_routers import HandledExceptionLoggingRoute
 # ) -> FastAPI:
 #     idp.add_swagger_config(app)
 #     return app
-from .idp import idp, get_idp
+from .idp import get_idp
 
 router = APIRouter(
     prefix="/iam",
@@ -427,3 +429,18 @@ async def logout(
     return idp.logout_uri
 
 router.include_router(example_user_requests_router)
+
+
+# Admin login
+adminpage_login_router = APIRouter(
+    tags=["iam/example-user-requests"],
+    route_class=HandledExceptionLoggingRoute,
+)
+@adminpage_login_router.route("/sign-in")
+async def adminpage_login(request: Request):
+    # absolute url for callback
+    # we will define it below
+    redirect_uri = request.url_for("login")
+    return await oauth_client.authorize_redirect(request, redirect_uri)
+
+router.include_router(adminpage_login_router)

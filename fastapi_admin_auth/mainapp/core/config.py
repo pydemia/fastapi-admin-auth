@@ -132,7 +132,8 @@ class KeycloakConfig(AppSettings):
     admin_client_id: str = Field("admin-cli")
     admin_client_secret: str = Field("WJmdud32rsQ4TzbPuGiU1V6pPWhOH8pq")
     realm: str = "fastapi-admin-auth"
-    callback_uri: str = "http://localhost:8000/callback"
+    callback_uri: str = "http://localhost:8000/iam/callback"
+    # callback_uri: str = "/iam/callback"
 
 keyclock_config = KeycloakConfig()
 

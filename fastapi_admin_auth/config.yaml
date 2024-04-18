@@ -2,10 +2,7 @@ app:
   root_path: ""
   allowed_hosts:
     - "*"
-    - "app.corus-ai.net"
-    - "corus-backend.corus.svc.cluster.local"
-    - "corus-backend.corus"
-    - "corus-backend"
+    - "backend.default.svc.cluster.local"
   version: "${APP__VERSION}"
   locale: "en" # ko, en
   # log_level: debug  #
@@ -26,7 +23,7 @@ app:
       lQIDAQAB
       -----END PUBLIC KEY-----
     default_userid: 0
-    default_username: "corus-admin"
+    default_username: "admin"
     default_usergroup: 0
     use_test_token: True
 
@@ -77,12 +74,11 @@ keycloak:
   admin_client_id: "admin-cli"
   admin_client_secret: "WJmdud32rsQ4TzbPuGiU1V6pPWhOH8pq"
   realm: "fastapi-admin-auth"
-  callback_uri: "http://localhost:8000/callback"
+  callback_uri: "http://localhost:8000/iam/callback"
+  # callback_uri: "/iam/callback"
 
 # websocket:
 #   host: "http://localhost"
 #   port: 8080
-#   username: "corus" #"${ WEBSOCKET_USERNAME}"
-#   password: "corus" #"${ WEBSOCKET_PASSWORD}"
-# #  username: "airuntime"
-# #  password: "radulkebpdjpbivh"
+#   username: "admin" #"${ WEBSOCKET_USERNAME}"
+#   password: "admin" #"${ WEBSOCKET_PASSWORD}"

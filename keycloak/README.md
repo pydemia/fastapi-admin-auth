@@ -11,6 +11,12 @@ docker run --rm \
 
 ```bash
 mkdir certs && cd certs
+```
 
+```bash
+/opt/keycloak/bin/kc.sh \
+  export \
+  --file fastapi-admin-auth-realm.json \
+  --realm fastapi-admin-auth
 
 ```

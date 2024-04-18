@@ -18,7 +18,7 @@ def get_https_client(config: OpensearchConfig) -> OpenSearch:
     if config.verify_certs:
         client = OpenSearch(
             hosts = [{'host': config.host, 'port': config.port}],
-            # hosts = [{'host': "opensearch.corus-ai.net", 'port': 9200}],
+            # hosts = [{'host': "opensearch.example.com", 'port': 9200}],
             http_compress = True, # enables gzip compression for request bodies
             http_auth = (config.username, config.password),
             ssl_context=context,

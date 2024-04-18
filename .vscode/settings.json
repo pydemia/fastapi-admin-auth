@@ -3,6 +3,6 @@
     "python.analysis.inlayHints.pytestParameters": true,
     "python.testing.cwd": "${workspaceFolder}/fastapi_admin_auth",
     "python.testing.pytestArgs": [
-        // "--ignore-glob=backend/corusapi/*"
+        // "--ignore-glob=backend/*"
     ]
 }

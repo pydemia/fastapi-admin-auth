@@ -2,7 +2,9 @@ from functools import lru_cache
 from mainapp.core.config import KeycloakConfig
 
 from fastapi_keycloak import FastAPIKeycloak
+from fastapi_keycloak import OIDCUser
 from mainapp.core.types.exceptions import HandledException, ResponseCode
+
 
 # @logged
 # class IDProvider:
@@ -38,9 +40,12 @@ def get_idp() -> FastAPIKeycloak:
             admin_client_secret=keycloak_config.admin_client_secret,
             realm=keycloak_config.realm,
             callback_uri=keycloak_config.callback_uri,
+            scope="openid profile email",
+            timeout=10,
         )
     except "requests.exceptions.MissingSchema":
         raise HandledException(ResponseCode.KEYCLOCK_REALM_NOT_FOUND)
     return idp
 
 idp = get_idp()
+User = OIDCUser
