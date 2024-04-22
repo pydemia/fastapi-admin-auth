@@ -1,5 +1,6 @@
 from functools import lru_cache
 from mainapp.core.config import KeycloakConfig
+from fastapi import Request
 
 from fastapi_keycloak import FastAPIKeycloak
 from fastapi_keycloak import OIDCUser
@@ -43,9 +44,17 @@ def get_idp() -> FastAPIKeycloak:
             scope="openid profile email",
             timeout=10,
         )
-    except "requests.exceptions.MissingSchema":
-        raise HandledException(ResponseCode.KEYCLOCK_REALM_NOT_FOUND)
+    except "requests.exceptions.MissingSchema" as schema_e:
+        raise HandledException(ResponseCode.KEYCLOCK_REALM_NOT_FOUND, e=schema_e)
+    except "http.client.RemoteDisconnected" as disconnected_e:
+        raise HandledException(ResponseCode.KEYCLOCK_CONNECTION_ERROR, e=disconnected_e)
+    except Exception as unknown_e:
+        raise HandledException(ResponseCode.KEYCLOCK_CONNECTION_ERROR, e=unknown_e)
     return idp
 
 idp = get_idp()
 User = OIDCUser
+
+def get_user_id(request: Request) -> str | None:
+    return request.state.user.get("sub")
+

@@ -23,25 +23,31 @@ def test_create_item():
     
     test_client = TestClient(app)
 
+    # Create by json
+    item_body = {
+        "name": "test",
+        "description": "test_desc",
+    }
     response = test_client.post(
         "/items",
-        # headers={"": "application/json"}
-        json={"name": "test"},
+        json=item_body,
     )
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
 
-    from mainapp.domain.item import models
+
+    # Create by Model
+    from mainapp.domains.item import models
     Item = models.Item
 
-    item_0 = Item(name="test 0", description="record 0")
-    item_1 = Item(name="test 1", description="record 1")
-    item_2 = Item(name="test 2", description="record 2")
-    item_3 = Item(name="test 3", description="record 3")
+    item_0 = Item(name="item 0", description="item_0")
+    item_1 = Item(name="item 1", description="item_1")
+    item_2 = Item(name="item 2", description="item_2")
+    item_3 = Item(name="item 3", description="item_3")
 
-    item_a = Item(name="test a", description="record a")
-    item_b = Item(name="test b", description="record b")
+    item_a = Item(name="item a", description="item_a")
+    item_b = Item(name="item b", description="item_b")
 
     items = [
         item_0, item_1, item_2, item_3,
@@ -50,13 +56,13 @@ def test_create_item():
     for item in items:
         response = test_client.post(
             "/items",
-            # headers={"": "application/json"}
             json=item.model_dump(),
         )
 
+
 @pytest.mark.usefixtures("setup", "teardown")
 @pytest.mark.order(2)
-def test_read_item():
+def test_read_items_all():
 
     from fastapi.testclient import TestClient
     from mainapp.main import app
@@ -72,20 +78,51 @@ def test_read_item():
     assert isinstance(body["data"], list)
 
 
+@pytest.mark.usefixtures("setup", "teardown")
+@pytest.mark.order(3)
+def test_read_item_by_param():
+
+    from fastapi.testclient import TestClient
+    from mainapp.main import app
+
+    test_client = TestClient(app)
+
+
+    item_body = {
+        "name": "test",
+        "description": "test_desc",
+    }
+    item_name = item_body["name"]
+
     from urllib.parse import quote
-    item_name = "test 0"
     encoded_item_name = quote(item_name)
+
     response = test_client.get(
         "/items",
-        params={"name": encoded_item_name},
+        params={
+            "name": encoded_item_name,
+        },
     )
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
     assert body["data"]["name"] == item_name
 
-    # get `item_id`
-    item_id = body["data"]["id"]
+@pytest.mark.usefixtures("setup", "teardown")
+@pytest.mark.order(4)
+def test_read_item_by_id():
+
+    from fastapi.testclient import TestClient
+    from mainapp.main import app
+    
+    test_client = TestClient(app)
+
+    response = test_client.get(
+        "/items",
+    )
+    item_body = response.json()["data"][0]
+    item_id = item_body["id"]
+
 
     response = test_client.get(
         f"/items/{item_id}",
@@ -97,7 +134,7 @@ def test_read_item():
 
 
 @pytest.mark.usefixtures("setup", "teardown")
-@pytest.mark.order(3)
+@pytest.mark.order(5)
 def test_put_item():
 
     from fastapi.testclient import TestClient
@@ -105,20 +142,11 @@ def test_put_item():
     
     test_client = TestClient(app)
 
-    # get `item_id`
-    from urllib.parse import quote
-    item_name = "test 0"
-    encoded_item_name = quote(item_name)
     response = test_client.get(
         "/items",
-        params={"name": encoded_item_name},
     )
-    response.raise_for_status()
-    body = response.json()
-    assert body["code"] == 1
-    assert body["data"]["name"] == item_name
-
-    item_id = body["data"]["id"]
+    item_body = response.json()["data"][0]
+    item_id = item_body["id"]
 
 
     new_name = "test-updated"
@@ -137,7 +165,7 @@ def test_put_item():
 
 
 @pytest.mark.usefixtures("setup", "teardown")
-@pytest.mark.order(4)
+@pytest.mark.order(6)
 def test_delete_item():
 
     from fastapi.testclient import TestClient
@@ -145,20 +173,12 @@ def test_delete_item():
     
     test_client = TestClient(app)
 
-    # get `item_id`
-    from urllib.parse import quote
-    item_name = "test-updated"
-    encoded_item_name = quote(item_name)
     response = test_client.get(
         "/items",
-        params={"name": encoded_item_name},
     )
-    response.raise_for_status()
-    body = response.json()
-    assert body["code"] == 1
-    assert body["data"]["name"] == item_name
+    item_body = response.json()["data"][0]
+    item_id = item_body["id"]
 
-    item_id = body["data"]["id"]
 
     response = test_client.delete(
         f"/items/{item_id}",

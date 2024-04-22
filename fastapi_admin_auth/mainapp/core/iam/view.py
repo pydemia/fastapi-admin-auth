@@ -397,6 +397,12 @@ async def get_current_users_roles(
     ):
     return user.roles
 
+@example_user_requests_router.get("/require_default")
+async def require_admin_role(
+    user: OIDCUser = Depends(idp.get_current_user(required_roles=["default-roles-fastapi-admin-auth"])),
+    idp: FastAPIKeycloak = Depends(get_idp),
+):
+    return f'Hi admin {user}'
 
 @example_user_requests_router.get("/require_admin")
 async def require_admin_role(

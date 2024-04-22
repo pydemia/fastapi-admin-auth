@@ -331,7 +331,8 @@ class ResponseCode(Enum):
     RESTCLIENT_REQUEST_ERROR = (-4005, "내부 RequestClient가 다른 API를 대상으로 요청 중 문제가 발생하였습니다.")
 
     # Keycloak Error:
-    KEYCLOCK_REALM_NOT_FOUND = (-5000, "Keycloak 설정이 잘못되었습니다. URL 또는 realm이 존재하는 지 확인이 필요합니다.")
+    KEYCLOCK_CONNECTION_ERROR = (-5000, "Keycloak 연결에 실패하였습니다.")
+    KEYCLOCK_REALM_NOT_FOUND = (-5001, "Keycloak 설정이 잘못되었습니다. URL 또는 realm이 존재하는 지 확인이 필요합니다.")
 
     # AsyncThreadPoolTaskException = (-9000 ~ -9099)
     ASYNC_TASK_UNEXPECTEDLY_CLOSED = (-9000, "비동기 작업이 비정상 종료되었습니다.")
