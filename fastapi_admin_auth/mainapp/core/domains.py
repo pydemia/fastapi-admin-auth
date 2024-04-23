@@ -50,10 +50,24 @@ def import_domain_components(module_or_qualname: ModuleType | str):
     # import domain routers
     routers = [importlib.import_module(".routes", s.__name__).router for s in submodules]
 
-    def append_domain_tag(router):
-        router.tags = [f"{_domain__name_}/{tag}" for tag in router.tags]
+    # def append_domain_tag(router):
+    #     router.tags = [f"{_domain__name_}/{tag}" for tag in router.tags]
+    #     return router
+    # routers = [append_domain_tag(router) for router in routers]
+    domain_router = APIRouter(
+        prefix=f"/{_domain__name_}",
+        route_class=HandledExceptionLoggingRoute,
+    )
+    def update_router_tags(router: APIRouter) -> APIRouter:
+        prefixed_tags = [f"{_domain__name_}/{tag}" for tag in router.tags]
+        router.tags = prefixed_tags
+        for route in router.routes:
+            route.tags = prefixed_tags
         return router
-    routers = [append_domain_tag(router) for router in routers]
+    routers = [update_router_tags(r) for r in routers]
+    
+    for router in routers:
+        domain_router.include_router(router)
 
     # import admin_views
     admin_modules = [importlib.import_module(".admin", s.__name__) for s in submodules]
@@ -66,12 +80,6 @@ def import_domain_components(module_or_qualname: ModuleType | str):
         ],
         [],
     )
-    domain_router = APIRouter(
-        prefix=f"/{_domain__name_}",
-        route_class=HandledExceptionLoggingRoute,
-    )
-    for router in routers:
-        domain_router.include_router(router)
 
 
     # import domain models

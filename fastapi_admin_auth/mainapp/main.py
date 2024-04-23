@@ -52,7 +52,15 @@ def create_app() -> FastAPI:
     #         course_models,
     #     ]
     # )
-    db.create_database(school.models)
+    db.create_database(
+        sum(
+            [
+                example.models,
+                school.models,
+            ],
+            [],
+        )
+    )
 
     ROOT_PATH = config.app_config.root_path
     app = FastAPI(
@@ -65,20 +73,7 @@ def create_app() -> FastAPI:
     )
     idp.add_swagger_config(app)
 
-    # app = include_routers_by_config(
-    #     app,
-    #     routers=[
-    #         iam_view.router,
-    #         default.router,
-    #         school.router,
-    #         # health_view.router,
-    #         # item_view.router,
-    #         # student_view.router,
-    #         # teacher_view.router,
-    #         # textbook_view.router,
-    #         # course_view.router,
-    #     ],
-    # )
+
     app = include_routers_by_config(
         app,
         routers = [
@@ -87,7 +82,7 @@ def create_app() -> FastAPI:
             school.router,
         ]
     )
-    
+
     origins = ["*"]
     app.add_middleware(
         CORSMiddleware,
