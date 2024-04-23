@@ -21,6 +21,8 @@ from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette_admin import CustomView
 
+
+from starlette_admin.views import BaseView  # for typing: childs: BaseModelView, ModelView, CustomView
 from starlette_admin.contrib.sqla import ModelView
 from starlette_admin import action, row_action
 from mainapp.core.iam.idp import idp, OIDCUser
@@ -341,3 +343,12 @@ class CustomActionedSampleModelView(ModelView):
     async def make_published_row_action(self, request: Request, pk: Any) -> str:
         ...
         return "The article was successfully marked as published"
+
+
+def add_admin_views(
+    admin: Admin,
+    admin_views: list[BaseView],
+) -> Admin:
+    for admin_view in admin_views:
+        admin.add_view(admin_view)
+    return admin

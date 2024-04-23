@@ -8,7 +8,7 @@ from .schema import CourseRequest
 
 router = APIRouter(
     prefix="/courses",
-    tags=["school/courses"],
+    tags=["courses"],
     route_class=HandledExceptionLoggingRoute,
 )
 

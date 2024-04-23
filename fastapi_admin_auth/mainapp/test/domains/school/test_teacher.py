@@ -30,7 +30,7 @@ def test_create_teacher():
     }
 
     response = test_client.post(
-        "/teachers",
+        "/school/teachers",
         json=teacher_body,
     )
     response.raise_for_status()
@@ -56,7 +56,7 @@ def test_create_teacher():
     ]
     for teacher in teachers:
         response = test_client.post(
-            "/teachers",
+            "/school/teachers",
             json=teacher.model_dump(),
         )
 
@@ -71,7 +71,7 @@ def test_read_teachers_all():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/teachers",
+        "/school/teachers",
     )
     response.raise_for_status()
     body = response.json()
@@ -100,7 +100,7 @@ def test_read_teacher_by_param():
     encoded_teacher_firstname = quote(teacher_firstname)
     encoded_teacher_lastname = quote(teacher_lastname)
     response = test_client.get(
-        "/teachers",
+        "/school/teachers",
         params={
             "firstname": encoded_teacher_firstname,
             "lastname": encoded_teacher_lastname,
@@ -123,14 +123,14 @@ def test_read_teacher_by_id():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/teachers",
+        "/school/teachers",
     )
     teacher_body = response.json()["data"][0]
     teacher_id = teacher_body["id"]
 
 
     response = test_client.get(
-        f"/teachers/{teacher_id}",
+        f"/school/teachers/{teacher_id}",
     )
     response.raise_for_status()
     body = response.json()
@@ -148,7 +148,7 @@ def test_put_teacher():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/teachers",
+        "/school/teachers",
     )
     teacher_body = response.json()["data"][0]
     teacher_id = teacher_body["id"]
@@ -158,7 +158,7 @@ def test_put_teacher():
     new_lastname = "Roeny"
 
     response = test_client.put(
-        f"/teachers/{teacher_id}",
+        f"/school/teachers/{teacher_id}",
         json={
             "firstname": new_firstname,
             "lastname": new_lastname,
@@ -183,14 +183,14 @@ def test_delete_teacher():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/teachers",
+        "/school/teachers",
     )
     teacher_body = response.json()["data"][0]
     teacher_id = teacher_body["id"]
 
 
     response = test_client.delete(
-        f"/teachers/{teacher_id}",
+        f"/school/teachers/{teacher_id}",
     )
     response.raise_for_status()
     body = response.json()

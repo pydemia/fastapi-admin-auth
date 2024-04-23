@@ -29,7 +29,7 @@ def test_create_item():
         "description": "test_desc",
     }
     response = test_client.post(
-        "/items",
+        "/example/items",
         json=item_body,
     )
     response.raise_for_status()
@@ -38,7 +38,7 @@ def test_create_item():
 
 
     # Create by Model
-    from mainapp.domains.item import models
+    from mainapp.domains.example.item import models
     Item = models.Item
 
     item_0 = Item(name="item 0", description="item_0")
@@ -55,7 +55,7 @@ def test_create_item():
     ]
     for item in items:
         response = test_client.post(
-            "/items",
+            "/example/items",
             json=item.model_dump(),
         )
 
@@ -70,7 +70,7 @@ def test_read_items_all():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/items",
+        "/example/items",
     )
     response.raise_for_status()
     body = response.json()
@@ -98,7 +98,7 @@ def test_read_item_by_param():
     encoded_item_name = quote(item_name)
 
     response = test_client.get(
-        "/items",
+        "/example/items",
         params={
             "name": encoded_item_name,
         },
@@ -118,14 +118,14 @@ def test_read_item_by_id():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/items",
+        "/example/items",
     )
     item_body = response.json()["data"][0]
     item_id = item_body["id"]
 
 
     response = test_client.get(
-        f"/items/{item_id}",
+        f"/example/items/{item_id}",
     )
     response.raise_for_status()
     body = response.json()
@@ -143,7 +143,7 @@ def test_put_item():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/items",
+        "/example/items",
     )
     item_body = response.json()["data"][0]
     item_id = item_body["id"]
@@ -151,7 +151,7 @@ def test_put_item():
 
     new_name = "test-updated"
     response = test_client.put(
-        f"/items/{item_id}",
+        f"/example/items/{item_id}",
         json={
             "name": new_name,
             "description": "updated",
@@ -174,14 +174,14 @@ def test_delete_item():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/items",
+        "/example/items",
     )
     item_body = response.json()["data"][0]
     item_id = item_body["id"]
 
 
     response = test_client.delete(
-        f"/items/{item_id}",
+        f"/example/items/{item_id}",
     )
     response.raise_for_status()
     body = response.json()

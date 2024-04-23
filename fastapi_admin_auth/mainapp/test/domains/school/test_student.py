@@ -29,7 +29,7 @@ def test_create_student():
         "lastname": "Doe",
     }
     response = test_client.post(
-        "/students",
+        "/school/students",
         json=student_body,
     )
     response.raise_for_status()
@@ -55,7 +55,7 @@ def test_create_student():
     ]
     for student in students:
         response = test_client.post(
-            "/students",
+            "/school/students",
             json=student.model_dump(),
         )
 
@@ -70,7 +70,7 @@ def test_read_students_all():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/students",
+        "/school/students",
     )
     response.raise_for_status()
     body = response.json()
@@ -99,7 +99,7 @@ def test_read_student_by_param():
     encoded_student_firstname = quote(student_firstname)
     encoded_student_lastname = quote(student_lastname)
     response = test_client.get(
-        "/students",
+        "/school/students",
         params={
             "firstname": encoded_student_firstname,
             "lastname": encoded_student_lastname,
@@ -122,14 +122,14 @@ def test_read_student_by_id():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/students",
+        "/school/students",
     )
     student_body = response.json()["data"][0]
     student_id = student_body["id"]
 
 
     response = test_client.get(
-        f"/students/{student_id}",
+        f"/school/students/{student_id}",
     )
     response.raise_for_status()
     body = response.json()
@@ -147,7 +147,7 @@ def test_put_student():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/students",
+        "/school/students",
     )
     student_body = response.json()["data"][0]
     student_id = student_body["id"]
@@ -157,7 +157,7 @@ def test_put_student():
     new_lastname = "Doeny"
 
     response = test_client.put(
-        f"/students/{student_id}",
+        f"/school/students/{student_id}",
         json={
             "firstname": new_firstname,
             "lastname": new_lastname,
@@ -182,14 +182,14 @@ def test_delete_student():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/students",
+        "/school/students",
     )
     student_body = response.json()["data"][0]
     student_id = student_body["id"]
 
 
     response = test_client.delete(
-        f"/students/{student_id}",
+        f"/school/students/{student_id}",
     )
     response.raise_for_status()
     body = response.json()

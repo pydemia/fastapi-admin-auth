@@ -15,8 +15,7 @@ from mainapp.core.iam.idp import idp
 from mainapp.core.database import db
 
 
-from mainapp.core.iam import view as iam_view
-
+from mainapp.core.iam.routes import router as iam_router
 # from mainapp.domains.health import view as health_view
 # from mainapp.domains.item import view as item_view
 # from mainapp.domains.school.textbook import view as textbook_view
@@ -24,33 +23,36 @@ from mainapp.core.iam import view as iam_view
 # from mainapp.domains.school.teacher import view as teacher_view
 # from mainapp.domains.school.course import view as course_view
 from mainapp.domains import (
-    default,
+    example,
     school,
 )
 
 
-from mainapp.domains.health import models as health_models
-from mainapp.domains.item import models as item_models
-from mainapp.domains.school.textbook import models as textbook_models
-from mainapp.domains.school.student import models as student_models
-from mainapp.domains.school.teacher import models as teacher_models
-from mainapp.domains.school.course import models as course_models
+# from mainapp.domains.health import models as health_models
+# from mainapp.domains.item import models as item_models
+# from mainapp.domains.school.textbook import models as textbook_models
+# from mainapp.domains.school.student import models as student_models
+# from mainapp.domains.school.teacher import models as teacher_models
+# from mainapp.domains.school.course import models as course_models
 
-from mainapp.core.admin import admin
+# from mainapp.core.domains import import_domain_components, add_admin_views
+# domain_router, admin_views, domain_models = import_domain_components(school)
+
 
 @logged
 def create_app() -> FastAPI:
     app_config = config.AppConfig()
-    db.create_database(
-        [
-            health_models,
-            item_models,
-            student_models,
-            teacher_models,
-            textbook_models,
-            course_models,
-        ]
-    )
+    # db.create_database(
+    #     [
+    #         health_models,
+    #         item_models,
+    #         student_models,
+    #         teacher_models,
+    #         textbook_models,
+    #         course_models,
+    #     ]
+    # )
+    db.create_database(school.models)
 
     ROOT_PATH = config.app_config.root_path
     app = FastAPI(
@@ -63,19 +65,27 @@ def create_app() -> FastAPI:
     )
     idp.add_swagger_config(app)
 
+    # app = include_routers_by_config(
+    #     app,
+    #     routers=[
+    #         iam_view.router,
+    #         default.router,
+    #         school.router,
+    #         # health_view.router,
+    #         # item_view.router,
+    #         # student_view.router,
+    #         # teacher_view.router,
+    #         # textbook_view.router,
+    #         # course_view.router,
+    #     ],
+    # )
     app = include_routers_by_config(
         app,
-        routers=[
-            iam_view.router,
-            default.router,
+        routers = [
+            iam_router,
+            example.router,
             school.router,
-            # health_view.router,
-            # item_view.router,
-            # student_view.router,
-            # teacher_view.router,
-            # textbook_view.router,
-            # course_view.router,
-        ],
+        ]
     )
     
     origins = ["*"]
@@ -106,32 +116,36 @@ def create_app() -> FastAPI:
     # async def redirect_admin_static():
     #     return RedirectResponse(url="/static")
 
-    from mainapp.domains.item.admin import ItemView
-    admin.add_view(ItemView)
 
-    from mainapp.domains.school.student.admin import (
-        StudentView,
-        # AuthorizedItemView,
-        # ActionedItemView,
-    )
-    admin.add_view(StudentView)
-    # admin.add_view(AuthorizedItemView)
-    # admin.add_view(ActionedItemView)
+    # from mainapp.core.admin import admin
+    # from mainapp.domains.item.admin import ItemView
+    # admin.add_view(ItemView)
 
-    from mainapp.domains.school.textbook.admin import (
-        TextbookView,
-        # ActionedDocumentView,
-    )
-    admin.add_view(TextbookView)
-    # admin.add_view(ActionedDocumentView)
+    # from mainapp.domains.school.student.admin import (
+    #     StudentView,
+    #     # AuthorizedItemView,
+    #     # ActionedItemView,
+    # )
+    # admin.add_view(StudentView)
+    # # admin.add_view(AuthorizedItemView)
+    # # admin.add_view(ActionedItemView)
+
+    # from mainapp.domains.school.textbook.admin import (
+    #     TextbookView,
+    #     # ActionedDocumentView,
+    # )
+    # admin.add_view(TextbookView)
+    # # admin.add_view(ActionedDocumentView)
 
 
-    from mainapp.domains.school.course.admin import CourseView
-    admin.add_view(CourseView)
+    # from mainapp.domains.school.course.admin import CourseView
+    # admin.add_view(CourseView)
     
-    from mainapp.domains.school.teacher.admin import TeacherView
-    admin.add_view(TeacherView)
+    # from mainapp.domains.school.teacher.admin import TeacherView
+    # admin.add_view(TeacherView)
 
+    from mainapp.core.admin import admin, add_admin_views
+    admin = add_admin_views(admin, school.admin_views)
     admin.mount_to(app)
 
     logging.config.fileConfig("logging.conf", disable_existing_loggers=False,)

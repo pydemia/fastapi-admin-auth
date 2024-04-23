@@ -9,7 +9,7 @@ from .schema import TeacherRequest
 
 router = APIRouter(
     prefix="/teachers",
-    tags=["school/teachers"],
+    tags=["teachers"],
     route_class=HandledExceptionLoggingRoute,
 )
 

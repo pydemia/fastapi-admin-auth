@@ -29,7 +29,7 @@ def test_create_textbook():
         "description": "test_desc",
     }
     response = test_client.post(
-        "/textbooks",
+        "/school/textbooks",
         json=textbook_body,
     )
     response.raise_for_status()
@@ -55,7 +55,7 @@ def test_create_textbook():
     ]
     for textbook in textbooks:
         response = test_client.post(
-            "/textbooks",
+            "/school/textbooks",
             json=textbook.model_dump(),
         )
 
@@ -70,7 +70,7 @@ def test_read_textbooks_all():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/textbooks",
+        "/school/textbooks",
     )
     response.raise_for_status()
     body = response.json()
@@ -98,7 +98,7 @@ def test_read_textbook_by_param():
     encoded_textbook_name = quote(textbook_name)
 
     response = test_client.get(
-        "/textbooks",
+        "/school/textbooks",
         params={
             "name": encoded_textbook_name,
         },
@@ -118,14 +118,14 @@ def test_read_textbook_by_id():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/textbooks",
+        "/school/textbooks",
     )
     textbook_body = response.json()["data"][0]
     textbook_id = textbook_body["id"]
 
 
     response = test_client.get(
-        f"/textbooks/{textbook_id}",
+        f"/school/textbooks/{textbook_id}",
     )
     response.raise_for_status()
     body = response.json()
@@ -143,7 +143,7 @@ def test_put_textbook():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/textbooks",
+        "/school/textbooks",
     )
     textbook_body = response.json()["data"][0]
     textbook_id = textbook_body["id"]
@@ -151,7 +151,7 @@ def test_put_textbook():
 
     new_name = "test-updated"
     response = test_client.put(
-        f"/textbooks/{textbook_id}",
+        f"/school/textbooks/{textbook_id}",
         json={
             "name": new_name,
             "description": "updated",
@@ -174,14 +174,14 @@ def test_delete_textbook():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/textbooks",
+        "/school/textbooks",
     )
     textbook_body = response.json()["data"][0]
     textbook_id = textbook_body["id"]
 
 
     response = test_client.delete(
-        f"/textbooks/{textbook_id}",
+        f"/school/textbooks/{textbook_id}",
     )
     response.raise_for_status()
     body = response.json()

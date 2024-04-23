@@ -29,7 +29,7 @@ def test_create_course():
         "description": "test_desc",
     }
     response = test_client.post(
-        "/courses",
+        "/school/courses",
         json=course_body,
     )
     response.raise_for_status()
@@ -55,7 +55,7 @@ def test_create_course():
     ]
     for course in courses:
         response = test_client.post(
-            "/courses",
+            "/school/courses",
             json=course.model_dump(),
         )
 
@@ -70,7 +70,7 @@ def test_read_courses_all():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/courses",
+        "/school/courses",
     )
     response.raise_for_status()
     body = response.json()
@@ -98,7 +98,7 @@ def test_read_course_by_param():
     encoded_course_name = quote(course_name)
 
     response = test_client.get(
-        "/courses",
+        "/school/courses",
         params={
             "name": encoded_course_name,
         },
@@ -118,14 +118,14 @@ def test_read_course_by_id():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/courses",
+        "/school/courses",
     )
     course_body = response.json()["data"][0]
     course_id = course_body["id"]
 
 
     response = test_client.get(
-        f"/courses/{course_id}",
+        f"/school/courses/{course_id}",
     )
     response.raise_for_status()
     body = response.json()
@@ -143,7 +143,7 @@ def test_put_course():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/courses",
+        "/school/courses",
     )
     course_body = response.json()["data"][0]
     course_id = course_body["id"]
@@ -151,7 +151,7 @@ def test_put_course():
 
     new_name = "test-updated"
     response = test_client.put(
-        f"/courses/{course_id}",
+        f"/school/courses/{course_id}",
         json={
             "name": new_name,
             "description": "updated",
@@ -174,14 +174,14 @@ def test_delete_course():
     test_client = TestClient(app)
 
     response = test_client.get(
-        "/courses",
+        "/school/courses",
     )
     course_body = response.json()["data"][0]
     course_id = course_body["id"]
 
 
     response = test_client.delete(
-        f"/courses/{course_id}",
+        f"/school/courses/{course_id}",
     )
     response.raise_for_status()
     body = response.json()

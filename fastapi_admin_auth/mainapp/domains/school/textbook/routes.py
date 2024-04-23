@@ -9,7 +9,7 @@ from .schema import TextbookRequest
 
 router = APIRouter(
     prefix="/textbooks",
-    tags=["school/textbooks"],
+    tags=["textbooks"],
     route_class=HandledExceptionLoggingRoute,
 )
 
