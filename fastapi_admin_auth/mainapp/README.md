@@ -1,7 +1,8 @@
 
 
 * Standalone: `Item`
-* One-to-One: `Course` : `Textbook`
+* Optional Foreign Key: `Course` : `Textbook`
+* One-to-One: `Course` : `Certificate`
 * One-to-Many: `Course`: `Teacher`
 * Many-to-Many: `Course` : `Student`
 

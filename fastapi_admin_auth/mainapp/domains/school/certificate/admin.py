@@ -9,61 +9,29 @@
 from typing import Any
 from starlette_admin.contrib.sqla import ModelView
 from starlette.requests import Request
-from starlette_admin import action, row_action, TagsField, HasOne
-# from starlette_admin import (
-#     TagsField,
-#     DateField,
-#     TimeField,
-#     DateTimeField,
-#     TimeZoneField,
-#     ListField,
-#     ImageField,
-#     CollectionField,
-#     PasswordField,
-#     RelationField,
-#     ArrowField,
-#     ColorField,
-#     HasOne,
-#     HasMany,
-# )
+from starlette_admin import action, row_action
 
 # from mainapp.core.admin import AuthorizedModelView
 
 
-from .models import Course
+from .models import Certificate
 
-class CourseModelView(ModelView):
-    page_size = 10
-    page_size_options = [10, 20, 50, 100, -1]
-    fields = [
-        "id",
-        "name",
-        Course.description,
-        TagsField("tags", label="Tags"),
-        HasOne("book", identity="textbook"),
-    ]
 
-CourseView = CourseModelView(
-    Course,
+CertificateView = ModelView(
+    Certificate,
     icon=None,
-    # name="Course",
-    label="Course",
+    # name="Certificate",
+    label="Certificate",
 )
-# CourseView = ModelView(
-#     Course,
-# )
-
-# class CourseView(ModelView):
-#     fields = ["id", "rel"]
 
 
-# AuthorizedCourseView = AuthorizedModelView(
-#     Course,
-#     # name="Authorized Course",
+# AuthorizedCertificateView = AuthorizedModelView(
+#     Certificate,
+#     # name="Authorized Certificate",
 #     icon=None,
-#     name="Course: Authorized",
+#     name="Certificate: Authorized",
 # )
-# class AuthorizedCourseView(AuthorizedModelView):
+# class AuthorizedCertificateView(AuthorizedModelView):
 
 #     def is_accessible(
 #         self, request: Request,
@@ -76,17 +44,17 @@ CourseView = CourseModelView(
 #         # key = request.state.user
 #         return True
 
-# CourseView = AuthorizedCourseView(
-#     Course,
-#     # name="Authorized Course",
+# CertificateView = AuthorizedCertificateView(
+#     Certificate,
+#     # name="Authorized Certificate",
 #     icon=None,
-#     label="AuthorizedCourse",
+#     label="AuthorizedCertificate",
 # )
 
 
 
-class CustomActionedCourseView(ModelView):
-    exclude_fields_from_list = [Course.description]
+class CustomActionedCertificateView(ModelView):
+    exclude_fields_from_list = [Certificate.description]
     def is_accessible(
         self, request: Request,
         # user: OIDCUser = Depends(idp.get_current_user()),
@@ -103,10 +71,10 @@ class CustomActionedCourseView(ModelView):
         return "edit" in request.state.user["roles"]
 
     def can_delete(self, request: Request) -> bool:
-        from mainapp.core.iam.idp import idp, get_user_id
-        uu = request.state.user
-        roles = idp.get_user_roles(get_user_id(request))
-        idp.get_user_roles(request.state.user.get("sub"))
+        # from mainapp.core.iam.idp import idp, get_user_id
+        # uu = request.state.user
+        # roles = idp.get_user_roles(get_user_id(request))
+        # idp.get_user_roles(request.state.user.get("sub"))
         return "delete" in request.state.user["roles"]
 
     async def is_action_allowed(self, request: Request, name: str) -> bool:
@@ -145,7 +113,7 @@ class CustomActionedCourseView(ModelView):
         return "The article was successfully marked as published"
 
 
-# ActionedCourseView = CustomActionedCourseView(
-#     Course,
-#     label="Course: CustomActioned",
+# ActionedCertificateView = CustomActionedCertificateView(
+#     Certificate,
+#     label="Certificate: CustomActioned",
 # )
