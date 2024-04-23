@@ -2,8 +2,8 @@ import collections
 import datetime as dt
 from typing import Any
 
-from pydantic.v1 import BaseModel, Field, root_validator
 from pydantic.v1.json import timedelta_isoformat
+from pydantic import BaseModel, Field, model_validator, ConfigDict
 
 from mainapp.core.utils.misc import dt_to_timemilis
 from ..exceptions import HandledException, ResponseCode, UnHandledException
@@ -31,21 +31,27 @@ class BaseResponse(BaseModel):
         title="the output",  # max_length=300
     )
 
-    class Config:
-        underscore_attrs_are_private = True
-        # max_anystr_length = 1_000_000
-        error_msg_templates = {
-            "value_error.any_str.max_length": "max_length:{limit_value}",
-        }
-        json_encoders = {
+    model_config = ConfigDict(
+        json_encoders={
             dt.datetime: dt_to_timemilis,
             dt.timedelta: timedelta_isoformat,
         }
-        # arbitrary_types_allowed = True
+    )
+    # class Config:
+    #     underscore_attrs_are_private = True
+    #     # max_anystr_length = 1_000_000
+    #     error_msg_templates = {
+    #         "value_error.any_str.max_length": "max_length:{limit_value}",
+    #     }
+    #     json_encoders = {
+    #         dt.datetime: dt_to_timemilis,
+    #         dt.timedelta: timedelta_isoformat,
+    #     }
+    #     # arbitrary_types_allowed = True
 
 
 class CommonResponse(BaseResponse):
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _init(cls, values):
         values["timestamp"] = dt.datetime.utcnow()
         rc = ResponseCode.SUCCESS
@@ -56,7 +62,7 @@ class CommonResponse(BaseResponse):
 
 
 class ErrorResponse(CommonResponse):
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _init(cls, values):
         values["timestamp"] = dt.datetime.utcnow()
         if "e" in values:
@@ -102,5 +108,5 @@ def _recursive_update_dt_to_timemilis(old, new=None):
                     _val,
                 )
             elif isinstance(_val, dt.datetime):
-                old[_key] = _dt_to_timemilis(_val)
+                old[_key] = dt_to_timemilis(_val)
             return old

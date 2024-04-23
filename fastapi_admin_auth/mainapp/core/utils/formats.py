@@ -3,7 +3,8 @@ from re import Match, Pattern
 from typing import Any
 
 from fastapi.requests import Request
-from pydantic.v1 import AnyUrl, BaseModel, HttpUrl
+# from pydantic.v1 import AnyUrl, BaseModel, HttpUrl
+from pydantic import BaseModel, AnyUrl, HttpUrl
 
 from ..types import response
 from ..types.exceptions import ResponseCode

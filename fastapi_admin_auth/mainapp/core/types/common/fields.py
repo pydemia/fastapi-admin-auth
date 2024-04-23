@@ -1,7 +1,8 @@
 # from pydantic.v1 import (
 #     Field,
 # )
-from pydantic.v1 import Field
+# from pydantic.v1 import Field
+from pydantic import Field
 import sqlalchemy as sa
 import datetime as dt
 

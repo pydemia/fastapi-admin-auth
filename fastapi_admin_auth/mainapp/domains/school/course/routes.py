@@ -4,7 +4,7 @@ from mainapp.core.exception_routers import HandledExceptionLoggingRoute
 from mainapp.core.types.schema.response import CommonResponse
 from .models import Course
 from .service import CourseService
-from .schema import CourseRequest
+from .schema import CourseRequest, SingleCourseResponse, MultiCourseResponse
 
 router = APIRouter(
     prefix="/courses",
@@ -13,16 +13,17 @@ router = APIRouter(
 )
 
 
-@router.get("")
+@router.get("", response_model=MultiCourseResponse)
 async def get_courses(
     name: str | None = None,
     service: CourseService = Depends(CourseService()),
 ):
     if name:
-        course_or_courses = service.get_course(name)
+        course_or_courses = [service.get_course(name)]
     else:
         course_or_courses = service.get_courses_all()
-    return CommonResponse(data=course_or_courses)
+    # return CommonResponse(data=course_or_courses)
+    return MultiCourseResponse(data=course_or_courses)
 
 
 @router.post("")
@@ -31,21 +32,23 @@ async def add_course(
     service: CourseService = Depends(CourseService()),
     ):
     course: Course = service.add_new_course(
-        course={
-            "name": body.name,
-            "description": body.description,
-        },
+        course=Course(
+            name=body.name,
+            description=body.description,
+            book_id=body.book_id, 
+        ),
     )
     return CommonResponse(data=course)
 
 
-@router.get("/{course_id}")
+@router.get("/{course_id}", response_model=SingleCourseResponse)
 async def get_course_by_id(
     course_id: int,
     service: CourseService = Depends(CourseService()),
 ):
     course = service.get_course(course_id)
-    return CommonResponse(data=course)
+    # return CommonResponse(data=course)
+    return SingleCourseResponse(data=course)
 
 
 @router.put("/{course_id}")

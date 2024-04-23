@@ -13,6 +13,20 @@
   ],
   "configurations": [
     {
+        "name": "[🌱]backend: uvicorn: app-only",
+        "type": "python",
+        "request": "launch",
+        "module": "uvicorn",
+        "args": [
+            "mainapp.main:app",
+            "--log-config=${workspaceFolder}/fastapi_admin_auth/logging.conf"
+        ],
+        "cwd": "${workspaceFolder}/fastapi_admin_auth",
+        "console": "internalConsole",
+        "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
+        "justMyCode": false
+    },
+    {
       "name": "[🌱🌱]backend: gunicorn: app-only",
       "type": "python",
       "request": "launch",
@@ -27,20 +41,6 @@
       "console": "internalConsole",
       "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
       "justMyCode": false,
-    },
-    {
-        "name": "[🌱]backend: uvicorn: app-only",
-        "type": "python",
-        "request": "launch",
-        "module": "uvicorn",
-        "args": [
-            "mainapp.main:app",
-            "--log-config=${workspaceFolder}/fastapi_admin_auth/logging.conf"
-        ],
-        "cwd": "${workspaceFolder}/fastapi_admin_auth",
-        "console": "internalConsole",
-        "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
-        "justMyCode": false
     },
     {
       "name": "Python test runner: debug",

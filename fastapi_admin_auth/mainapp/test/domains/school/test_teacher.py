@@ -39,8 +39,7 @@ def test_create_teacher():
 
 
     # Create by Model
-    from mainapp.domains.school.teacher import models
-    Teacher = models.Teacher
+    from mainapp.domains.school.teacher.models import Teacher
 
     teacher_0 = Teacher(firstname="Daniel", lastname="Walker", description="teacher 0")
     teacher_1 = Teacher(firstname="Sophia", lastname="Garcia", description="teacher 1")

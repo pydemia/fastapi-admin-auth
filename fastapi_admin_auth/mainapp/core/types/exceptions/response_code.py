@@ -6,16 +6,26 @@ from typing import Any
 
 import yaml
 from autologging import logged
-from pydantic.v1 import (
+
+from pydantic import (
     BaseModel,
-    BaseSettings,
-    Extra,
     Field,
     ValidationError,
-    root_validator,
-    validator,
+    model_validator,
+    field_validator,
+    ConfigDict,
 )
-from pydantic.v1.env_settings import SettingsSourceCallable
+from pydantic.fields import FieldInfo
+# from pydantic.v1 import (
+#     BaseModel,
+#     BaseSettings,
+#     Extra,
+#     Field,
+#     ValidationError,
+#     root_validator,
+#     validator,
+# )
+# from pydantic.v1.env_settings import SettingsSourceCallable
 
 # from pydantic.v1 import (
 #     BaseModel,
@@ -26,11 +36,11 @@ from pydantic.v1.env_settings import SettingsSourceCallable
 #     ValidationError,
 # )
 # from pydantic.v1.fields import FieldInfo
-# from pydantic_settings import (
-#     BaseSettings,
-#     EnvSettingsSource,
-#     PydanticBaseSettingsSource,
-# )
+from pydantic_settings import (
+    BaseSettings,
+    EnvSettingsSource,
+    PydanticBaseSettingsSource,
+)
 from mainapp.core.types.enums import Locale
 
 __all__ = [
@@ -94,13 +104,17 @@ class Code(BaseModel):
     code: int = Field(ge=-99999, le=1, multiple_of=1)
     message: str
 
-    @validator("message", pre=True, always=True, allow_reuse=True)
+    @field_validator("message", mode="before")
     def select_msg_by_locale(cls, v):
-        msg = Message.parse_obj(v)
+        # msg = Message.parse_obj(v)
+        msg = Message.model_validate(v)
         return msg.__getattribute__(LOCALE.value)
 
-    class Config:
-        extra = Extra.ignore
+    model_config = ConfigDict(
+        extra="ignore",
+    )
+    # class Config:
+    #     extra = Extra.ignore
 
 
 class CodeMessage(BaseModel):
@@ -108,75 +122,84 @@ class CodeMessage(BaseModel):
     code: int
     message: str
 
-    class Config:
-        allow_mutation = False
+    model_config = ConfigDict(
+        frozen=True,
+    )
+
+    # class Config:
+    #     allow_mutation = False
 
 
-# class LoadCodeYamlSettingsSource(EnvSettingsSource):
-#     def prepare_field_value(
-#         self, field_name: str, field: FieldInfo, value: Any, value_is_complex: bool
-#     ) -> Any:
-#         """
-#         A simple settings source that loads variables from a JSON file
-#         at the project's root.
+class LoadCodeYamlSettingsSource(EnvSettingsSource):
+    def prepare_field_value(
+        self, field_name: str, field: FieldInfo, value: Any, value_is_complex: bool
+    ) -> Any:
+        """
+        A simple settings source that loads variables from a JSON file
+        at the project's root.
 
-#         Here we happen to choose to use the `env_file_encoding` from Config
-#         when reading `config.json`
-#         """
-#         # encoding = settings.__config__.env_file_encoding
-#         # return json.loads(Path('config.json').read_text(encoding))
-#         try:
-#             filepath = os.getenv("APP_CODE", "code.yaml")
-#             with open(filepath, "r") as f:
-#                 config = yaml.load(f, Loader=yaml.Loader)
-#         except FileNotFoundError:
-#             with open(_find_rootpath().joinpath(filepath), "r") as f:
-#                 config = yaml.load(f, Loader=yaml.Loader)
-#         return config
+        Here we happen to choose to use the `env_file_encoding` from Config
+        when reading `config.json`
+        """
+        # encoding = settings.__config__.env_file_encoding
+        # return json.loads(Path('config.json').read_text(encoding))
+        try:
+            filepath = os.getenv("APP_CODE", "code.yaml")
+            with open(filepath, "r") as f:
+                config = yaml.load(f, Loader=yaml.Loader)
+        except FileNotFoundError:
+            with open(_find_rootpath().joinpath(filepath), "r") as f:
+                config = yaml.load(f, Loader=yaml.Loader)
+        return config
 
 
 @logged
 class CodeMessages(BaseSettings):
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def convert_dict2model(cls, values):
         try:
             new_values = {}
             for k, v in values.items():
-                new_values.update({k: Code.parse_obj(v)})
+                # new_values.update({k: Code.parse_obj(v)})
+                new_values.update({k: Code.model_validate(v)})
                 # return {k: Code.parse_obj(v) for k, v in values.items()}
             return new_values
         except ValidationError as e:
             cls.__log.warn(f"Failed to parse 'config.yaml' with FIELD '{k}': {v}")
             raise e
 
-    class Config:
-        extra = Extra.allow
-        allow_mutation = False
+    model_config = ConfigDict(
+        extra="allow",
+        frozen=True,
+    )
+    # class Config:
+    #     extra = Extra.allow
+    #     allow_mutation = False
 
-        @classmethod
-        def customise_sources(
-            cls,
-            init_settings: SettingsSourceCallable,
-            env_settings: SettingsSourceCallable,
-            file_secret_settings: SettingsSourceCallable,
-        ) -> tuple[SettingsSourceCallable, ...]:
-            return (
-                init_settings,
-                _load_code_config,
-                env_settings,
-                file_secret_settings,
-            )
+    #     @classmethod
+    #     def customise_sources(
+    #         cls,
+    #         init_settings: SettingsSourceCallable,
+    #         env_settings: SettingsSourceCallable,
+    #         file_secret_settings: SettingsSourceCallable,
+    #     ) -> tuple[SettingsSourceCallable, ...]:
+    #         return (
+    #             init_settings,
+    #             _load_code_config,
+    #             env_settings,
+    #             file_secret_settings,
+    #         )
 
-    # @classmethod
-    # def settings_customise_sources(
-    #     cls,
-    #     settings_cls: Type[BaseSettings],
-    #     init_settings: PydanticBaseSettingsSource,
-    #     env_settings: PydanticBaseSettingsSource,
-    #     dotenv_settings: PydanticBaseSettingsSource,
-    #     file_secret_settings: PydanticBaseSettingsSource,
-    # ) -> tuple[PydanticBaseSettingsSource, ...]:
-    #     return (LoadCodeYamlSettingsSource(settings_cls),)
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        return (init_settings, env_settings, file_secret_settings, LoadCodeYamlSettingsSource(settings_cls),)
 
     def find_by_code(self, code: int) -> CodeMessage | None:
         fields: dict[str, Code] = self.__dict__

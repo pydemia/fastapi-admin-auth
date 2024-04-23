@@ -38,19 +38,64 @@ def test_create_course():
 
 
     # Create by Model
-    from mainapp.domains.school.course import models
-    Course = models.Course
+    from mainapp.domains.school.course.models import Course
 
     course_0 = Course(name="course 0", description="course_0")
     course_1 = Course(name="course 1", description="course_1")
     course_2 = Course(name="course 2", description="course_2")
     course_3 = Course(name="course 3", description="course_3")
 
-    course_a = Course(name="course a", description="course_a")
-    course_b = Course(name="course b", description="course_b")
 
     courses = [
         course_0, course_1, course_2, course_3,
+    ]
+    for course in courses:
+        response = test_client.post(
+            "/school/courses",
+            json=course.model_dump(),
+        )
+
+
+    # Create by Model with foreign key
+    from mainapp.domains.school.textbook.models import Textbook
+
+    textbook_a = Textbook(name="textbook a", description="textbook_a")
+    textbook_b = Textbook(name="textbook b", description="textbook_b")
+
+    textbooks = [
+        textbook_a, textbook_b,
+    ]
+    for textbook in textbooks:
+        response = test_client.post(
+            "/school/textbooks",
+            json=textbook.model_dump(),
+        )
+
+    from urllib.parse import quote
+    encoded_textbook_a_name = quote(textbook_a.name)
+    encoded_textbook_b_name = quote(textbook_b.name)
+
+    textbook_a_response = test_client.get(
+        "/school/textbooks",
+        params={
+            "name": encoded_textbook_a_name,
+        },
+    )
+    textbook_a_model = Textbook.model_validate(textbook_a_response.json()["data"])
+
+    textbook_b_response = test_client.get(
+        "/school/textbooks",
+        params={
+            "name": encoded_textbook_b_name,
+        },
+    )
+    textbook_b_model = Textbook.model_validate(textbook_b_response.json()["data"])
+
+
+    course_a = Course(name="course a", description="course_a", book_id=textbook_a_model.id)
+    course_b = Course(name="course b", description="course_b", book_id=textbook_b_model.id)
+
+    courses = [
         course_a, course_b,
     ]
     for course in courses:
@@ -58,6 +103,7 @@ def test_create_course():
             "/school/courses",
             json=course.model_dump(),
         )
+
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -106,7 +152,7 @@ def test_read_course_by_param():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["name"] == course_name
+    assert body["data"][0]["name"] == course_name
 
 @pytest.mark.usefixtures("setup", "teardown")
 @pytest.mark.order(4)

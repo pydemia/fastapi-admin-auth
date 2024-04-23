@@ -5,6 +5,8 @@ from fastapi import Request
 from fastapi_keycloak import FastAPIKeycloak
 from fastapi_keycloak import OIDCUser
 from mainapp.core.types.exceptions import HandledException, ResponseCode
+from requests.exceptions import MissingSchema
+from http.client import RemoteDisconnected
 
 
 # @logged
@@ -30,6 +32,7 @@ from mainapp.core.types.exceptions import HandledException, ResponseCode
 # # idp = IDProvider(core_config.KeycloakConfig())
 keycloak_config = KeycloakConfig()
 
+
 @lru_cache
 def get_idp() -> FastAPIKeycloak:
     try:
@@ -44,9 +47,9 @@ def get_idp() -> FastAPIKeycloak:
             scope="openid profile email",
             timeout=10,
         )
-    except "requests.exceptions.MissingSchema" as schema_e:
+    except MissingSchema as schema_e:
         raise HandledException(ResponseCode.KEYCLOCK_REALM_NOT_FOUND, e=schema_e)
-    except "http.client.RemoteDisconnected" as disconnected_e:
+    except RemoteDisconnected as disconnected_e:
         raise HandledException(ResponseCode.KEYCLOCK_CONNECTION_ERROR, e=disconnected_e)
     except Exception as unknown_e:
         raise HandledException(ResponseCode.KEYCLOCK_CONNECTION_ERROR, e=unknown_e)

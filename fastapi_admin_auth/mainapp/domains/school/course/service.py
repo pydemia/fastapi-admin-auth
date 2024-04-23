@@ -42,6 +42,7 @@ class CourseService:
             course = Course(
                 name=course["name"],
                 description=course.get("description"),
+                book_id=course.get("book_id"),
             )
         course = self.crud.create_course(course)
         return course

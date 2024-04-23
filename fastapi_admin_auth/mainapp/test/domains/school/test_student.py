@@ -38,8 +38,7 @@ def test_create_student():
 
 
     # Create by Model
-    from mainapp.domains.school.student import models
-    Student = models.Student
+    from mainapp.domains.school.student.models import Student
 
     student_0 = Student(firstname="Lucas", lastname="Young", description="student 0")
     student_1 = Student(firstname="Christopher", lastname="Lee", description="student 1")

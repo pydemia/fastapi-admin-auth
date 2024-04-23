@@ -24,6 +24,9 @@ CourseView = ModelView(
     label="Course",
 )
 
+# class CourseView(ModelView):
+#     fields = ["id", "rel"]
+
 
 # AuthorizedCourseView = AuthorizedModelView(
 #     Course,
@@ -113,7 +116,7 @@ class CustomActionedCourseView(ModelView):
         return "The article was successfully marked as published"
 
 
-ActionedCourseView = CustomActionedCourseView(
-    Course,
-    label="Course: CustomActioned",
-)
+# ActionedCourseView = CustomActionedCourseView(
+#     Course,
+#     label="Course: CustomActioned",
+# )

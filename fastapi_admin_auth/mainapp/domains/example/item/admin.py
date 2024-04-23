@@ -113,7 +113,7 @@ class CustomActionedItemView(ModelView):
         return "The article was successfully marked as published"
 
 
-ActionedItemView = CustomActionedItemView(
-    Item,
-    label="Item: CustomActioned",
-)
+# ActionedItemView = CustomActionedItemView(
+#     Item,
+#     label="Item: CustomActioned",
+# )

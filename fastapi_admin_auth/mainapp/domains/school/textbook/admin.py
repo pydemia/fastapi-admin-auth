@@ -113,7 +113,7 @@ class CustomActionedTextbookView(ModelView):
         return "The article was successfully marked as published"
 
 
-ActionedTextbookView = CustomActionedTextbookView(
-    Textbook,
-    label="Textbook: CustomActioned",
-)
+# ActionedTextbookView = CustomActionedTextbookView(
+#     Textbook,
+#     label="Textbook: CustomActioned",
+# )

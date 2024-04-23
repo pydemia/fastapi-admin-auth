@@ -18,7 +18,6 @@ from autologging import logged
 
 
 from pydantic import Field, field_validator, model_validator
-from typing import Type
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -89,7 +88,7 @@ class AppSettings(BaseSettings):
     @classmethod
     def settings_customise_sources(
         cls,
-        settings_cls: Type[BaseSettings],
+        settings_cls: type[BaseSettings],
         init_settings: PydanticBaseSettingsSource,
         env_settings: PydanticBaseSettingsSource,
         dotenv_settings: PydanticBaseSettingsSource,

@@ -157,7 +157,7 @@
             "problemMatcher": []
         },
         {
-            "label": "run --all",
+            "label": "launch --all",
             "dependsOrder": "sequence",
             "dependsOn": [
                 "keycloak-shutdown",

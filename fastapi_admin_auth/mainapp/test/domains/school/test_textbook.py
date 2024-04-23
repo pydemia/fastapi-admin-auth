@@ -38,20 +38,15 @@ def test_create_textbook():
 
 
     # Create by Model
-    from mainapp.domains.school.textbook import models
-    Textbook = models.Textbook
+    from mainapp.domains.school.textbook.models import Textbook
 
     textbook_0 = Textbook(name="textbook 0", description="textbook_0")
     textbook_1 = Textbook(name="textbook 1", description="textbook_1")
     textbook_2 = Textbook(name="textbook 2", description="textbook_2")
     textbook_3 = Textbook(name="textbook 3", description="textbook_3")
 
-    textbook_a = Textbook(name="textbook a", description="textbook_a")
-    textbook_b = Textbook(name="textbook b", description="textbook_b")
-
     textbooks = [
         textbook_0, textbook_1, textbook_2, textbook_3,
-        textbook_a, textbook_b,
     ]
     for textbook in textbooks:
         response = test_client.post(
