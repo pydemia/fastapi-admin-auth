@@ -20,6 +20,7 @@ class Certificate(SQLModel, table=True):
     name: str = Field(index=True, unique=True)
     description: str = Field("")
 
+    # course_id: int | None = Field(default=None, foreign_key="course.id")
     course: "Course" = Relationship(
         back_populates="certificate",
         # sa_relationship_kwargs={
@@ -39,16 +40,16 @@ class Course(SQLModel, table=True):
     book_id: int | None = Field(default=None, foreign_key="textbook.id")
     book: Optional["Textbook"] = Relationship()
 
+    # certificate_id: int | None = Field(foreign_key="certificate.id")
     certificate_id: int | None = Field(foreign_key="certificate.id")
     certificate: "Certificate" = Relationship(
         back_populates="course",
-        # sa_relationship_kwargs={
-        #     "lazy": "selectin",
-        # }
+        sa_relationship_kwargs={
+            "cascade": "all",
+            # "cascade": "save-update, delete", # Instruct the ORM how to track changes to local objects
+            # "lazy": "selectin",
+        },
     )
-    # certificate: Certificate | None = Relationship(
-    #     back_populates="textbook.id",
-    #     sa_relationship_kwargs=dict(
-    #         lazy="selectin",
-    #     )
-    # )
+
+    # async def __admin_repr__(self, request: Request):
+    #     return self.name

@@ -3,7 +3,7 @@ from fastapi import Depends
 from sqlmodel import select, col
 from mainapp.core.database import db, Session
 
-from .models import Course
+from .models import Course, Certificate
 
 
 class CourseCRUD:
@@ -110,7 +110,6 @@ class CourseCRUD:
     ) -> Course:
 
         session = self.session
-        session.add(course)
         session.commit()
         session.refresh(course)
         return course
@@ -122,3 +121,24 @@ class CourseCRUD:
         session = self.session
         session.delete(course)
         session.commit()
+
+
+    def get_certificate_by_id(
+        self,
+        id,
+    ) -> Certificate | None:
+
+        session = self.session
+        stmt = select(Certificate).where(Certificate.id == id)
+        stmt = session.exec(stmt)
+        return stmt.first()
+
+    def get_certificate_by_name(
+        self,
+        name: str,
+    ) -> Certificate | None:
+
+        session = self.session
+        stmt = select(Certificate).where(Certificate.name == name)
+        stmt = session.exec(stmt)
+        return stmt.first()

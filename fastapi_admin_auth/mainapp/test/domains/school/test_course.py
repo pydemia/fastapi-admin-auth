@@ -24,9 +24,14 @@ def test_create_course():
     test_client = TestClient(app)
 
     # Create by json
+    certificate_body = {
+        "name": "test",
+        "description": "test_desc",
+    }
     course_body = {
         "name": "test",
         "description": "test_desc",
+        "certificate": certificate_body,
     }
     response = test_client.post(
         "/school/courses",
@@ -38,12 +43,25 @@ def test_create_course():
 
 
     # Create by Model
-    from mainapp.domains.school.course.models import Course
+    # from mainapp.domains.school.course.models import Course, Certificate
+    from mainapp.domains.school.course.schema import CreateCourseRequest, CertificateRequest
 
-    course_0 = Course(name="course 0", description="course_0")
-    course_1 = Course(name="course 1", description="course_1")
-    course_2 = Course(name="course 2", description="course_2")
-    course_3 = Course(name="course 3", description="course_3")
+    course_0 = CreateCourseRequest(
+        name="course 0", description="course_0",
+        certificate=CertificateRequest(name="cert 0", description="cert_0")
+    )
+    course_1 = CreateCourseRequest(
+        name="course 1", description="course_1",
+        certificate=CertificateRequest(name="cert 1", description="cert_1")
+    )
+    course_2 = CreateCourseRequest(
+        name="course 2", description="course_2",
+        certificate=CertificateRequest(name="cert 2", description="cert_2")
+    )
+    course_3 = CreateCourseRequest(
+        name="course 3", description="course_3",
+        certificate=CertificateRequest(name="cert 3", description="cert_3")
+    )
 
 
     courses = [
@@ -92,8 +110,16 @@ def test_create_course():
     textbook_b_model = Textbook.model_validate(textbook_b_response.json()["data"])
 
 
-    course_a = Course(name="course a", description="course_a", book_id=textbook_a_model.id)
-    course_b = Course(name="course b", description="course_b", book_id=textbook_b_model.id)
+    course_a = CreateCourseRequest(
+        name="course a", description="course_a",
+        book_id=textbook_a_model.id,
+        certificate=CertificateRequest(name="cert a", description="cert_a"),
+    )
+    course_b = CreateCourseRequest(
+        name="course b", description="course_b",
+        book_id=textbook_b_model.id,
+        certificate=CertificateRequest(name="cert a", description="cert_a"),
+    )
 
     courses = [
         course_a, course_b,
@@ -194,20 +220,67 @@ def test_put_course():
     course_body = response.json()["data"][0]
     course_id = course_body["id"]
 
-
+    # Update simple values
     new_name = "test-updated"
+
+    course_body["name"] = new_name
+    course_body["description"] = "updated"
+
     response = test_client.put(
         f"/school/courses/{course_id}",
-        json={
-            "name": new_name,
-            "description": "updated",
-        }
+        json=course_body,
     )
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
     assert body["data"]["id"] == course_id
     assert body["data"]["name"] == new_name
+
+
+    # # update One-to-One relations
+    # course_body["certificate_id"] = new_name
+    # course_body["description"] = "updated"
+
+    # response = test_client.put(
+    #     f"/school/courses/{course_id}",
+    #     json=course_body,
+    # )
+    # response.raise_for_status()
+    # body = response.json()
+    # assert body["code"] == 1
+    # assert body["data"]["id"] == course_id
+    # assert body["data"]["name"] == new_name
+
+
+# @pytest.mark.usefixtures("setup", "teardown")
+# @pytest.mark.order(5)
+# def test_put_course_certificate():
+
+#     from fastapi.testclient import TestClient
+#     from mainapp.main import app
+    
+#     test_client = TestClient(app)
+
+#     response = test_client.get(
+#         "/school/courses",
+#     )
+#     course_body = response.json()["data"][0]
+#     course_id = course_body["id"]
+
+
+#     new_name = "test-updated"
+#     response = test_client.put(
+#         f"/school/courses/{course_id}",
+#         json={
+#             "name": new_name,
+#             "description": "updated",
+#         }
+#     )
+#     response.raise_for_status()
+#     body = response.json()
+#     assert body["code"] == 1
+#     assert body["data"]["id"] == course_id
+#     assert body["data"]["name"] == new_name
 
 
 @pytest.mark.usefixtures("setup", "teardown")

@@ -10,23 +10,23 @@ from typing import Any
 from starlette_admin.contrib.sqla import ModelView
 from starlette.requests import Request
 from starlette_admin import action, row_action
-# from starlette_admin import (
-#     # TagsField,
-#     # StringField,
-# #     DateField,
-# #     TimeField,
-# #     DateTimeField,
-# #     TimeZoneField,
-#     # ListField,
-# #     ImageField,
-#     # CollectionField,
-# #     PasswordField,
-# #     RelationField,
-# #     ArrowField,
-# #     ColorField,
-#     # HasOne,
-# #     HasMany,
-# )
+from starlette_admin import (
+    # TagsField,
+    # StringField,
+#     DateField,
+#     TimeField,
+#     DateTimeField,
+#     TimeZoneField,
+    # ListField,
+#     ImageField,
+    CollectionField,
+#     PasswordField,
+#     RelationField,
+#     ArrowField,
+#     ColorField,
+    HasOne,
+#     HasMany,
+)
 
 # from mainapp.core.admin import AuthorizedModelView
 
@@ -40,11 +40,14 @@ class CertificateModelView(ModelView):
     fields = [
         "id",
         "name",
-        Certificate.description,
-        # HasOne("course", identity="course_id"),
+        # Certificate.description,
+        "description",
+        HasOne("course", identity="course_id"),
         # TagsField("tags", label="Tags"),
     ]
 
+    def can_delete(self, request: Request) -> bool:
+        return False
 
 CertificateView = ModelView(
     Certificate,
@@ -57,52 +60,63 @@ CertificateView = ModelView(
 class CourseModelView(ModelView):
     page_size = 10
     page_size_options = [10, 20, 50, 100, -1]
-    # fields = [
-    #     "id",
-    #     "name",
-    #     Course.description,
-    #     HasOne("book", identity="textbook"),
-    #     HasOne("certificate", identity="certificate"),
-    #     # TagsField("tags", label="Tags"),
-    #     # CollectionField(
-    #     #     "certificate",
-    #     #     fields=CertificateView.fields,
-    #     #     # fields=[
-    #     #     #     StringField
-    #     #     # ]
-    #     # )
-    #     # ListField(
-    #     #     field=CollectionField
-    #     # )
-    # ]
-    # exclude_fields_from_list = ["certificate"]
-    # exclude_fields_from_detail = ["certificate"]
-    # exclude_fields_from_edit = ["certificate"]
+    fields = [
+        "id",
+        "name",
+        # Course.description,
+        "description",
+        HasOne("book", identity="textbook"),
+        # HasOne("certificate_id", identity="certificate_id"),
+        # TagsField("tags", label="Tags"),
+        HasOne("certificate", identity="certificate_id"),
+        CollectionField(
+            "certificate_info",
+            # "certificate",
+            fields=CertificateView.fields,
+        )
+    ]
+    # exclude_fields_from_list = ["certificate_id"]
+    # exclude_fields_from_detail = ["certificate_id"]
+    # exclude_fields_from_edit = ["certificate_id"]
+    # exclude_fields_from_list = ["cetrificate"]
+    # exclude_fields_from_detail = ["cetrificate"]
+    # exclude_fields_from_edit = ["cetrificate"]
+    exclude_fields_from_list = ["certificate_info"]
+    exclude_fields_from_detail = ["certificate_info"]
+    exclude_fields_from_edit = ["certificate_info"]
+    exclude_fields_from_create = ["certificate"]
 
-    # async def create(
-    #         self,
-    #         request: Request,
-    #         data: dict[str, Any],
-    #     ) -> Any:
-    #     certificate = data.pop("certificate")
-    #     certificate = Certificate.model_validate(certificate)
-    #     data["certificate"] = certificate
+    async def create(
+            self,
+            request: Request,
+            data: dict[str, Any],
+        ) -> Any:
+        # certificate = data.pop("certificate_info")
+        certificate = data.pop("certificate_info")
+        certificate = Certificate(**certificate)
+        # data["certificate_info"] = certificate.model_dump()
+        # data["certificate"] = certificate.model_dump()
+        data["certificate_info"] = certificate
+        # data["certificate"] = certificate
 
-    #     course = await super().create(request, data)
-    #     return course
+        # data = Course.model_validate(data).model_dump()
+        # return await super().create(request, data)
+        course = await super().create(request, data)
+        return course
+        # return Course.model_validate(course.model_dump())
 
-    # async def edit(
-    #         self,
-    #         request: Request,
-    #         pk: Any,
-    #         data: dict[str, Any],
-    #     ) -> Any:
-    #     certificate = data.pop("certificate")
-    #     # Update the existing certifiate, delete the ones that are no longer there and add the new ones.
-    #     certificate = Certificate.model_validate(certificate)
-    #     data["certificate"] = certificate
-    #     course = await super().edit(request, pk, data)
-    #     return course
+    async def edit(
+            self,
+            request: Request,
+            pk: Any,
+            data: dict[str, Any],
+        ) -> Any:
+        certificate = data.pop("certificate_info")
+        certificate = Certificate.model_validate(certificate)
+        data["certificate_info"] = certificate
+        return await super().edit(request, pk, data)
+        # course = await super().edit(request, pk, data)
+        # return Course.model_validate(course.model_dump())
 
 
 CourseView = CourseModelView(

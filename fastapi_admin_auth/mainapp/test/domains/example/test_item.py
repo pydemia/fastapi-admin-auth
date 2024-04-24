@@ -38,20 +38,15 @@ def test_create_item():
 
 
     # Create by Model
-    from mainapp.domains.example.item import models
-    Item = models.Item
+    from mainapp.domains.example.item.models import Item
 
     item_0 = Item(name="item 0", description="item_0")
     item_1 = Item(name="item 1", description="item_1")
     item_2 = Item(name="item 2", description="item_2")
     item_3 = Item(name="item 3", description="item_3")
 
-    item_a = Item(name="item a", description="item_a")
-    item_b = Item(name="item b", description="item_b")
-
     items = [
         item_0, item_1, item_2, item_3,
-        item_a, item_b,
     ]
     for item in items:
         response = test_client.post(
