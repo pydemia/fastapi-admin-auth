@@ -19,6 +19,7 @@ from starlette_admin.auth import (
 )
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware, AuthenticationBackend
 from starlette_admin import CustomView
 
 
@@ -89,7 +90,7 @@ class KeycloakAuthProvider(AuthProvider):
             )
             .include_query_params(next=request.query_params.get("next"))
         )
-        return await oauth_client.authorize_redirect(request, str(redirect_uri))
+        return await oauth_client.authorize_redirect(request, redirect_uri)
 
 
     async def render_logout(self, request: Request, admin: BaseAdmin) -> Response:
@@ -137,10 +138,11 @@ class KeycloakAuthProvider(AuthProvider):
 
 
 # from starlette.middleware.authentication import AuthenticationMiddleware
-# from starlette.authentication import (
-#     AuthCredentials, AuthenticationBackend, AuthenticationError, SimpleUser
-# )
-
+from starlette.authentication import (
+    AuthCredentials, AuthenticationBackend, AuthenticationError, SimpleUser
+)
+import base64
+import binascii
 # class BasicAuthBackend(AuthenticationBackend):
 #     async def authenticate(self, conn):
 #         if "Authorization" not in conn.headers:
@@ -158,6 +160,23 @@ class KeycloakAuthProvider(AuthProvider):
 #         username, _, password = decoded.partition(":")
 #         # TODO: You'd want to verify the username and password here.
 #         return AuthCredentials(["authenticated"]), SimpleUser(username)
+class KeycloakAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        if "Authorization" not in conn.headers:
+            return
+
+        auth = conn.headers["Authorization"]
+        try:
+            scheme, credentials = auth.split()
+            if scheme.lower() != 'basic':
+                return
+            decoded = base64.b64decode(credentials).decode("ascii")
+        except (ValueError, UnicodeDecodeError, binascii.Error):
+            raise AuthenticationError('Invalid basic auth credentials')
+
+        username, _, password = decoded.partition(":")
+        # TODO: You'd want to verify the username and password here.
+        return AuthCredentials(["authenticated"]), SimpleUser(username)
 
 
 
@@ -179,7 +198,9 @@ admin = Admin(
         logout_path="/sign-out",
     ),
     middlewares=[
-        Middleware(SessionMiddleware, secret_key=SECRET)],
+        Middleware(AuthenticationMiddleware, backend=KeycloakAuthBackend()),
+        Middleware(SessionMiddleware, secret_key=""),
+    ],
         # MiddleWare(AuthenticationMiddleware, backend=BasicAuthBackend())
     # middlewares=[Middleware(SessionMiddleware)],
     debug=True,
@@ -198,9 +219,6 @@ oauth2_scheme = OAuth2PasswordBearer(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=idp.token_uri)
 # oauth2_scheme(request.headers["token"])
 
-
-OAuth2PasswordBearer
-# oauth2_scheme
 
 def get_keycloak_user(request: Request) -> OIDCUser:
     user = request.state.user

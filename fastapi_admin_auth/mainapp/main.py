@@ -55,8 +55,8 @@ def create_app() -> FastAPI:
     db.create_database(
         sum(
             [
-                example.models,
-                school.models,
+                example.domain_models,
+                school.domain_models,
             ],
             [],
         )
@@ -78,8 +78,8 @@ def create_app() -> FastAPI:
         app,
         routers = [
             iam_router,
-            example.router,
-            school.router,
+            example.domain_router,
+            school.domain_router,
         ]
     )
 
@@ -140,7 +140,7 @@ def create_app() -> FastAPI:
     # admin.add_view(TeacherView)
 
     from mainapp.core.admin import admin, add_admin_views
-    admin = add_admin_views(admin, school.admin_views)
+    admin = add_admin_views(admin, school.domain_adminviews)
     admin.mount_to(app)
 
     logging.config.fileConfig("logging.conf", disable_existing_loggers=False,)

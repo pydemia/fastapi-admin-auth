@@ -1,5 +1,4 @@
 from typing import Any
-from .models import Textbook
 from fastapi import Depends
 # from .crud import (
 #     get_textbooks_all,
@@ -19,6 +18,7 @@ from fastapi import Depends
 # update_textbook
 # delete_textbook
 from mainapp.core.types.exceptions import HandledException, ResponseCode
+from .models import Textbook
 from .crud import TextbookCRUD
 
 

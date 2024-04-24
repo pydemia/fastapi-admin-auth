@@ -4,7 +4,12 @@ from mainapp.core.exception_routers import HandledExceptionLoggingRoute
 from mainapp.core.types.schema.response import CommonResponse
 from .models import Course
 from .service import CourseService
-from .schema import CourseRequest, SingleCourseResponse, MultiCourseResponse
+from .schema import (
+    CreateCourseRequest,
+    UpdateCourseRequest,
+    SingleCourseResponse,
+    MultiCourseResponse,
+)
 
 router = APIRouter(
     prefix="/courses",
@@ -22,21 +27,22 @@ async def get_courses(
         course_or_courses = [service.get_course(name)]
     else:
         course_or_courses = service.get_courses_all()
-    # return CommonResponse(data=course_or_courses)
     return MultiCourseResponse(data=course_or_courses)
 
 
 @router.post("")
 async def add_course(
-    body: CourseRequest,
+    body: CreateCourseRequest,
     service: CourseService = Depends(CourseService()),
     ):
+    course = Course(
+        name=body.name,
+        description=body.description,
+        book_id=body.book_id,
+        certificate=body.certificate,
+    )
     course: Course = service.add_new_course(
-        course=Course(
-            name=body.name,
-            description=body.description,
-            book_id=body.book_id, 
-        ),
+        course=course
     )
     return CommonResponse(data=course)
 
@@ -54,7 +60,7 @@ async def get_course_by_id(
 @router.put("/{course_id}")
 async def update_course(
     course_id: int,
-    body: CourseRequest,
+    body: UpdateCourseRequest,
     service: CourseService = Depends(CourseService()),
 ):
     

@@ -1,3 +1,3 @@
 from mainapp.core.domains import import_domain_components
 
-router, admin_views, models = import_domain_components(__name__)
+domain_router, domain_adminviews, domain_models = import_domain_components(__name__)

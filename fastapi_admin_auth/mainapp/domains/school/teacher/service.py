@@ -1,5 +1,4 @@
 from typing import Any
-from .models import Teacher
 from fastapi import Depends
 # from .crud import (
 #     get_teachers_all,
@@ -19,6 +18,7 @@ from fastapi import Depends
 # update_teacher
 # delete_teacher
 from mainapp.core.types.exceptions import HandledException, ResponseCode
+from .models import Teacher
 from .crud import TeacherCRUD
 
 

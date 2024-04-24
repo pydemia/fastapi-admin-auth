@@ -1,5 +1,4 @@
 from typing import Any
-from .models import Student
 from fastapi import Depends
 # from .crud import (
 #     get_students_all,
@@ -19,6 +18,7 @@ from fastapi import Depends
 # update_student
 # delete_student
 from mainapp.core.types.exceptions import HandledException, ResponseCode
+from .models import Student
 from .crud import StudentCRUD
 
 

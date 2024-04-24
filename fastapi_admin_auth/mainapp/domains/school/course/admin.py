@@ -9,28 +9,50 @@
 from typing import Any
 from starlette_admin.contrib.sqla import ModelView
 from starlette.requests import Request
-from starlette_admin import action, row_action, TagsField, HasOne
-# from starlette_admin import (
-#     TagsField,
+from starlette_admin import action, row_action
+from starlette_admin import (
+    TagsField,
+    # StringField,
 #     DateField,
 #     TimeField,
 #     DateTimeField,
 #     TimeZoneField,
-#     ListField,
+    # ListField,
 #     ImageField,
-#     CollectionField,
+    CollectionField,
 #     PasswordField,
 #     RelationField,
 #     ArrowField,
 #     ColorField,
-#     HasOne,
+    HasOne,
 #     HasMany,
-# )
+)
 
 # from mainapp.core.admin import AuthorizedModelView
 
 
-from .models import Course
+from .models import Course, Certificate
+
+
+class CertificateModelView(ModelView):
+    page_size = 10
+    page_size_options = [10, 20, 50, 100, -1]
+    fields = [
+        "id",
+        "name",
+        # Certificate.description,
+        "description",
+        HasOne("course", identity="course_id"),
+        TagsField("tags", label="Tags"),
+    ]
+
+CertificateView = ModelView(
+    Certificate,
+    icon=None,
+    # name="Course",
+    label="Course Certificate",
+)
+
 
 class CourseModelView(ModelView):
     page_size = 10
@@ -38,17 +60,53 @@ class CourseModelView(ModelView):
     fields = [
         "id",
         "name",
-        Course.description,
-        TagsField("tags", label="Tags"),
+        # Course.description,
+        "description",
         HasOne("book", identity="textbook"),
+        # HasOne("certificate", identity="certificate_id"),
+        # TagsField("tags", label="Tags"),
+        HasOne("certificate", identity="certificate"),
+        CollectionField(
+            "certificate_info",
+            fields=CertificateView.fields,
+        )
     ]
+    exclude_fields_from_list = ["certificate_info"]
+    exclude_fields_from_detail = ["certificate_info"]
+    exclude_fields_from_edit = ["certificate_info"]
+
+    async def create(
+            self,
+            request: Request,
+            data: dict[str, Any],
+        ) -> Any:
+        certificate = data.pop("certificate_info")
+        certificate = Certificate.model_validate(certificate)
+        data["certificate_info"] = certificate
+        return await super().create(request, data)
+
+    async def edit(
+            self,
+            request: Request,
+            pk: Any,
+            data: dict[str, Any],
+        ) -> Any:
+        # certificate = data.pop("certificate_info")
+        # certificate = Certificate.model_validate(certificate)
+        # data["certificate_info"] = certificate
+        return await super().edit(request, pk, data)
+
 
 CourseView = CourseModelView(
     Course,
-    icon=None,
-    # name="Course",
     label="Course",
 )
+# CourseView = ModelView(
+#     Course,
+#     label="Course",
+# )
+
+
 # CourseView = ModelView(
 #     Course,
 # )

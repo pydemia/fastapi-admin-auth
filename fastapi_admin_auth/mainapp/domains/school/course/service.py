@@ -1,5 +1,4 @@
 from typing import Any
-from .models import Course
 from fastapi import Depends
 # from .crud import (
 #     get_courses_all,
@@ -19,6 +18,7 @@ from fastapi import Depends
 # update_course
 # delete_course
 from mainapp.core.types.exceptions import HandledException, ResponseCode
+from .models import Course
 from .crud import CourseCRUD
 
 
@@ -43,6 +43,7 @@ class CourseService:
                 name=course["name"],
                 description=course.get("description"),
                 book_id=course.get("book_id"),
+                certificate_id=course.get("certificate_id"),
             )
         course = self.crud.create_course(course)
         return course
