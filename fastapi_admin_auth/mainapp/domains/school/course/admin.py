@@ -10,7 +10,7 @@ from typing import Any
 from starlette_admin.contrib.sqla import ModelView
 from starlette.requests import Request
 from starlette_admin import action, row_action
-# from starlette_admin import (
+from starlette_admin import (
 #     # TagsField,
 #     # StringField,
 # #     DateField,
@@ -22,11 +22,11 @@ from starlette_admin import action, row_action
 #     # CollectionField,
 # #     PasswordField,
 # #     RelationField,
-# #     ArrowField,
+    # ArrowField,
 # #     ColorField,
-#     # HasOne,
+    HasOne,
 # #     HasMany,
-# )
+)
 
 # from mainapp.core.admin import AuthorizedModelView
 
@@ -57,24 +57,24 @@ CertificateView = ModelView(
 class CourseModelView(ModelView):
     page_size = 10
     page_size_options = [10, 20, 50, 100, -1]
-    # fields = [
-    #     "id",
-    #     "name",
-    #     Course.description,
-    #     HasOne("book", identity="textbook"),
-    #     HasOne("certificate", identity="certificate"),
-    #     # TagsField("tags", label="Tags"),
-    #     # CollectionField(
-    #     #     "certificate",
-    #     #     fields=CertificateView.fields,
-    #     #     # fields=[
-    #     #     #     StringField
-    #     #     # ]
-    #     # )
-    #     # ListField(
-    #     #     field=CollectionField
-    #     # )
-    # ]
+    fields = [
+        "id",
+        "name",
+        Course.description,
+        HasOne("book", identity="textbook"),
+        HasOne("certificate", identity="certificate"),
+        # TagsField("tags", label="Tags"),
+        # CollectionField(
+        #     "certificate",
+        #     fields=CertificateView.fields,
+        #     # fields=[
+        #     #     StringField
+        #     # ]
+        # )
+        # ListField(
+        #     field=CollectionField
+        # )
+    ]
     # exclude_fields_from_list = ["certificate"]
     # exclude_fields_from_detail = ["certificate"]
     # exclude_fields_from_edit = ["certificate"]

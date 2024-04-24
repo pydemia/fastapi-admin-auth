@@ -41,7 +41,7 @@ class Course(SQLModel, table=True):
     book: Optional["Textbook"] = Relationship()
 
     # certificate_id: int | None = Field(foreign_key="certificate.id")
-    certificate_id: int | None = Field(foreign_key="certificate.id")
+    certificate_id: int = Field(foreign_key="certificate.id")
     certificate: "Certificate" = Relationship(
         back_populates="course",
         sa_relationship_kwargs={
