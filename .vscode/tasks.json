@@ -7,6 +7,11 @@
     },
     "tasks": [
         {
+            "label": "docker-network create 'local'",
+            "type": "shell",
+            "command": "if [[ -z \"$(docker network ls --filter 'name=local' --format '{{lower .Name}}')\" ]]; then docker network create local; fi;",
+        },
+        {
             "label": "database-launch --stateless",
             "type": "docker-run",
             "dockerRun": {
