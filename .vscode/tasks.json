@@ -18,6 +18,7 @@
                 "containerName": "db",
                 "image": "bitnami/postgresql:14.8.0",
                 "env": {
+                    "POSTGRESQL_PORT_NUMBER": "15432",
                     "POSTGRESQL_DATABASE": "backend",
                     "POSTGRESQL_USERNAME": "admin",
                     "POSTGRESQL_PASSWORD": "admin"
@@ -27,7 +28,7 @@
                 // "network": "bridge",
                 "ports": [
                     {
-                        "containerPort": 5432,
+                        "containerPort": 15432,
                         "hostPort": 15432
                     }
                 ],
@@ -92,7 +93,7 @@
                 "image": "quay.io/keycloak/keycloak:24.0.2",
                 "command": "start",
                 "envFiles": [
-                    "${workspaceFolder}/.env"
+                    "${workspaceFolder}/keycloak/.env"
                 ],
                 // "network": "host",
                 "network": "local",
@@ -120,7 +121,7 @@
                 "image": "quay.io/keycloak/keycloak:24.0.2",
                 "command": "start --import-realm",
                 "envFiles": [
-                    "${workspaceFolder}/.env"
+                    "${workspaceFolder}/keycloak/.env"
                 ],
                 // "network": "host",
                 "network": "local",

@@ -20,3 +20,4 @@ class Teacher(SQLModel, table=True):
     courses: list["Course"] = Relationship(
             back_populates="teacher"
     )
+

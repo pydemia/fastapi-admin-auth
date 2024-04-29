@@ -1,5 +1,4 @@
 import json
-import multiprocessing
 import os
 
 # The suggested number of workers is (2*CPU)+1
@@ -54,8 +53,8 @@ else:
         web_concurrency = min(web_concurrency, use_max_workers)
 
 
-host = os.getenv("APP_HOST", "0.0.0.0")
-port = os.getenv("APP_PORT", "8000")
+host = os.getenv("APP__HOST", "0.0.0.0")
+port = os.getenv("APP__PORT", "8000")
 bind_env = os.getenv("BIND", None)
 use_loglevel = os.getenv("LOG_LEVEL", "INFO").lower()
 if bind_env:

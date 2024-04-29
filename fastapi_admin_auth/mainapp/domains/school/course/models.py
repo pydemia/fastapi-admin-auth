@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ..textbook.models import Textbook
     from ..teacher.models import Teacher
+    from ..student.models import Student
 # from mainapp.domains.school.textbook import models as textbook_models
 # from mainapp.domains.school.certificate import models as certificate_models
 
@@ -33,6 +34,21 @@ class Certificate(SQLModel, table=True):
         return self.name
 
 
+
+class CourseStudentLink(SQLModel, table=True):
+    # See another-self: https://github.com/tiangolo/sqlmodel/issues/89#issuecomment-917698160
+    course_id: int | None = Field(
+        default=None,
+        foreign_key="course.id",
+        primary_key=True,
+    )
+    student_id: int | None = Field(
+        default=None,
+        foreign_key="student.id",
+        primary_key=True,
+    )
+
+
 class Course(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(index=True, unique=True)
@@ -52,9 +68,14 @@ class Course(SQLModel, table=True):
         },
     )
 
-    teacher_id: int = Field(foreign_key="teacher_id")
+    teacher_id: int = Field(foreign_key="teacher.id")
     teacher: "Teacher" = Relationship(
             back_populates="courses"
+    )
+
+    students: list["Student"] = Relationship(
+        back_populates="courses",
+        link_model=CourseStudentLink,
     )
 
     # async def __admin_repr__(self, request: Request):
