@@ -25,7 +25,7 @@ from starlette_admin import (
     # ArrowField,
 # #     ColorField,
     HasOne,
-    # HasMany,
+    HasMany,
 )
 
 # from mainapp.core.admin import AuthorizedModelView
@@ -64,6 +64,11 @@ class CourseModelView(ModelView):
         HasOne("book", identity="textbook"),
         HasOne("certificate", identity="certificate", required=True),
         HasOne("teacher", identity="teacher", required=True),
+        HasMany("students", identity="student", required=False)
+        # HasOne(Course.book.key, identity="textbook"),
+        # HasOne(Course.certificate.key, identity="certificate", required=True),
+        # HasOne(Course.teacher.key, identity="teacher", required=True),
+        # HasMany(Course.students.key, identity="Student[multiple, optional]", required=False)
         # TagsField("tags", label="Tags"),
         # CollectionField(
         #     "certificate",

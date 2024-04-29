@@ -4,7 +4,12 @@ __all__ = [
     "Student",
 ]
 
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Relationship
+from typing import TYPE_CHECKING
+
+from ..course.models import CourseStudentLink
+if TYPE_CHECKING:
+    from ..course.models import Course
 
 
 class Student(SQLModel, table=True):
@@ -12,3 +17,8 @@ class Student(SQLModel, table=True):
     firstname: str
     lastname: str
     description: str = Field("")
+
+    courses: list["Course"] = Relationship(
+        back_populates="students",
+        link_model=CourseStudentLink,
+    )
