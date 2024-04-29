@@ -52,7 +52,7 @@ class Course(SQLModel, table=True):
         },
     )
 
-    teacher_id: int = Field(foreign_key="teacher_id")
+    teacher_id: int = Field(foreign_key="teacher.id")
     teacher: "Teacher" = Relationship(
             back_populates="courses"
     )
