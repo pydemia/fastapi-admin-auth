@@ -9,6 +9,10 @@ from sqlmodel import SQLModel, engine_from_config # create_engine
 from sqlmodel import Session
 from mainapp.core.config import DBConfig, db_config
 import urllib.parse
+from alembic.config import Config as AlembicConfig
+from alembic import command as alembic_cmd
+
+
 
 __all__ = [
     "Base",
@@ -95,6 +99,7 @@ class Database:
             port=db_config.port,
             dbname=db_config.dbname,
         )
+        self.db_url = db_extra_config_dict["database.url"]
 
         self.engine = engine_from_config(
             db_extra_config_dict,
@@ -131,58 +136,15 @@ class Database:
         except Exception as e:
             raise e
 
-    # db.migration(template_dir=container.app_config().template_dir)
-    # def migration(self, template_dir: Path = None) -> None:
-    #     """
-    #     """
-    #     try:
-    #         def mig_templates():
-    #             import os
-    #             # from .models import CustomTemplateList
-    #             # from .crud import CustomTemplateListRepository
-    #             # from ..types.enums.nodes import TemplateType, ShareScope
+    def apply_migration(self, alembic_config_filepath: str = "alembic.ini"):
+        alembic_cfg = AlembicConfig(alembic_config_filepath)
+        alembic_cfg.set_main_option("sqlalchemy.url", self.db_url)
+        alembic_cmd.upgrade(alembic_cfg, "head")
 
-    #             custom_template_list = template_dir.glob("**/*.py")
-    #             for path in custom_template_list:
-    #                 with open(path, "r") as f:
-    #                     line_skip = f.readline()
-    #                     line_skip = f.readline()
-    #                     subject = f.readline().replace("- Subject:","").strip()
-    #                     description = f.readline().replace("- Description:","").strip()
-    #                     line_skip = f.readline()
-    #                     code = f.read()
-    #                 custom_template = CustomTemplateList()
-    #                 custom_template.template_id = path.stem
-    #                 custom_template.template_type = int(TemplateType.TEMPLATE)
-    #                 custom_template.subject = subject
-    #                 custom_template.description = description
-    #                 custom_template.default_yn = True
-    #                 custom_template.share_scope = int(ShareScope.GLOBAL)
-    #                 custom_template.project_id = 1
-    #                 custom_template.code = code
-    #                 custom_template.create_user = "system"
-    #                 custom_template.update_user = "system"
-    #                 custom_template.use_yn = True
+    # def prepare(self,  model_modules=[], alembic_config_filepath: str = "alembic.ini"):
+    #     self.create_database(model_modules)
+    #     self.apply_migration(alembic_config_filepath=alembic_config_filepath)
 
-    #                 repo = CustomTemplateListRepository(self._session_factory)
-    #                 repo.add_or_update(custom_template)
-    #         mig_templates()
-
-    #     except Exception as e:
-    #         raise e
-
-    # @contextmanager
-    # def session(self) -> Callable[..., ContextManager[Session]]:
-    #     """
-    #     """
-    #     session: Session = self._session_factory()
-    #     try:
-    #         yield session
-    #     except Exception:
-    #         session.rollback()
-    #         raise
-    #     finally:
-    #         session.close()
 
 ## pagination.py
 

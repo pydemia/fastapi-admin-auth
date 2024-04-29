@@ -38,6 +38,38 @@ from mainapp.domains import (
 # from mainapp.core.domains import import_domain_components, add_admin_views
 # domain_router, admin_views, domain_models = import_domain_components(school)
 
+# @asynccontextmanager
+# async def prepare_db(app_: FastAPI):
+#     logging.info("DB: creating tables...")
+#     # db.create_database(
+#     #     sum(
+#     #         [
+#     #             example.domain_models,
+#     #             school.domain_models,
+#     #         ],
+#     #         [],
+#     #     )
+#     # )
+#     logging.info("DB: apply migrations...")
+#     db.apply_migration()
+#     yield
+#     logging.info("DB: setup finished.")
+
+def prepare_db():
+    logging.info("DB: creating tables...")
+    db.create_database(
+        sum(
+            [
+                example.domain_models,
+                school.domain_models,
+            ],
+            [],
+        )
+    )
+    logging.info("DB: apply migrations...")
+    db.apply_migration()
+    logging.info("DB: setup finished.")
+
 
 @logged
 def create_app() -> FastAPI:
@@ -52,15 +84,16 @@ def create_app() -> FastAPI:
     #         course_models,
     #     ]
     # )
-    db.create_database(
-        sum(
-            [
-                example.domain_models,
-                school.domain_models,
-            ],
-            [],
-        )
-    )
+    # db.create_database(
+    #     sum(
+    #         [
+    #             example.domain_models,
+    #             school.domain_models,
+    #         ],
+    #         [],
+    #     )
+    # )
+    prepare_db()
 
     ROOT_PATH = config.app_config.root_path
     app = FastAPI(

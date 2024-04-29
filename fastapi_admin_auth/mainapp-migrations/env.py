@@ -11,15 +11,18 @@ from alembic import context
 # access to the values within the .ini file in use.
 config = context.config
 
+
+raw_config_parser = ConfigParser(interpolation=ExtendedInterpolation())
+with open(config.config_file_name) as f:
+    enved = os.path.expandvars(f.read())
+raw_config_parser.read_string(enved)
+url = raw_config_parser["alembic"]["sqlalchemy.url"]
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     # fileConfig(config.config_file_name)
 
-    raw_config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-    with open(config.config_file_name) as f:
-        enved = os.path.expandvars(f.read())
-    raw_config_parser.read_string(enved)
     fileConfig(raw_config_parser)
 
 
@@ -80,7 +83,6 @@ def run_migrations_online() -> None:
     """
     connectable = engine_from_config(
         # config.get_section(config.config_ini_section, {}),
-        # dict(self.file_config.items(name))
         raw_config_parser["alembic"],
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
