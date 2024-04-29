@@ -71,7 +71,7 @@ class CustomActionedTextbookView(ModelView):
         return "edit" in request.state.user["roles"]
 
     def can_delete(self, request: Request) -> bool:
-        from mainapp.core.iam.idp import idp, get_user_id
+        from mainapp.core.iam.oauth import idp, get_user_id
         uu = request.state.user
         roles = idp.get_user_roles(get_user_id(request))
         idp.get_user_roles(request.state.user.get("sub"))

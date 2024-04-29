@@ -199,5 +199,143 @@
             ],
             "group": "test"
         },
+        {
+            "label": "alembic-init 'mainapp'",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "dotenv",
+                "-f",
+                ".env",
+                "run",
+                "${command:python.interpreterPath}",
+                "-m",
+                "alembic",
+                "init",
+                "mainapp-migrations"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/fastapi_admin_auth",
+            },
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "revealProblems": "onProblem",
+                "close": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "alembic-revision --add",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "dotenv",
+                "-f",
+                ".env",
+                "run",
+                "${command:python.interpreterPath}",
+                "-m",
+                "alembic",
+                "revision",
+                "--autogenerate",
+                "-m",
+                "\"${input:alembic-revision-message}\""
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/fastapi_admin_auth",
+            },
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "revealProblems": "onProblem",
+                "close": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "alembic-revision --apply",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "dotenv",
+                "-f",
+                ".env",
+                "run",
+                "${command:python.interpreterPath}",
+                "-m",
+                "alembic",
+                "upgrade",
+                "head",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/fastapi_admin_auth",
+            },
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "revealProblems": "onProblem",
+                "close": false
+            },
+            "problemMatcher": []
+        }
+        {
+            "label": "alembic-revision --rollback",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "dotenv",
+                "-f",
+                ".env",
+                "run",
+                "${command:python.interpreterPath}",
+                "-m",
+                "alembic",
+                "downgrade",
+                "head",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/fastapi_admin_auth",
+            },
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "revealProblems": "onProblem",
+                "close": false
+            },
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "alembic-revision-message",
+            "type": "promptString",
+            "default": "",
+            "description": "alembic-revision-message:",
+        },
     ]
 }

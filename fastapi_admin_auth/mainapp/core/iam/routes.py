@@ -6,7 +6,7 @@ from fastapi_keycloak import FastAPIKeycloak, OIDCUser, UsernamePassword, HTTPMe
 
 from mainapp.core.exception_routers import HandledExceptionLoggingRoute
 
-from mainapp.core.iam.idp import idp
+from mainapp.core.iam.oauth import idp
 from mainapp.core.iam.oauth import oauth_client
 
 
@@ -90,7 +90,7 @@ from mainapp.core.iam.oauth import oauth_client
 # ) -> FastAPI:
 #     idp.add_swagger_config(app)
 #     return app
-from .idp import get_idp
+from .oauth import get_idp
 
 router = APIRouter(
     prefix="/iam",

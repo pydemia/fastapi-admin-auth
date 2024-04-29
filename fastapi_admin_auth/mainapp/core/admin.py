@@ -26,7 +26,7 @@ from starlette_admin import CustomView
 from starlette_admin.views import BaseView  # for typing: childs: BaseModelView, ModelView, CustomView
 from starlette_admin.contrib.sqla import ModelView
 from starlette_admin import action, row_action
-from mainapp.core.iam.idp import idp, OIDCUser
+from mainapp.core.iam.oauth import idp, OIDCUser
 
 
 # from authlib.integrations.starlette_client.apps import StarletteOAuth2App

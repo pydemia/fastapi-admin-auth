@@ -34,7 +34,7 @@ class PredictorSpec(BaseModel):
     runtime_version: str
     storage_uri: str
     image: str
-    model_class_name: str | None
+    modelclass_name: str | None
 
 
 @logged

@@ -11,7 +11,7 @@ from mainapp.core import config
 from mainapp.core.dependencies import (
     include_routers_by_config,
 )
-from mainapp.core.iam.idp import idp
+from mainapp.core.iam.oauth import idp
 from mainapp.core.database import db
 
 
