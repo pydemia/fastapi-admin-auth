@@ -7,7 +7,7 @@
     },
     "tasks": [
         {
-            "label": "docker-network create 'local'",
+            "label": "all-docker-network create 'local'",
             "type": "shell",
             "command": "if [[ -z \"$(docker network ls --filter 'name=local' --format '{{lower .Name}}')\" ]]; then docker network create local; fi;",
         },

@@ -29,3 +29,5 @@ fastapi-authz
 starlette-admin
 fastapi-keycloak
 authlib
+
+pytest

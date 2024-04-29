@@ -11,6 +11,7 @@ from starlette.requests import Request
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ..textbook.models import Textbook
+    from ..teacher.models import Teacher
 # from mainapp.domains.school.textbook import models as textbook_models
 # from mainapp.domains.school.certificate import models as certificate_models
 
@@ -41,7 +42,7 @@ class Course(SQLModel, table=True):
     book: Optional["Textbook"] = Relationship()
 
     # certificate_id: int | None = Field(foreign_key="certificate.id")
-    certificate_id: int | None = Field(foreign_key="certificate.id")
+    certificate_id: int = Field(foreign_key="certificate.id")
     certificate: "Certificate" = Relationship(
         back_populates="course",
         sa_relationship_kwargs={
@@ -49,6 +50,11 @@ class Course(SQLModel, table=True):
             # "cascade": "save-update, delete", # Instruct the ORM how to track changes to local objects
             # "lazy": "selectin",
         },
+    )
+
+    teacher_id: int = Field(foreign_key="teacher_id")
+    teacher: "Teacher" = Relationship(
+            back_populates="courses"
     )
 
     # async def __admin_repr__(self, request: Request):

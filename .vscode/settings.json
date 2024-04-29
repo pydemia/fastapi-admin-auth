@@ -4,5 +4,29 @@
     "python.testing.cwd": "${workspaceFolder}/fastapi_admin_auth",
     "python.testing.pytestArgs": [
         // "--ignore-glob=backend/*"
+    ],
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 15432,
+            "driver": "PostgreSQL",
+            "name": "keycloak",
+            "group": "FASTAPI-ADMIN-AUTH",
+            "database": "keycloak",
+            "username": "admin",
+            "password": "admin"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 15432,
+            "driver": "PostgreSQL",
+            "name": "backend",
+            "group": "FASTAPI-ADMIN-AUTH",
+            "database": "backend",
+            "username": "admin",
+            "password": "admin"
+        }
     ]
 }
