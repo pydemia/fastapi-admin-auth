@@ -74,7 +74,7 @@ keycloak:
   admin_client_id: "admin-cli"
   admin_client_secret: "WJmdud32rsQ4TzbPuGiU1V6pPWhOH8pq"
   realm: "fastapi-admin-auth"
-  scope: "openid profile mail"
+  scope: "openid profile email"
   timeout: 10
   callback_uri: "http://localhost:8000/iam/callback"
   # callback_uri: "/iam/callback"

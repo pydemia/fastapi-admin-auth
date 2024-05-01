@@ -57,15 +57,15 @@ from mainapp.domains import (
 
 def prepare_db():
     logging.info("DB: creating tables...")
-    db.create_database(
-        sum(
-            [
-                example.domain_models,
-                school.domain_models,
-            ],
-            [],
-        )
-    )
+    # db.create_database(
+    #     sum(
+    #         [
+    #             example.domain_models,
+    #             school.domain_models,
+    #         ],
+    #         [],
+    #     )
+    # )
     logging.info("DB: apply migrations...")
     db.apply_migration()
     logging.info("DB: setup finished.")

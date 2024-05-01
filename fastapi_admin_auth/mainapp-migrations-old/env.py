@@ -7,6 +7,25 @@ from sqlalchemy import pool
 
 from alembic import context
 
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+
+raw_config_parser = ConfigParser(interpolation=ExtendedInterpolation())
+with open(config.config_file_name) as f:
+    enved = os.path.expandvars(f.read())
+raw_config_parser.read_string(enved)
+url = raw_config_parser["alembic"]["sqlalchemy.url"]
+
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+if config.config_file_name is not None:
+    # fileConfig(config.config_file_name)
+
+    fileConfig(raw_config_parser)
+
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
@@ -25,26 +44,6 @@ db_models = [
 ]
 
 target_metadata = SQLModel.metadata
-
-
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-config = context.config
-
-raw_config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-with open(config.config_file_name) as f:
-    enved = os.path.expandvars(f.read())
-raw_config_parser.read_string(enved)
-url = raw_config_parser["alembic"]["sqlalchemy.url"]
-
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
-if config.config_file_name is not None:
-    # fileConfig(config.config_file_name)
-
-    fileConfig(raw_config_parser)
-
-
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
