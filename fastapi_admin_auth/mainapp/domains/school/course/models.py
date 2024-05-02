@@ -80,3 +80,70 @@ class Course(SQLModel, table=True):
 
     # async def __admin_repr__(self, request: Request):
     #     return self.name
+
+
+seed = [
+    (
+        "Textbook",
+        [
+            # Textbook(id=4, name="textbook a", description="textbook_a"),
+            # Textbook(id=5, name="textbook b", description="textbook_b"),
+            dict(id=4, name="textbook a", description="textbook_a"),
+            dict(id=5, name="textbook b", description="textbook_b"),
+        ]
+    ),
+    (
+        "Certificate",
+        [
+            dict(id=0, name="cert 0", description="cert_0"),
+            dict(id=1, name="cert 1", description="cert_1"),
+            dict(id=2, name="cert 2", description="cert_2"),
+            dict(id=3, name="cert 3", description="cert_3"),
+        ]
+    ),
+    (
+        "Student",
+        [
+            dict(id=0, firstname="Lucas", lastname="Young", description="student 0"),
+            dict(id=1, firstname="Christopher", lastname="Lee", description="student 1"),
+            dict(id=2, firstname="Sarah", lastname="Patel", description="student 2"),
+            dict(id=3, firstname="Liam", lastname="Davies", description="student 3"),
+            dict(id=4, firstname="Chloe", lastname="Bennett", description="student a"),
+            dict(id=5, firstname="Evelyn", lastname="Jones", description="student b"),
+        ]
+    ),
+    (
+        "Teacher",
+        [
+            # Teacher(id=0, firstname="Daniel", lastname="Walker", description="teacher 0", courses=[0, 1]),
+            # Teacher(id=1, firstname="Sophia", lastname="Garcia", description="teacher 1", courses=[0, 2]),
+            # Teacher(id=2, firstname="Ethan", lastname="Miller", description="teacher 2", courses=[]),
+            # Teacher(id=3, firstname="Charlotte", lastname="Wilson", description="teacher 3", courses=[2, 3]),
+            # Teacher(id=4, firstname="Scarlett", lastname="Lewis", description="teacher a", courses=[3]),
+            # Teacher(id=5, firstname="Audrey", lastname="Taylor", description="teacher b", courses=[1, 2, 3]),
+            dict(id=0, firstname="Daniel", lastname="Walker", description="teacher 0"),
+            dict(id=1, firstname="Sophia", lastname="Garcia", description="teacher 1"),
+            dict(id=2, firstname="Ethan", lastname="Miller", description="teacher 2"),
+            # dict(id=3, firstname="Charlotte", lastname="Wilson", description="teacher 3"),
+            # dict(id=4, firstname="Scarlett", lastname="Lewis", description="teacher a"),
+            # dict(id=5, firstname="Audrey", lastname="Taylor", description="teacher b"),
+        ],
+    ),
+    (
+        "Course",
+        [
+            dict(id=0, name="course 0", description="course_0", certificate_id=0, teacher_id=2, students=[0, 1]),
+            # dict(id=1, name="course 1", description="course_1", certificate_id=1, teacher_id=1, students=[0, 5]),
+            # dict(id=2, name="course 2", description="course_2", certificate_id=2, teacher_id=1, students=[1, 3, 5]),
+            # dict(id=3, name="course 3", description="course_3", certificate_id=3, teacher_id=0, students=[3, 4, 5]),
+            dict(id=0, name="course 0", description="course_0", certificate_id=0, teacher_id=2),
+            dict(id=1, name="course 1", description="course_1", certificate_id=1, teacher_id=1),
+            dict(id=2, name="course 2", description="course_2", certificate_id=2, teacher_id=1),
+            dict(id=3, name="course 3", description="course_3", certificate_id=3, teacher_id=0),
+            # Course(id=0, name="course 0", description="course_0", courses=[0, 1]),
+            # Course(id=1, name="course 1", description="course_1", courses=[0, 2]),
+            # Course(id=2, name="course 2", description="course_2", courses=[]),
+            # Course(id=3, name="course 3", description="course_3", courses=[2, 3]),
+        ],
+    )
+]

@@ -13,47 +13,12 @@ from mainapp.core.dependencies import (
 )
 from mainapp.core.iam.oauth import idp
 from mainapp.core.database import db
-
-
+from mainapp.core.health.routes import router as health_router
 from mainapp.core.iam.routes import router as iam_router
-# from mainapp.domains.health import view as health_view
-# from mainapp.domains.item import view as item_view
-# from mainapp.domains.school.textbook import view as textbook_view
-# from mainapp.domains.school.student import view as student_view
-# from mainapp.domains.school.teacher import view as teacher_view
-# from mainapp.domains.school.course import view as course_view
 from mainapp.domains import (
     example,
     school,
 )
-
-
-# from mainapp.domains.health import models as health_models
-# from mainapp.domains.item import models as item_models
-# from mainapp.domains.school.textbook import models as textbook_models
-# from mainapp.domains.school.student import models as student_models
-# from mainapp.domains.school.teacher import models as teacher_models
-# from mainapp.domains.school.course import models as course_models
-
-# from mainapp.core.domains import import_domain_components, add_admin_views
-# domain_router, admin_views, domain_models = import_domain_components(school)
-
-# @asynccontextmanager
-# async def prepare_db(app_: FastAPI):
-#     logging.info("DB: creating tables...")
-#     # db.create_database(
-#     #     sum(
-#     #         [
-#     #             example.domain_models,
-#     #             school.domain_models,
-#     #         ],
-#     #         [],
-#     #     )
-#     # )
-#     logging.info("DB: apply migrations...")
-#     db.apply_migration()
-#     yield
-#     logging.info("DB: setup finished.")
 
 def prepare_db():
     logging.info("DB: creating tables...")
@@ -68,22 +33,14 @@ def prepare_db():
     # )
     logging.info("DB: apply migrations...")
     db.apply_migration()
+    db.insert_seed()
+    
     logging.info("DB: setup finished.")
 
 
 @logged
 def create_app() -> FastAPI:
     app_config = config.AppConfig()
-    # db.create_database(
-    #     [
-    #         health_models,
-    #         item_models,
-    #         student_models,
-    #         teacher_models,
-    #         textbook_models,
-    #         course_models,
-    #     ]
-    # )
     # db.create_database(
     #     sum(
     #         [
@@ -93,7 +50,8 @@ def create_app() -> FastAPI:
     #         [],
     #     )
     # )
-    prepare_db()
+    # prepare_db()
+    db.prepare()
 
     ROOT_PATH = config.app_config.root_path
     app = FastAPI(
@@ -110,6 +68,7 @@ def create_app() -> FastAPI:
     app = include_routers_by_config(
         app,
         routers = [
+            health_router,
             iam_router,
             example.domain_router,
             school.domain_router,

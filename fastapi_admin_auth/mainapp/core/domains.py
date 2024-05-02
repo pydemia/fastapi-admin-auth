@@ -4,6 +4,7 @@ from types import ModuleType
 import inspect
 from starlette_admin.contrib.sqla.view import BaseModelView
 from sqlmodel import SQLModel
+from sqlmodel.main import SQLModelMetaclass
 
 from fastapi import APIRouter
 from mainapp.core.exception_routers import HandledExceptionLoggingRoute
@@ -85,7 +86,9 @@ def import_domain_components(module_or_qualname: ModuleType | str):
     # import domain models
     model_modules = [importlib.import_module(".models", s.__name__) for s in submodules]
     def is_model(attr):
-        return isinstance(attr, SQLModel)
+        # return isinstance(attr, SQLModel)
+        return isinstance(attr, SQLModelMetaclass) and attr != SQLModel
+
     models = sum(
         [
             [obj for name, obj in inspect.getmembers(module, is_model)]
@@ -93,7 +96,18 @@ def import_domain_components(module_or_qualname: ModuleType | str):
         ],
         [],
     )
-    return domain_router, admin_views, models
+
+    # def is_seed(attr):
+    #     return attr
+    seeds = sum(
+        [
+            getattr(module, "seed", [])
+            # [obj for name, obj in inspect.getmembers(module)]
+            for module in model_modules
+        ],
+        [],
+    ) or None
+    return domain_router, admin_views, models, seeds
 
 
 # def add_admin_views(
@@ -103,4 +117,10 @@ def import_domain_components(module_or_qualname: ModuleType | str):
 #     for admin_view in admin_views:
 #         admin.add_view(admin_view)
 #     return admin
+
+# def insert_seed(seeds: list[tuple[SQLModelMetaclass, list[SQLModelMetaclass]]]):
+#     from alembic import op
+#     for seed in seeds:
+#         table, rows = seed
+#         op.bulk_insert(table, rows)
 

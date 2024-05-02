@@ -1,6 +1,9 @@
 """Database module."""
 
 from typing import Any
+from types import ModuleType
+import urllib.parse
+import inspect
 
 # from sqlalchemy import orm
 # from sqlalchemy.engine import engine_from_config
@@ -8,7 +11,7 @@ from typing import Any
 from sqlmodel import SQLModel, engine_from_config # create_engine
 from sqlmodel import Session
 from mainapp.core.config import DBConfig, db_config
-import urllib.parse
+
 from alembic.config import Config as AlembicConfig
 from alembic import command as alembic_cmd
 
@@ -106,6 +109,7 @@ class Database:
             prefix="database.",
         )
 
+
     # @asynccontextmanager
     async def get_session(self):
         with Session(
@@ -120,6 +124,10 @@ class Database:
             #     session.rollback()
             # finally:
             #     session.close()
+    
+    @property
+    def metadata(self):
+        return SQLModel.metadata
 
     def create_database(self, model_modules=[]) -> None:
         """
@@ -132,7 +140,8 @@ class Database:
         """
         try:
             # Base.metadata.create_all(bind=self._engine)
-            SQLModel.metadata.create_all(self.engine)
+            # SQLModel.metadata.create_all(self.engine)
+            self.metadata.create_all(self.engine)
         except Exception as e:
             raise e
 
@@ -141,9 +150,138 @@ class Database:
         alembic_cfg.set_main_option("sqlalchemy.url", self.db_url)
         alembic_cmd.upgrade(alembic_cfg, "head")
 
-    # def prepare(self,  model_modules=[], alembic_config_filepath: str = "alembic.ini"):
-    #     self.create_database(model_modules)
-    #     self.apply_migration(alembic_config_filepath=alembic_config_filepath)
+    # def insert_seed(self, seeds: list[tuple[SQLModelMetaclass, list[SQLModelMetaclass]]]):
+    def insesrt_seeds(self, domain_modules: list[ModuleType] = None) -> bool:
+        """
+        Arguments
+        ---------
+            domain_modules: 
+        
+        Example
+        -------
+            Example 1:
+            >>> from mainapp.core.database import db
+            >>> db.insert_seeds()
+
+            Example 2:
+            >>> from mainapp.core.database import db
+            >>> from mainapp.domains import example, school
+            >>> db.insert_seeds([example, school])
+        """
+        def is_module(attr):
+            return isinstance(attr, ModuleType)
+        
+        if domain_modules is None:
+            from mainapp import domains
+            domain_modules = inspect.getmembers(domains, is_module)
+        
+        domain_models = sum(
+            [
+                getattr(module, "domain_models", [])
+                for name, module in domain_modules
+            ],
+            [],
+        )
+        domain_models_dict = {
+            model.__name__.lower(): model for model in domain_models
+        }
+
+        seeds = sum(
+            filter(
+                lambda x: x is not None,
+                [
+                    getattr(module, "domain_seeds")
+                    for name, module in domain_modules
+                ]
+            ),
+            [],
+        )
+        SQLModel
+
+        with Session(
+            bind=self.engine,
+            autocommit=False,
+            autoflush=False,
+        ) as session:
+            for seed in seeds:
+                table, rows = seed
+                if isinstance(table, str):
+                    table = domain_models_dict[table.lower()]
+                for row in rows:
+                    if isinstance(row, dict):
+                        # from sqlalchemy.orm.attributes import InstrumentedAttribute
+                        # [k for k, v in table.__sqlmodel_relationships__.items() if isinstance()]
+                        many_to_many_fields = [
+                            (k, v.link_model) for k, v in table.__sqlmodel_relationships__.items()
+                            if getattr(v, "link_model")
+                        ]
+                        for field_name, link_table in many_to_many_fields:
+                            linked_field = getattr(table, field_name)
+                            link = linked_field.property.local_remote_pairs
+                            # link_cols = dict(link_table.__table__.columns)
+                            # (_, link_field), (_, link_field) = link
+
+                            # for field in link_table.model_fields.items():
+                            aa = [(k, v) for k, v in link_table.model_fields.items()]
+                            link_table_fields = [(k, v.foreign_key.split(".")) for k, v in link_table.model_fields.items()]
+                            link_table_fields_dict = {
+                                fkey[0]: (fkey[1], name)
+                                for name, fkey in link_table_fields
+                            }
+                            # link_table_fields_dict.pop(table.__name__.lower())
+                            table_a_name = table.__name__.lower()
+                            field_a_pk, field_a_name = link_table_fields_dict.pop(table.__name__.lower())
+
+                            table_b_name, (field_b_pk, field_b_name) = link_table_fields_dict.items()[0]
+                            
+                            table_b = domain_models_dict[table_b_name]
+                            row_b_list = [session.get(table_b, i) for i in row.get(field_name)]
+                            link_table_row = link_table({field_a_name: row["id"]})
+                            row[field_name] = row_b_list
+                            row = table(**row)
+
+                            if not session.get(link_table, ):
+
+                        row = {k: v for k, v in row.items()}
+
+
+                        row = table(**row)
+
+                        
+                    if not session.get(table, row.id):
+                        session.add(row)
+                # session.add_all(rows)
+            session.commit()
+
+        return True
+
+
+    def prepare(
+            self,
+            alembic_config_filepath: str = "alembic.ini",
+            domain_modules: list[ModuleType] = None,
+        ):
+        """
+        Arguments
+        ---------
+            alembic_config_filepath: str
+                Filepath
+            domain_modules: list[ModuleType] 
+                Modules of domains
+        Example
+        -------
+            Example 1:
+            >>> from mainapp.core.database import db
+            >>> db.insert_seeds()
+
+            Example 2:
+            >>> from mainapp.core.database import db
+            >>> from mainapp.domains import example, school
+            >>> db.insert_seeds([example, school])
+        """
+        # self.create_database(model_modules)
+        self.apply_migration(alembic_config_filepath=alembic_config_filepath)
+        self.insesrt_seeds(domain_modules)
 
 
 ## pagination.py

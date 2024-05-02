@@ -22,3 +22,17 @@ class Student(SQLModel, table=True):
         back_populates="students",
         link_model=CourseStudentLink,
     )
+
+# seed = [
+#     (
+#         Student,
+#         [
+#             Student(id=0, firstname="Lucas", lastname="Young", description="student 0"),
+#             Student(id=1, firstname="Christopher", lastname="Lee", description="student 1"),
+#             Student(id=2, firstname="Sarah", lastname="Patel", description="student 2"),
+#             Student(id=3, firstname="Liam", lastname="Davies", description="student 3"),
+#             Student(id=4, firstname="Chloe", lastname="Bennett", description="student a"),
+#             Student(id=5, firstname="Evelyn", lastname="Jones", description="student b"),
+#         ]
+#     ),
+# ]
