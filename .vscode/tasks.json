@@ -43,7 +43,7 @@
             }
         },
         {
-            "label": "database-wait-for-ready",
+            "label": "database-wait-for-ready(pg_isready)",
             "type": "shell",
             "command": "bash -c 'command -v pg_isready >/dev/null 2>&1 || { echo >&2 \"\"pg_isready\" does not exist.\"; exit 1; } && until [ $COUNT_SEC -eq $TIMEOUT_SEC ] || pg_isready --host=$DB_HOST --port=$DB_PORT --dbname=$DB_DATABASE --username=$DB_USERNAME --timeout=$PING_TIMEOUT > /dev/null 2>&1; do printf \"\\r$(( COUNT_SEC++ +1))s/${TIMEOUT_SEC}s\" && sleep 1; done; [ $(( COUNT_SEC++ )) -lt $TIMEOUT_SEC ] && printf \"\ndatabase($DB_USERNAME@$DB_HOST:$DB_PORT/$DB_DATABASE) READY!\\n\" || printf \"\ndatabase($DB_USERNAME@$DB_HOST:$DB_PORT/$DB_DATABASE) NOT READY: TIMEOUT!\\n\"'",
             "options": {
@@ -147,7 +147,7 @@
             }
         },
         {
-            "label": "keycloak-wait-for-ready",
+            "label": "keycloak-wait-for-ready(curl)",
             "type": "shell",
             "command": "bash -c 'command -v curl >/dev/null 2>&1 || { echo >&2 \"\"curl\" does not exist.\"; exit 1; } && until [ $COUNT_SEC -eq $TIMEOUT_SEC ] || curl -f -LI http://${KC_HOST}:${KC_PORT}/health/ready > /dev/null 2>&1; do printf \"\\r$(( COUNT_SEC++ +1))s/${TIMEOUT_SEC}s\" && sleep 1; done; [ $(( COUNT_SEC++ )) -lt $TIMEOUT_SEC ] && printf \"\nkeycloak($KC_HOST:$KC_PORT) READY!\\n\" || printf \"\nkeycloak($KC_HOST:$KC_PORT) NOT READY: TIMEOUT!\\n\"'",
             "options": {

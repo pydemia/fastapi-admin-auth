@@ -206,17 +206,19 @@ class Database:
                 table, rows = seed
                 if isinstance(table, str):
                     table = domain_models_dict[table.lower()]
+                
+                many_to_many_fields = [
+                    (k, v.link_model) for k, v in table.__sqlmodel_relationships__.items()
+                    if getattr(v, "link_model")
+                ]
                 for row in rows:
+
                     if isinstance(row, dict):
-                        # from sqlalchemy.orm.attributes import InstrumentedAttribute
-                        # [k for k, v in table.__sqlmodel_relationships__.items() if isinstance()]
-                        many_to_many_fields = [
-                            (k, v.link_model) for k, v in table.__sqlmodel_relationships__.items()
-                            if getattr(v, "link_model")
-                        ]
+                        row_dict = row
+
                         for field_name, link_table in many_to_many_fields:
                             linked_field = getattr(table, field_name)
-                            if field_name not in row:
+                            if field_name not in row_dict:
                                 continue
                             link = linked_field.property.local_remote_pairs
 
@@ -231,32 +233,44 @@ class Database:
                             table_b_name, (field_b_pk, field_b_name) = list(link_table_fields_dict.items())[0]
                             
                             table_b = domain_models_dict[table_b_name]
-                            row_b_list = [session.get(table_b, i) for i in row.get(field_name)]
 
-                            for row_b in row_b_list:
-                                link_table_row = {
-                                    field_a_name: row["id"],
-                                    field_b_name: row_b.id,
-                                }
-                                link_table_row = link_table.model_validate(link_table_row)
+                            row_b_list = []
+                            for row_b_pk in row_dict.get(field_name):
+                                existed_table_b_row = session.get(table_b, row_b_pk)
+                                if not existed_table_b_row:
+                                    raise ValueError(
+                                        f"'{table_a_name}' related pk '{row_b_pk} in '{table_b_name}' does not exist!"
+                                    )
+                                row_b_list.append(existed_table_b_row)
+
+                                # link_table_row = {
+                                #     field_a_name: row["id"],
+                                #     field_b_name: existed_table_b_row.id,
+                                # }
+                                # link_table_row = link_table.model_validate(link_table_row)
                                 
-                                existed_link = session.get(link_table, (row["id"], row_b.id))
-                                if existed_link:
-                                    existed_link.sqlmodel_update(row)
-                                else:
-                                    session.add(link_table_row)
+                                # existed_link = session.get(link_table, (row["id"], existed_table_b_row.id))
+                                # if existed_link:
+                                #     existed_link.sqlmodel_update(row)
+                                #     session.add(existed_link)
+                                # else:
+                                #     session.add(link_table_row)
+                                # # session.commit()
 
-                            row[field_name] = row_b_list
+                            row_dict[field_name] = row_b_list
 
-                        row = table(**row)
+                        row = table(**row_dict)
 
                     existed_row = session.get(table, row.id)
                     if existed_row:
-                        existed_row.sqlmodel_update(row)
+                        existed_row.sqlmodel_update(row.model_dump(exclude_unset=True))
+                        for field_name, link_table in many_to_many_fields:
+                            new_relations = getattr(row, field_name)
+                            setattr(existed_row, field_name, new_relations)
+                        session.add(existed_row)
                     else:
                         session.add(row)
-                # session.add_all(rows)
-            session.commit()
+                    session.commit()
 
         return True
 
