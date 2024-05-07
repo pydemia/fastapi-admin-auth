@@ -2,7 +2,9 @@ from typing import Iterable
 from fastapi import Depends
 from sqlmodel import select, col
 from mainapp.core.database import db, Session
+from mainapp.core.database import get_pk_values
 
+from mainapp.core.types.exceptions import HandledException, ResponseCode
 from .models import Item
 
 
@@ -17,7 +19,7 @@ class ItemCRUD:
         self.session = session
         return self
 
-    def get_items_all(
+    def get_all(
         self,
     ) -> list[Item | None]:    
 
@@ -27,7 +29,7 @@ class ItemCRUD:
         return stmt.all()
 
 
-    def get_items_by_range(
+    def get_by_range(
         self,
         page: int = 0,
         page_size: int = 10,
@@ -46,7 +48,7 @@ class ItemCRUD:
         return stmt.all()
 
 
-    def get_items_by_ids(
+    def get_by_ids(
         self,
         ids: Iterable,
     ) -> list[Item | None]:
@@ -57,17 +59,28 @@ class ItemCRUD:
         return stmt.all()
 
 
-    def get_item_by_id(
+    def get_by_model(
         self,
-        id,
+        record: Item,
     ) -> Item | None:
 
         session = self.session
-        stmt = select(Item).where(Item.id == id)
-        stmt = session.exec(stmt)
-        return stmt.first()
+        
+        record = session.get_one(Item, get_pk_values(record))
+        # stmt = session.exec(stmt)
+        # return stmt.first()
+        return record
 
-    def get_item_by_name(
+
+    def get_by_id(
+        self,
+        *pk,
+    ) -> Item | None:
+
+        session = self.session
+        return session.get_one(Item, pk)
+
+    def get_by_name(
         self,
         name: str,
     ) -> Item | None:
@@ -77,48 +90,57 @@ class ItemCRUD:
         stmt = session.exec(stmt)
         return stmt.first()
 
-    def create_item(
+    def create(
         self,
-        item: Item,
+        record: Item,
     ) -> Item:
 
         session = self.session
-        session.add(item)
+        session.add(record)
         session.commit()
-        session.refresh(item)
-        return item
+        session.refresh(record)
+        return record
 
 
-    def get_or_create_item(
+    def get_or_create(
         self,
-        name: str,
+        record: Item,
     ) -> Item:
-        item: Item | None = self.get_item_by_name(
-            name=name
-        )
-        if item:
-            return item
+
+        if record.id:
+            old: Item | None = self.get_by_model(record)
+        
+        if old:
+            return old
         else:
-            item = Item(name=name)
-            item = self.create_item(item)
-            return item
+            return self.create(record)
 
 
-    def update_item(
+    def update(
         self,
-        item: Item,
+        record: Item,
     ) -> Item:
 
         session = self.session
-        session.add(item)
-        session.commit()
-        session.refresh(item)
-        return item
+        old = session.get(Item, record.id)
+        if old:
+            dumped = record.model_dump(exclude_unset=True)
+            old.sqlmodel_update(dumped)
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+        else:
+            raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
+        return record
 
-    def delete_item(
+    def delete(
         self,
-        item: Item,
-    ) -> None:
-        session = self.session
-        session.delete(item)
-        session.commit()
+        record: Item,
+    ) -> bool:
+        if self.get_by_model(record):
+            session = self.session
+            session.delete(record)
+            session.commit()
+            return True
+        else:
+            return False

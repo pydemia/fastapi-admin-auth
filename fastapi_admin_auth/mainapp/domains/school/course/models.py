@@ -81,6 +81,8 @@ class Course(SQLModel, table=True):
     # async def __admin_repr__(self, request: Request):
     #     return self.name
 
+# cert_4 = Certificate(id=4, name="cert 4", description="cert_4")
+# teacher_3 = Teacher(id=3, firstname="Charlotte", lastname="Wilson", description="teacher 4")
 
 seed = [
     (
@@ -99,6 +101,7 @@ seed = [
             dict(id=1, name="cert 1", description="cert_1"),
             dict(id=2, name="cert 2", description="cert_2"),
             dict(id=3, name="cert 3", description="cert_3"),
+            dict(id=4, name="cert 4", description="cert_4"),
         ]
     ),
     (
@@ -126,7 +129,7 @@ seed = [
             dict(id=0, firstname="Daniel", lastname="Walker", description="teacher 0"),
             dict(id=1, firstname="Sophia", lastname="Garcia", description="teacher 1"),
             dict(id=2, firstname="Ethan", lastname="Miller", description="teacher 2"),
-            # dict(id=3, firstname="Charlotte", lastname="Wilson", description="teacher 3"),
+            dict(id=3, firstname="Charlotte", lastname="Wilson", description="teacher 3"),
             # dict(id=4, firstname="Scarlett", lastname="Lewis", description="teacher a"),
             # dict(id=5, firstname="Audrey", lastname="Taylor", description="teacher b"),
         ],
@@ -138,6 +141,8 @@ seed = [
             dict(id=1, name="course 1", description="course_1", certificate_id=1, teacher_id=1, students=[2, 3, 5]),
             dict(id=2, name="course 2", description="course_2", certificate_id=2, teacher_id=1),
             dict(id=3, name="course 3", description="course_3", certificate_id=3, teacher_id=0),
+            dict(id=4, name="course 4", description="course_4", certificate_id=4, teacher_id=3),
+            # Course(id=4, name="course 3", description="course_4", certificate=cert_4, teacher_id=2),
             # dict(id=1, name="course 1", description="course_1", certificate_id=1, teacher_id=1, students=[0, 5]),
             # dict(id=2, name="course 2", description="course_2", certificate_id=2, teacher_id=1, students=[1, 3, 5]),
             # dict(id=3, name="course 3", description="course_3", certificate_id=3, teacher_id=0, students=[3, 4, 5]),

@@ -358,6 +358,17 @@ class Page(BaseModel):
         # self.pageMetadata = pageMetadata
 
 
+def get_pk_list(table_or_record):
+    return [
+        name for name, property
+        in table_or_record.model_fields.items()
+        if getattr(property, "primary_key") == True
+    ]
+
+def get_pk_values(record):
+    pk_list = get_pk_list(record)
+    return [getattr(record, pk) for pk in pk_list]
+
 class PageableParams(BaseModel):
     page: int = 1
     size: int
