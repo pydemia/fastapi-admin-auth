@@ -1,8 +1,9 @@
 from typing import Iterable
 from fastapi import Depends
 from sqlmodel import select, col
-from mainapp.core.database import db, Session
+from mainapp.core.database import db, Session, get_pk_values
 
+from mainapp.core.types.exceptions import HandledException, ResponseCode
 from .models import Textbook
 
 
@@ -17,7 +18,7 @@ class TextbookCRUD:
         self.session = session
         return self
 
-    def get_textbooks_all(
+    def get_all(
         self,
     ) -> list[Textbook | None]:    
 
@@ -27,7 +28,7 @@ class TextbookCRUD:
         return stmt.all()
 
 
-    def get_textbooks_by_range(
+    def get_by_range(
         self,
         page: int = 0,
         page_size: int = 10,
@@ -46,7 +47,7 @@ class TextbookCRUD:
         return stmt.all()
 
 
-    def get_textbooks_by_ids(
+    def get_by_ids(
         self,
         ids: Iterable,
     ) -> list[Textbook | None]:
@@ -57,17 +58,28 @@ class TextbookCRUD:
         return stmt.all()
 
 
-    def get_textbook_by_id(
+    def get_by_model(
         self,
-        id,
+        record: Textbook,
     ) -> Textbook | None:
 
         session = self.session
-        stmt = select(Textbook).where(Textbook.id == id)
-        stmt = session.exec(stmt)
-        return stmt.first()
+        
+        record = session.get_one(Textbook, get_pk_values(record))
+        # stmt = session.exec(stmt)
+        # return stmt.first()
+        return record
 
-    def get_textbook_by_name(
+
+    def get_by_id(
+        self,
+        *pk,
+    ) -> Textbook | None:
+
+        session = self.session
+        return session.get_one(Textbook, pk)
+
+    def get_by_name(
         self,
         name: str,
     ) -> Textbook | None:
@@ -77,48 +89,57 @@ class TextbookCRUD:
         stmt = session.exec(stmt)
         return stmt.first()
 
-    def create_textbook(
+    def create(
         self,
-        textbook: Textbook,
+        record: Textbook,
     ) -> Textbook:
 
         session = self.session
-        session.add(textbook)
+        session.add(record)
         session.commit()
-        session.refresh(textbook)
-        return textbook
+        session.refresh(record)
+        return record
 
 
-    def get_or_create_textbook(
+    def get_or_create(
         self,
-        name: str,
+        record: Textbook,
     ) -> Textbook:
-        textbook: Textbook | None = self.get_textbook_by_name(
-            name=name
-        )
-        if textbook:
-            return textbook
+
+        if record.id:
+            old: Textbook | None = self.get_by_model(record)
+        
+        if old:
+            return old
         else:
-            textbook = Textbook(name=name)
-            textbook = self.create_textbook(textbook)
-            return textbook
+            return self.create(record)
 
 
-    def update_textbook(
+    def update(
         self,
-        textbook: Textbook,
+        record: Textbook,
     ) -> Textbook:
 
         session = self.session
-        session.add(textbook)
-        session.commit()
-        session.refresh(textbook)
-        return textbook
+        old = session.get(Textbook, record.id)
+        if old:
+            dumped = record.model_dump(exclude_unset=True)
+            old.sqlmodel_update(dumped)
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+        else:
+            raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
+        return record
 
-    def delete_textbook(
+    def delete(
         self,
-        textbook: Textbook,
-    ) -> None:
-        session = self.session
-        session.delete(textbook)
-        session.commit()
+        record: Textbook,
+    ) -> bool:
+        if self.get_by_model(record):
+            session = self.session
+            session.delete(record)
+            session.commit()
+            return True
+        else:
+            return False

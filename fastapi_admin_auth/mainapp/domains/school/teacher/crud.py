@@ -1,8 +1,9 @@
 from typing import Iterable
 from fastapi import Depends
-from sqlmodel import select, col, and_
-from mainapp.core.database import db, Session
+from sqlmodel import select, col
+from mainapp.core.database import db, Session, get_pk_values
 
+from mainapp.core.types.exceptions import HandledException, ResponseCode
 from .models import Teacher
 
 
@@ -17,7 +18,7 @@ class TeacherCRUD:
         self.session = session
         return self
 
-    def get_teachers_all(
+    def get_all(
         self,
     ) -> list[Teacher | None]:    
 
@@ -27,7 +28,7 @@ class TeacherCRUD:
         return stmt.all()
 
 
-    def get_teachers_by_range(
+    def get_by_range(
         self,
         page: int = 0,
         page_size: int = 10,
@@ -46,7 +47,7 @@ class TeacherCRUD:
         return stmt.all()
 
 
-    def get_teachers_by_ids(
+    def get_by_ids(
         self,
         ids: Iterable,
     ) -> list[Teacher | None]:
@@ -57,73 +58,88 @@ class TeacherCRUD:
         return stmt.all()
 
 
-    def get_teacher_by_id(
+    def get_by_model(
         self,
-        id,
+        record: Teacher,
     ) -> Teacher | None:
 
         session = self.session
-        stmt = select(Teacher).where(Teacher.id == id)
-        stmt = session.exec(stmt)
-        return stmt.first()
+        
+        record = session.get_one(Teacher, get_pk_values(record))
+        # stmt = session.exec(stmt)
+        # return stmt.first()
+        return record
 
-    def get_teacher_by_name(
+
+    def get_by_id(
         self,
-        firstname: str,
-        lastname: str,
+        *pk,
     ) -> Teacher | None:
 
         session = self.session
-        stmt = select(Teacher).where(
-            and_(Teacher.firstname == firstname, Teacher.lastname == lastname)
-        )
+        return session.get_one(Teacher, pk)
+
+    def get_by_name(
+        self,
+        name: str,
+    ) -> Teacher | None:
+
+        session = self.session
+        stmt = select(Teacher).where(Teacher.name == name)
         stmt = session.exec(stmt)
         return stmt.first()
 
-    def create_teacher(
+    def create(
         self,
-        teacher: Teacher,
+        record: Teacher,
     ) -> Teacher:
 
         session = self.session
-        session.add(teacher)
+        session.add(record)
         session.commit()
-        session.refresh(teacher)
-        return teacher
+        session.refresh(record)
+        return record
 
 
-    def get_or_create_teacher(
+    def get_or_create(
         self,
-        firstname: str,
-        lastname: str,
+        record: Teacher,
     ) -> Teacher:
-        teacher: Teacher | None = self.get_teacher_by_name(
-            firstname=firstname,
-            lastname=lastname,
-        )
-        if teacher:
-            return teacher
+
+        if record.id:
+            old: Teacher | None = self.get_by_model(record)
+        
+        if old:
+            return old
         else:
-            teacher = Teacher(firstname=firstname, lastname=lastname)
-            teacher = self.create_teacher(teacher)
-            return teacher
+            return self.create(record)
 
 
-    def update_teacher(
+    def update(
         self,
-        teacher: Teacher,
+        record: Teacher,
     ) -> Teacher:
 
         session = self.session
-        session.add(teacher)
-        session.commit()
-        session.refresh(teacher)
-        return teacher
+        old = session.get(Teacher, record.id)
+        if old:
+            dumped = record.model_dump(exclude_unset=True)
+            old.sqlmodel_update(dumped)
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+        else:
+            raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
+        return record
 
-    def delete_teacher(
+    def delete(
         self,
-        teacher: Teacher,
-    ) -> None:
-        session = self.session
-        session.delete(teacher)
-        session.commit()
+        record: Teacher,
+    ) -> bool:
+        if self.get_by_model(record):
+            session = self.session
+            session.delete(record)
+            session.commit()
+            return True
+        else:
+            return False

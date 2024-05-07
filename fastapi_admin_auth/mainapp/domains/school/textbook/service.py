@@ -30,7 +30,7 @@ class TextbookService:
         self,
         crud: TextbookCRUD = Depends(TextbookCRUD()),
     ):
-        self.crud = crud
+        self.textbook_crud = crud
         return self
 
 
@@ -43,7 +43,7 @@ class TextbookService:
                 name=textbook["name"],
                 description=textbook.get("description"),
             )
-        textbook = self.crud.create_textbook(textbook)
+        textbook = self.textbook_crud.create_textbook(textbook)
         return textbook
 
 
@@ -60,11 +60,11 @@ class TextbookService:
         id_or_name_or_entity: int | str | Textbook,
     ) -> Textbook | None:
         if isinstance(id_or_name_or_entity, int):
-            textbook = self.crud.get_textbook_by_id(id_or_name_or_entity)
+            textbook = self.textbook_crud.get_by_id(id_or_name_or_entity)
         elif isinstance(id_or_name_or_entity, str):
-            textbook = self.crud.get_textbook_by_name(id_or_name_or_entity)
+            textbook = self.textbook_crud.get_by_name(id_or_name_or_entity)
         elif isinstance(id_or_name_or_entity, Textbook):
-            textbook = self.crud.get_textbook_by_id(id_or_name_or_entity.id)
+            textbook = self.textbook_crud.get_by_id(id_or_name_or_entity.id)
         else:
             raise HandledException(ResponseCode.ENTITY_ID_INVALID)
 
@@ -77,9 +77,9 @@ class TextbookService:
         page_size: int | None = None,
     ) -> list[Textbook | None]:
         if page:
-            textbooks = self.crud.get_textbooks_by_range(page=1)
+            textbooks = self.textbook_crud.get_by_range(page=1)
         else:
-            textbooks = self.crud.get_textbooks_all()
+            textbooks = self.textbook_crud.get_all()
         return textbooks
     
     def update_textbook_description(
@@ -92,7 +92,7 @@ class TextbookService:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
         
         textbook.description = description
-        textbook = self.crud.update_textbook(textbook)
+        textbook = self.textbook_crud.update(textbook)
         return textbook
 
 
@@ -101,13 +101,13 @@ class TextbookService:
         textbook_id: int,
         new_textbook: Textbook,
     ) -> Textbook:
-        old_textbook: Textbook | None = self.crud.get_textbook_by_id(textbook_id)
+        old_textbook: Textbook | None = self.textbook_crud.get_by_id(textbook_id)
         if not old_textbook:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
         old_textbook.name = new_textbook.name
         old_textbook.description = new_textbook.description
-        textbook = self.crud.update_textbook(old_textbook)
+        textbook = self.textbook_crud.update(old_textbook)
 
         return textbook
 
@@ -116,9 +116,8 @@ class TextbookService:
         self,
         id_or_name: str,
     ) -> bool:
-        textbook = self.get_textbook(id_or_name)
+        textbook = self.get(id_or_name)
         if not textbook:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
-        self.crud.delete_textbook(textbook)
-        return
+        return self.textbook_crud.delete(textbook)

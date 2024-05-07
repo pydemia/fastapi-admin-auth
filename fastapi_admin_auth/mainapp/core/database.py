@@ -10,6 +10,7 @@ import inspect
 # from sqlalchemy.orm import Session
 from sqlmodel import SQLModel, engine_from_config # create_engine
 from sqlmodel import Session
+from sqlmodel.main import FieldInfo as sqlmodel_FieldInfo
 from mainapp.core.config import DBConfig, db_config
 
 from alembic.config import Config as AlembicConfig
@@ -18,7 +19,7 @@ from alembic import command as alembic_cmd
 
 
 __all__ = [
-    "Base",
+    # "Base",
     # "RedisDataBase",
     "Database",
 ]
@@ -362,7 +363,8 @@ def get_pk_list(table_or_record):
     return [
         name for name, property
         in table_or_record.model_fields.items()
-        if getattr(property, "primary_key") == True
+        if isinstance(property, sqlmodel_FieldInfo)
+        and getattr(property, "primary_key") == True
     ]
 
 def get_pk_values(record):

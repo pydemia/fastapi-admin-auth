@@ -30,7 +30,7 @@ class StudentService:
         self,
         crud: StudentCRUD = Depends(StudentCRUD()),
     ):
-        self.crud = crud
+        self.student_crud = crud
         return self
 
 
@@ -44,7 +44,7 @@ class StudentService:
                 lastname=student["lastname"],
                 description=student.get("description"),
             )
-        student = self.crud.create_student(student)
+        student = self.student_crud.create(student)
         return student
 
 
@@ -61,7 +61,7 @@ class StudentService:
         firstname: str,
         lastname: str,
     ) -> Student | None:
-        student = self.crud.get_student_by_name(firstname, lastname)
+        student = self.textbook_crud.get_by_name(firstname, lastname)
         return student
 
 
@@ -70,9 +70,9 @@ class StudentService:
         id_or_entity: int | Student,
     ) -> Student | None:
         if isinstance(id_or_entity, int):
-            student = self.crud.get_student_by_id(id_or_entity)
+            student = self.textbook_crud.get_by_id(id_or_entity)
         elif isinstance(id_or_entity, Student):
-            student = self.crud.get_student_by_id(id_or_entity.id)
+            student = self.textbook_crud.get_by_id(id_or_entity.id)
         else:
             raise HandledException(ResponseCode.ENTITY_ID_INVALID)
 
@@ -85,9 +85,9 @@ class StudentService:
         page_size: int | None = None,
     ) -> list[Student | None]:
         if page:
-            students = self.crud.get_students_by_range(page=1)
+            students = self.textbook_crud.get_by_range(page=1)
         else:
-            students = self.crud.get_students_all()
+            students = self.textbook_crud.get_all()
         return students
     
     def update_student_description(
@@ -100,7 +100,7 @@ class StudentService:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
         
         student.description = description
-        student = self.crud.update_student(student)
+        student = self.student_crud.update(student)
         return student
 
 
@@ -109,14 +109,14 @@ class StudentService:
         student_id: int,
         new_student: Student,
     ) -> Student:
-        old_student: Student | None = self.crud.get_student_by_id(student_id)
+        old_student: Student | None = self.textbook_crud.get_by_id(student_id)
         if not old_student:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
         old_student.firstname = new_student.firstname
         old_student.lastname = new_student.lastname
         old_student.description = new_student.description
-        student = self.crud.update_student(old_student)
+        student = self.student_crud.update(old_student)
 
         return student
 
@@ -129,5 +129,4 @@ class StudentService:
         if not student:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
-        self.crud.delete_student(student)
-        return
+        return self.student_crud.delete(student)

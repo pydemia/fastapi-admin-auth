@@ -19,7 +19,7 @@ from fastapi import Depends
 # delete_course
 from mainapp.core.types.exceptions import HandledException, ResponseCode
 from .models import Course, Certificate
-from .crud import CourseCRUD
+from .crud import CourseCRUD, CertificateCRUD
 from .schema import UpdateCourseRequest, CertificateRequest
 
 
@@ -29,9 +29,11 @@ class CourseService:
 
     def __call__(
         self,
-        crud: CourseCRUD = Depends(CourseCRUD()),
+        course_crud: CourseCRUD = Depends(CourseCRUD()),
+        cert_crud: CourseCRUD = Depends(CertificateCRUD()),
     ):
-        self.crud = crud
+        self.course_crud = course_crud
+        self.cert_crud = cert_crud
         return self
 
 
@@ -46,7 +48,7 @@ class CourseService:
                 book_id=course.get("book_id"),
                 cert_id=course.get("cert_id"),
             )
-        course = self.crud.create_course(course)
+        course = self.course_crud.create(course)
         return course
 
 
@@ -63,11 +65,11 @@ class CourseService:
         id_or_name_or_entity: int | str | Course,
     ) -> Course | None:
         if isinstance(id_or_name_or_entity, int):
-            course = self.crud.get_course_by_id(id_or_name_or_entity)
+            course = self.course_crud.get_by_id(id_or_name_or_entity)
         elif isinstance(id_or_name_or_entity, str):
-            course = self.crud.get_course_by_name(id_or_name_or_entity)
+            course = self.course_crud.get_by_name(id_or_name_or_entity)
         elif isinstance(id_or_name_or_entity, Course):
-            course = self.crud.get_course_by_id(id_or_name_or_entity.id)
+            course = self.course_crud.get_by_id(id_or_name_or_entity.id)
         else:
             raise HandledException(ResponseCode.ENTITY_ID_INVALID)
 
@@ -80,9 +82,9 @@ class CourseService:
         page_size: int | None = None,
     ) -> list[Course | None]:
         if page:
-            courses = self.crud.get_courses_by_range(page=1)
+            courses = self.course_crud.get_by_range(page=1)
         else:
-            courses = self.crud.get_courses_all()
+            courses = self.course_crud.get_all()
         return courses
     
     def update_course_description(
@@ -95,7 +97,7 @@ class CourseService:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
         
         course.description = description
-        course = self.crud.update_course(course)
+        course = self.course_crud.update(course)
         return course
 
 
@@ -105,7 +107,7 @@ class CourseService:
         new_course: Course | UpdateCourseRequest,
     ) -> Course:
         
-        old_course: Course | None = self.crud.get_course_by_id(course_id)
+        old_course: Course | None = self.course_crud.get_by_id(course_id)
         if not old_course:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
@@ -122,7 +124,7 @@ class CourseService:
                 old_course.cert_id = new_course.cert_id
                 old_course.certificate = Certificate.model_validate(old_course.certificate.model_dump())
 
-        course = self.crud.update_course(old_course)
+        course = self.course_crud.update(old_course)
 
         return course
 
@@ -135,19 +137,19 @@ class CourseService:
         if not course:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
-        self.crud.delete_course(course)
-        return
+        return self.course_crud.delete(course)
+
 
     def get_certificate(
         self,
         id_or_name_or_entity: int | str | Certificate,
     ) -> Certificate | None:
         if isinstance(id_or_name_or_entity, int):
-            certificate = self.crud.get_course_by_id(id_or_name_or_entity)
+            certificate = self.cert_crud.get_by_id(id_or_name_or_entity)
         elif isinstance(id_or_name_or_entity, str):
-            certificate = self.crud.get_course_by_name(id_or_name_or_entity)
+            certificate = self.cert_crud.get_by_name(id_or_name_or_entity)
         elif isinstance(id_or_name_or_entity, Course):
-            certificate = self.crud.get_course_by_id(id_or_name_or_entity.id)
+            certificate = self.cert_crud.get_by_id(id_or_name_or_entity.id)
         else:
             raise HandledException(ResponseCode.ENTITY_ID_INVALID)
 
@@ -161,7 +163,7 @@ class CourseService:
     ) -> Certificate:
         
 
-        old_cert: Certificate | None = self.crud.get_course_by_id(cert_id)
+        old_cert: Certificate | None = self.cert_crud.get_by_id(cert_id)
         if not old_cert:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
@@ -177,18 +179,17 @@ class CourseService:
         #         old_cert.course_id = new_cert.course_id
         #         old_cert.course = Course.model_validate(old_cert.course.model_dump())
 
-        certificate = self.crud.update_course(old_cert)
+        certificate = self.course_crud.update(old_cert)
 
         return certificate
 
 
-    # def delete_certificate(
-    #     self,
-    #     cert_id: str,
-    # ) -> bool:
-    #     student = self.get_certificate(cert_id)
-    #     if not student:
-    #         raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
+    def delete_certificate(
+        self,
+        cert_id: str,
+    ) -> bool:
+        certificate = self.get_certificate(cert_id)
+        if not certificate:
+            raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
-    #     self.crud.delete_certificate(student)
-    #     return
+        return self.crud.delete(certificate)

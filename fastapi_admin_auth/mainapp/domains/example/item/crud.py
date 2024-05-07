@@ -1,8 +1,7 @@
 from typing import Iterable
 from fastapi import Depends
 from sqlmodel import select, col
-from mainapp.core.database import db, Session
-from mainapp.core.database import get_pk_values
+from mainapp.core.database import db, Session, get_pk_values
 
 from mainapp.core.types.exceptions import HandledException, ResponseCode
 from .models import Item
