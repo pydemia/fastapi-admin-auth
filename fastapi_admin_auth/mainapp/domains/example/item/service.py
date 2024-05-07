@@ -5,7 +5,7 @@ from fastapi import Depends
 #     get_items_all,
 #     get_items_by_ids,
 #     get_items_by_range,
-#     get_item_by_id,
+#     get_by_id,
 #     create_item,
 #     update_item,
 #     delete_item,
@@ -14,7 +14,7 @@ from fastapi import Depends
 # get_items_all
 # get_items_by_ids
 # get_items_by_range
-# get_item_by_id
+# get_by_id
 # create_item
 # update_item
 # delete_item
@@ -30,7 +30,7 @@ class ItemService:
         self,
         crud: ItemCRUD = Depends(ItemCRUD()),
     ):
-        self.crud = crud
+        self.item_crud = crud
         return self
 
 
@@ -43,7 +43,7 @@ class ItemService:
                 name=item["name"],
                 description=item.get("description"),
             )
-        item = self.crud.create_item(item)
+        item = self.item_crud.create(item)
         return item
 
 
@@ -60,11 +60,11 @@ class ItemService:
         id_or_name_or_entity: int | str | Item,
     ) -> Item | None:
         if isinstance(id_or_name_or_entity, int):
-            item = self.crud.get_item_by_id(id_or_name_or_entity)
+            item = self.item_crud.get_by_id(id_or_name_or_entity)
         elif isinstance(id_or_name_or_entity, str):
-            item = self.crud.get_item_by_name(id_or_name_or_entity)
+            item = self.item_crud.get_by_name(id_or_name_or_entity)
         elif isinstance(id_or_name_or_entity, Item):
-            item = self.crud.get_item_by_id(id_or_name_or_entity.id)
+            item = self.item_crud.get_by_id(id_or_name_or_entity.id)
         else:
             raise HandledException(ResponseCode.ENTITY_ID_INVALID)
 
@@ -77,9 +77,9 @@ class ItemService:
         page_size: int | None = None,
     ) -> list[Item | None]:
         if page:
-            items = self.crud.get_items_by_range(page=1)
+            items = self.item_crud.gets_by_range(page=1)
         else:
-            items = self.crud.get_items_all()
+            items = self.item_crud.get_all()
         return items
     
     def update_item_description(
@@ -92,7 +92,7 @@ class ItemService:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
         
         item.description = description
-        item = self.crud.update_item(item)
+        item = self.item_crud.update(item)
         return item
 
 
@@ -101,13 +101,13 @@ class ItemService:
         item_id: int,
         new_item: Item,
     ) -> Item:
-        old_item: Item | None = self.crud.get_item_by_id(item_id)
+        old_item: Item | None = self.item_crud.get_by_id(item_id)
         if not old_item:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
         old_item.name = new_item.name
         old_item.description = new_item.description
-        item = self.crud.update_item(old_item)
+        item = self.item_crud.update(old_item)
 
         return item
 
@@ -120,5 +120,4 @@ class ItemService:
         if not item:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
-        self.crud.delete_item(item)
-        return
+        return self.item_crud.delete(item)

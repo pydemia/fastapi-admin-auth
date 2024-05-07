@@ -30,7 +30,7 @@ class TeacherService:
         self,
         crud: TeacherCRUD = Depends(TeacherCRUD()),
     ):
-        self.crud = crud
+        self.teacher_crud = crud
         return self
 
 
@@ -44,7 +44,7 @@ class TeacherService:
                 lastname=teacher["lastname"],
                 description=teacher.get("description"),
             )
-        teacher = self.crud.create_teacher(teacher)
+        teacher = self.teacher_crud.create(teacher)
         return teacher
 
 
@@ -61,7 +61,7 @@ class TeacherService:
         firstname: str,
         lastname: str,
     ) -> Teacher | None:
-        teacher = self.crud.get_teacher_by_name(firstname, lastname)
+        teacher = self.textbook_crud.get_by_name(firstname, lastname)
         return teacher
 
 
@@ -70,9 +70,9 @@ class TeacherService:
         id_or_entity: int | Teacher,
     ) -> Teacher | None:
         if isinstance(id_or_entity, int):
-            teacher = self.crud.get_teacher_by_id(id_or_entity)
+            teacher = self.textbook_crud.get_by_id(id_or_entity)
         elif isinstance(id_or_entity, Teacher):
-            teacher = self.crud.get_teacher_by_id(id_or_entity.id)
+            teacher = self.textbook_crud.get_by_id(id_or_entity.id)
         else:
             raise HandledException(ResponseCode.ENTITY_ID_INVALID)
 
@@ -85,9 +85,9 @@ class TeacherService:
         page_size: int | None = None,
     ) -> list[Teacher | None]:
         if page:
-            teachers = self.crud.get_teachers_by_range(page=1)
+            teachers = self.textbook_crud.get_by_range(page=1)
         else:
-            teachers = self.crud.get_teachers_all()
+            teachers = self.textbook_crud.get_all()
         return teachers
     
     def update_teacher_description(
@@ -95,12 +95,12 @@ class TeacherService:
         name: str,
         description: str,
     ) -> Teacher:
-        teacher = self.get_teacher(name)
+        teacher = self.get(name)
         if not teacher:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
         
         teacher.description = description
-        teacher = self.crud.update_teacher(teacher)
+        teacher = self.teacher_crud.update(teacher)
         return teacher
 
 
@@ -109,14 +109,14 @@ class TeacherService:
         teacher_id: int,
         new_teacher: Teacher,
     ) -> Teacher:
-        old_teacher: Teacher | None = self.crud.get_teacher_by_id(teacher_id)
+        old_teacher: Teacher | None = self.textbook_crud.get_by_id(teacher_id)
         if not old_teacher:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
         old_teacher.firstname = new_teacher.firstname
         old_teacher.lastname = new_teacher.lastname
         old_teacher.description = new_teacher.description
-        teacher = self.crud.update_teacher(old_teacher)
+        teacher = self.teacher_crud.update(old_teacher)
 
         return teacher
 
@@ -129,5 +129,4 @@ class TeacherService:
         if not teacher:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 
-        self.crud.delete_teacher(teacher)
-        return
+        return self.teacher_crud.delete(teacher)
