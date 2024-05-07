@@ -196,7 +196,6 @@ class Database:
             ),
             [],
         )
-        SQLModel
 
         with Session(
             bind=self.engine,
@@ -217,38 +216,44 @@ class Database:
                         ]
                         for field_name, link_table in many_to_many_fields:
                             linked_field = getattr(table, field_name)
+                            if field_name not in row:
+                                continue
                             link = linked_field.property.local_remote_pairs
-                            # link_cols = dict(link_table.__table__.columns)
-                            # (_, link_field), (_, link_field) = link
 
-                            # for field in link_table.model_fields.items():
-                            aa = [(k, v) for k, v in link_table.model_fields.items()]
                             link_table_fields = [(k, v.foreign_key.split(".")) for k, v in link_table.model_fields.items()]
                             link_table_fields_dict = {
                                 fkey[0]: (fkey[1], name)
                                 for name, fkey in link_table_fields
                             }
-                            # link_table_fields_dict.pop(table.__name__.lower())
                             table_a_name = table.__name__.lower()
-                            field_a_pk, field_a_name = link_table_fields_dict.pop(table.__name__.lower())
+                            field_a_pk, field_a_name = link_table_fields_dict.pop(table_a_name)
 
-                            table_b_name, (field_b_pk, field_b_name) = link_table_fields_dict.items()[0]
+                            table_b_name, (field_b_pk, field_b_name) = list(link_table_fields_dict.items())[0]
                             
                             table_b = domain_models_dict[table_b_name]
                             row_b_list = [session.get(table_b, i) for i in row.get(field_name)]
-                            link_table_row = link_table({field_a_name: row["id"]})
+
+                            for row_b in row_b_list:
+                                link_table_row = {
+                                    field_a_name: row["id"],
+                                    field_b_name: row_b.id,
+                                }
+                                link_table_row = link_table.model_validate(link_table_row)
+                                
+                                existed_link = session.get(link_table, (row["id"], row_b.id))
+                                if existed_link:
+                                    existed_link.sqlmodel_update(row)
+                                else:
+                                    session.add(link_table_row)
+
                             row[field_name] = row_b_list
-                            row = table(**row)
-
-                            if not session.get(link_table, ):
-
-                        row = {k: v for k, v in row.items()}
-
 
                         row = table(**row)
 
-                        
-                    if not session.get(table, row.id):
+                    existed_row = session.get(table, row.id)
+                    if existed_row:
+                        existed_row.sqlmodel_update(row)
+                    else:
                         session.add(row)
                 # session.add_all(rows)
             session.commit()
