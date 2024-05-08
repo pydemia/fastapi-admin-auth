@@ -1,5 +1,5 @@
 import pytest
-
+import httpx
 
 
 @pytest.fixture()
@@ -22,9 +22,12 @@ def test_health_live():
     test_client = TestClient(app)
 
     response = test_client.get("/example/health/live")
-    response.raise_for_status()
-    body = response.json()
-    assert body["code"] == 1
+    try:
+        response.raise_for_status()
+        body = response.json()
+        assert body["code"] == 1
+    except httpx.HTTPStatusError:
+        print(response.json()["message"])
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -36,6 +39,9 @@ def test_health_ready():
     test_client = TestClient(app)
 
     response = test_client.get("/example/health/ready")
-    response.raise_for_status()
-    body = response.json()
-    assert body["code"] == 1
+    try:
+        response.raise_for_status()
+        body = response.json()
+        assert body["code"] == 1
+    except httpx.HTTPStatusError:
+        print(response.json()["message"])

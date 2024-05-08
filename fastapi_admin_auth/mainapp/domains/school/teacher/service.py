@@ -95,7 +95,7 @@ class TeacherService:
         name: str,
         description: str,
     ) -> Teacher:
-        teacher = self.get(name)
+        teacher = self.get_teacher_by_name(name)
         if not teacher:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
         

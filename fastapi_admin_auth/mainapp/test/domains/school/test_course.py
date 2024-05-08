@@ -159,7 +159,6 @@ def test_read_course_by_param():
 
     test_client = TestClient(app)
 
-
     course_body = {
         "name": "test",
         "description": "test_desc",
@@ -214,17 +213,30 @@ def test_put_course():
     
     test_client = TestClient(app)
 
+    course_body = {
+        "name": "test",
+        "description": "test_desc",
+    }
+    course_name = course_body["name"]
+
+    from urllib.parse import quote
+    encoded_course_name = quote(course_name)
+
     response = test_client.get(
         "/school/courses",
+        params={
+            "name": encoded_course_name,
+        },
     )
-    course_body = response.json()["data"][0]
+    course_body = response.json()["data"]
     course_id = course_body["id"]
 
     # Update simple values
     new_name = "test-updated"
+    new_desc = "updated"
 
     course_body["name"] = new_name
-    course_body["description"] = "updated"
+    course_body["description"] = new_desc
 
     response = test_client.put(
         f"/school/courses/{course_id}",
@@ -292,10 +304,22 @@ def test_delete_course():
     
     test_client = TestClient(app)
 
+    course_body = {
+        "name": "test-updated",
+        "description": "updated",
+    }
+    course_name = course_body["name"]
+
+    from urllib.parse import quote
+    encoded_course_name = quote(course_name)
+
     response = test_client.get(
         "/school/courses",
+        params={
+            "name": encoded_course_name,
+        },
     )
-    course_body = response.json()["data"][0]
+    course_body = response.json()["data"]
     course_id = course_body["id"]
 
 

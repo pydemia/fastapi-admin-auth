@@ -22,10 +22,10 @@ class CourseCRUD:
         self,
     ) -> list[Course | None]:    
 
-        session = self.session
-        stmt = select(Course)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Course)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_range(
@@ -35,16 +35,16 @@ class CourseCRUD:
         order_by_asc: bool = True,
     ) -> list[Course | None]:
 
-        session = self.session
-        stmt = select(Course)
-        if order_by_asc:
-            stmt.order_by(col(Course.id).asc())
-        else:
-            stmt.order_by(col(Course.id).desc())
-        stmt = stmt.offset(page_size * page)
-        stmt = stmt.limit(page_size)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Course)
+            if order_by_asc:
+                stmt.order_by(col(Course.id).asc())
+            else:
+                stmt.order_by(col(Course.id).desc())
+            stmt = stmt.offset(page_size * page)
+            stmt = stmt.limit(page_size)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_ids(
@@ -52,10 +52,10 @@ class CourseCRUD:
         ids: Iterable,
     ) -> list[Course | None]:
 
-        session = self.session
-        stmt = select(Course).where(Course.id in ids)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Course).where(Course.id in ids)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_model(
@@ -63,12 +63,11 @@ class CourseCRUD:
         record: Course,
     ) -> Course | None:
 
-        session = self.session
-        
-        record = session.get_one(Course, get_pk_values(record))
-        # stmt = session.exec(stmt)
-        # return stmt.first()
-        return record
+        with self.session as session:
+            record = session.get_one(Course, get_pk_values(record))
+            # stmt = session.exec(stmt)
+            # return stmt.first()
+            return record
 
 
     def get_by_id(
@@ -76,29 +75,29 @@ class CourseCRUD:
         *pk,
     ) -> Course | None:
 
-        session = self.session
-        return session.get_one(Course, pk)
+        with self.session as session:
+            return session.get_one(Course, pk)
 
     def get_by_name(
         self,
         name: str,
     ) -> Course | None:
 
-        session = self.session
-        stmt = select(Course).where(Course.name == name)
-        stmt = session.exec(stmt)
-        return stmt.first()
+        with self.session as session:
+            stmt = select(Course).where(Course.name == name)
+            stmt = session.exec(stmt)
+            return stmt.first()
 
     def create(
         self,
         record: Course,
     ) -> Course:
 
-        session = self.session
-        session.add(record)
-        session.commit()
-        session.refresh(record)
-        return record
+        with self.session as session:
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+            return record
 
 
     def get_or_create(
@@ -120,27 +119,27 @@ class CourseCRUD:
         record: Course,
     ) -> Course:
 
-        session = self.session
-        old = session.get(Course, record.id)
-        if old:
-            dumped = record.model_dump(exclude_unset=True)
-            old.sqlmodel_update(dumped)
-            session.add(record)
-            session.commit()
-            session.refresh(record)
-        else:
-            raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
-        return record
+        with self.session as session:
+            old = session.get(Course, record.id)
+            if old:
+                dumped = record.model_dump(exclude_unset=True)
+                old.sqlmodel_update(dumped)
+                session.add(old)
+                session.commit()
+                session.refresh(old)
+            else:
+                raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
+            return old
 
     def delete(
         self,
         record: Course,
     ) -> bool:
         if self.get_by_model(record):
-            session = self.session
-            session.delete(record)
-            session.commit()
-            return True
+            with self.session as session:
+                session.delete(record)
+                session.commit()
+                return True
         else:
             return False
 
@@ -160,10 +159,10 @@ class CertificateCRUD:
         self,
     ) -> list[Certificate | None]:    
 
-        session = self.session
-        stmt = select(Certificate)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Certificate)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_range(
@@ -173,16 +172,16 @@ class CertificateCRUD:
         order_by_asc: bool = True,
     ) -> list[Certificate | None]:
 
-        session = self.session
-        stmt = select(Certificate)
-        if order_by_asc:
-            stmt.order_by(col(Certificate.id).asc())
-        else:
-            stmt.order_by(col(Certificate.id).desc())
-        stmt = stmt.offset(page_size * page)
-        stmt = stmt.limit(page_size)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Certificate)
+            if order_by_asc:
+                stmt.order_by(col(Certificate.id).asc())
+            else:
+                stmt.order_by(col(Certificate.id).desc())
+            stmt = stmt.offset(page_size * page)
+            stmt = stmt.limit(page_size)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_ids(
@@ -190,10 +189,10 @@ class CertificateCRUD:
         ids: Iterable,
     ) -> list[Certificate | None]:
 
-        session = self.session
-        stmt = select(Certificate).where(Certificate.id in ids)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Certificate).where(Certificate.id in ids)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_model(
@@ -201,12 +200,11 @@ class CertificateCRUD:
         record: Certificate,
     ) -> Certificate | None:
 
-        session = self.session
-        
-        record = session.get_one(Certificate, get_pk_values(record))
-        # stmt = session.exec(stmt)
-        # return stmt.first()
-        return record
+        with self.session as session:
+            record = session.get_one(Certificate, get_pk_values(record))
+            # stmt = session.exec(stmt)
+            # return stmt.first()
+            return record
 
 
     def get_by_id(
@@ -214,29 +212,29 @@ class CertificateCRUD:
         *pk,
     ) -> Certificate | None:
 
-        session = self.session
-        return session.get_one(Certificate, pk)
+        with self.session as session:
+            return session.get_one(Certificate, pk)
 
     def get_by_name(
         self,
         name: str,
     ) -> Certificate | None:
 
-        session = self.session
-        stmt = select(Certificate).where(Certificate.name == name)
-        stmt = session.exec(stmt)
-        return stmt.first()
+        with self.session as session:
+            stmt = select(Certificate).where(Certificate.name == name)
+            stmt = session.exec(stmt)
+            return stmt.first()
 
     def create(
         self,
         record: Certificate,
     ) -> Certificate:
 
-        session = self.session
-        session.add(record)
-        session.commit()
-        session.refresh(record)
-        return record
+        with self.session as session:
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+            return record
 
 
     def get_or_create(
@@ -258,26 +256,26 @@ class CertificateCRUD:
         record: Certificate,
     ) -> Certificate:
 
-        session = self.session
-        old = session.get(Certificate, record.id)
-        if old:
-            dumped = record.model_dump(exclude_unset=True)
-            old.sqlmodel_update(dumped)
-            session.add(record)
-            session.commit()
-            session.refresh(record)
-        else:
-            raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
-        return record
+        with self.session as session:
+            old = session.get(Certificate, record.id)
+            if old:
+                dumped = record.model_dump(exclude_unset=True)
+                old.sqlmodel_update(dumped)
+                session.add(old)
+                session.commit()
+                session.refresh(old)
+            else:
+                raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
+            return old
 
     def delete(
         self,
         record: Certificate,
     ) -> bool:
         if self.get_by_model(record):
-            session = self.session
-            session.delete(record)
-            session.commit()
-            return True
+            with self.session as session:
+                session.delete(record)
+                session.commit()
+                return True
         else:
             return False

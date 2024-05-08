@@ -43,7 +43,7 @@ class TextbookService:
                 name=textbook["name"],
                 description=textbook.get("description"),
             )
-        textbook = self.textbook_crud.create_textbook(textbook)
+        textbook = self.textbook_crud.create(textbook)
         return textbook
 
 
@@ -116,7 +116,7 @@ class TextbookService:
         self,
         id_or_name: str,
     ) -> bool:
-        textbook = self.get(id_or_name)
+        textbook = self.get_textbook(id_or_name)
         if not textbook:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 

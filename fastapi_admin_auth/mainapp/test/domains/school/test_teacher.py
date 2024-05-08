@@ -41,16 +41,16 @@ def test_create_teacher():
     # Create by Model
     from mainapp.domains.school.teacher.models import Teacher
 
-    teacher_0 = Teacher(firstname="Daniel", lastname="Walker", description="teacher 0")
-    teacher_1 = Teacher(firstname="Sophia", lastname="Garcia", description="teacher 1")
-    teacher_2 = Teacher(firstname="Ethan", lastname="Miller", description="teacher 2")
-    teacher_3 = Teacher(firstname="Charlotte", lastname="Wilson", description="teacher 3")
+    teacher_1 = Teacher(firstname="Sophia", lastname="Garcia", description="teacher test1")
+    teacher_2 = Teacher(firstname="Ethan", lastname="Miller", description="teacher test2")
+    teacher_3 = Teacher(firstname="Charlotte", lastname="Wilson", description="teacher test3")
+    teacher_4 = Teacher(firstname="Daniel", lastname="Walker", description="teacher test4")
 
     teacher_a = Teacher(firstname="Scarlett", lastname="Lewis", description="teacher a")
     teacher_b = Teacher(firstname="Audrey", lastname="Taylor", description="teacher b")
 
     teachers = [
-        teacher_0, teacher_1, teacher_2, teacher_3,
+        teacher_1, teacher_2, teacher_3, teacher_4,
         teacher_a, teacher_b,
     ]
     for teacher in teachers:
@@ -87,7 +87,6 @@ def test_read_teacher_by_param():
 
     test_client = TestClient(app)
 
-    from urllib.parse import quote
     teacher_body = {
         "firstname": "Richard",
         "lastname": "Roe",
@@ -96,6 +95,7 @@ def test_read_teacher_by_param():
     teacher_firstname =  teacher_body["firstname"]
     teacher_lastname = teacher_body["lastname"]
 
+    from urllib.parse import quote
     encoded_teacher_firstname = quote(teacher_firstname)
     encoded_teacher_lastname = quote(teacher_lastname)
     response = test_client.get(
@@ -146,10 +146,25 @@ def test_put_teacher():
     
     test_client = TestClient(app)
 
+    teacher_body = {
+        "firstname": "Richard",
+        "lastname": "Roe",
+    }
+
+    teacher_firstname =  teacher_body["firstname"]
+    teacher_lastname = teacher_body["lastname"]
+
+    from urllib.parse import quote
+    encoded_teacher_firstname = quote(teacher_firstname)
+    encoded_teacher_lastname = quote(teacher_lastname)
     response = test_client.get(
         "/school/teachers",
+        params={
+            "firstname": encoded_teacher_firstname,
+            "lastname": encoded_teacher_lastname,
+        },
     )
-    teacher_body = response.json()["data"][0]
+    teacher_body = response.json()["data"]
     teacher_id = teacher_body["id"]
 
 
@@ -181,10 +196,25 @@ def test_delete_teacher():
     
     test_client = TestClient(app)
 
+    teacher_body = {
+        "firstname": "Richardey",
+        "lastname": "Roeny",
+    }
+
+    teacher_firstname =  teacher_body["firstname"]
+    teacher_lastname = teacher_body["lastname"]
+
+    from urllib.parse import quote
+    encoded_teacher_firstname = quote(teacher_firstname)
+    encoded_teacher_lastname = quote(teacher_lastname)
     response = test_client.get(
         "/school/teachers",
+        params={
+            "firstname": encoded_teacher_firstname,
+            "lastname": encoded_teacher_lastname,
+        },
     )
-    teacher_body = response.json()["data"][0]
+    teacher_body = response.json()["data"]
     teacher_id = teacher_body["id"]
 
 

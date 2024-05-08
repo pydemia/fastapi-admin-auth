@@ -40,13 +40,13 @@ def test_create_textbook():
     # Create by Model
     from mainapp.domains.school.textbook.models import Textbook
 
-    textbook_0 = Textbook(name="textbook 0", description="textbook_0")
-    textbook_1 = Textbook(name="textbook 1", description="textbook_1")
-    textbook_2 = Textbook(name="textbook 2", description="textbook_2")
-    textbook_3 = Textbook(name="textbook 3", description="textbook_3")
+    textbook_1 = Textbook(name="textbook test1", description="textbook_test1")
+    textbook_2 = Textbook(name="textbook test2", description="textbook_test2")
+    textbook_3 = Textbook(name="textbook test3", description="textbook_test3")
+    textbook_4 = Textbook(name="textbook test0", description="textbook_test0")
 
     textbooks = [
-        textbook_0, textbook_1, textbook_2, textbook_3,
+        textbook_1, textbook_2, textbook_3, textbook_4,
     ]
     for textbook in textbooks:
         response = test_client.post(
@@ -137,19 +137,33 @@ def test_put_textbook():
     
     test_client = TestClient(app)
 
+    textbook_body = {
+        "name": "test",
+        "description": "test_desc",
+    }
+    textbook_name = textbook_body["name"]
+
+    from urllib.parse import quote
+    encoded_textbook_name = quote(textbook_name)
+
     response = test_client.get(
         "/school/textbooks",
+        params={
+            "name": encoded_textbook_name,
+        },
     )
-    textbook_body = response.json()["data"][0]
+    textbook_body = response.json()["data"]
     textbook_id = textbook_body["id"]
 
 
     new_name = "test-updated"
+    new_desc = "updated"
+
     response = test_client.put(
         f"/school/textbooks/{textbook_id}",
         json={
             "name": new_name,
-            "description": "updated",
+            "description": new_desc,
         }
     )
     response.raise_for_status()
@@ -168,10 +182,22 @@ def test_delete_textbook():
     
     test_client = TestClient(app)
 
+    textbook_body = {
+        "name": "test-updated",
+        "description": "updated",
+    }
+    textbook_name = textbook_body["name"]
+
+    from urllib.parse import quote
+    encoded_textbook_name = quote(textbook_name)
+
     response = test_client.get(
         "/school/textbooks",
+        params={
+            "name": encoded_textbook_name,
+        },
     )
-    textbook_body = response.json()["data"][0]
+    textbook_body = response.json()["data"]
     textbook_id = textbook_body["id"]
 
 

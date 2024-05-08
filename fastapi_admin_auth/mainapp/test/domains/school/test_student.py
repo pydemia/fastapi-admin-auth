@@ -86,7 +86,6 @@ def test_read_student_by_param():
 
     test_client = TestClient(app)
 
-
     student_body = {
         "firstname": "John",
         "lastname": "Doe",
@@ -145,10 +144,24 @@ def test_put_student():
     
     test_client = TestClient(app)
 
+    student_body = {
+        "firstname": "John",
+        "lastname": "Doe",
+    }
+    student_firstname =  student_body["firstname"]
+    student_lastname = student_body["lastname"]
+
+    from urllib.parse import quote
+    encoded_student_firstname = quote(student_firstname)
+    encoded_student_lastname = quote(student_lastname)
     response = test_client.get(
         "/school/students",
+        params={
+            "firstname": encoded_student_firstname,
+            "lastname": encoded_student_lastname,
+        },
     )
-    student_body = response.json()["data"][0]
+    student_body = response.json()["data"]
     student_id = student_body["id"]
 
 
@@ -180,10 +193,24 @@ def test_delete_student():
     
     test_client = TestClient(app)
 
+    student_body = {
+        "firstname": "Johney",
+        "lastname": "Doeny",
+    }
+    student_firstname =  student_body["firstname"]
+    student_lastname = student_body["lastname"]
+
+    from urllib.parse import quote
+    encoded_student_firstname = quote(student_firstname)
+    encoded_student_lastname = quote(student_lastname)
     response = test_client.get(
         "/school/students",
+        params={
+            "firstname": encoded_student_firstname,
+            "lastname": encoded_student_lastname,
+        },
     )
-    student_body = response.json()["data"][0]
+    student_body = response.json()["data"]
     student_id = student_body["id"]
 
 

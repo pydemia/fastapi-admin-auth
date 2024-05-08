@@ -22,10 +22,10 @@ class StudentCRUD:
         self,
     ) -> list[Student | None]:    
 
-        session = self.session
-        stmt = select(Student)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Student)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_range(
@@ -35,16 +35,16 @@ class StudentCRUD:
         order_by_asc: bool = True,
     ) -> list[Student | None]:
 
-        session = self.session
-        stmt = select(Student)
-        if order_by_asc:
-            stmt.order_by(col(Student.id).asc())
-        else:
-            stmt.order_by(col(Student.id).desc())
-        stmt = stmt.offset(page_size * page)
-        stmt = stmt.limit(page_size)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Student)
+            if order_by_asc:
+                stmt.order_by(col(Student.id).asc())
+            else:
+                stmt.order_by(col(Student.id).desc())
+            stmt = stmt.offset(page_size * page)
+            stmt = stmt.limit(page_size)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_ids(
@@ -52,10 +52,10 @@ class StudentCRUD:
         ids: Iterable,
     ) -> list[Student | None]:
 
-        session = self.session
-        stmt = select(Student).where(Student.id in ids)
-        stmt = session.exec(stmt)
-        return stmt.all()
+        with self.session as session:
+            stmt = select(Student).where(Student.id in ids)
+            stmt = session.exec(stmt)
+            return stmt.all()
 
 
     def get_by_model(
@@ -63,12 +63,11 @@ class StudentCRUD:
         record: Student,
     ) -> Student | None:
 
-        session = self.session
-        
-        record = session.get_one(Student, get_pk_values(record))
-        # stmt = session.exec(stmt)
-        # return stmt.first()
-        return record
+        with self.session as session:
+            record = session.get_one(Student, get_pk_values(record))
+            # stmt = session.exec(stmt)
+            # return stmt.first()
+            return record
 
 
     def get_by_id(
@@ -76,29 +75,29 @@ class StudentCRUD:
         *pk,
     ) -> Student | None:
 
-        session = self.session
-        return session.get_one(Student, pk)
+        with self.session as session:
+            return session.get_one(Student, pk)
 
     def get_by_name(
         self,
         name: str,
     ) -> Student | None:
 
-        session = self.session
-        stmt = select(Student).where(Student.name == name)
-        stmt = session.exec(stmt)
-        return stmt.first()
+        with self.session as session:
+            stmt = select(Student).where(Student.name == name)
+            stmt = session.exec(stmt)
+            return stmt.first()
 
     def create(
         self,
         record: Student,
     ) -> Student:
 
-        session = self.session
-        session.add(record)
-        session.commit()
-        session.refresh(record)
-        return record
+        with self.session as session:
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+            return record
 
 
     def get_or_create(
@@ -120,16 +119,16 @@ class StudentCRUD:
         record: Student,
     ) -> Student:
 
-        session = self.session
-        old = session.get(Student, record.id)
-        if old:
-            dumped = record.model_dump(exclude_unset=True)
-            old.sqlmodel_update(dumped)
-            session.add(record)
-            session.commit()
-            session.refresh(record)
-        else:
-            raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
+        with self.session as session:
+            old = session.get(Student, record.id)
+            if old:
+                dumped = record.model_dump(exclude_unset=True)
+                old.sqlmodel_update(dumped)
+                session.add(old)
+                session.commit()
+                session.refresh(record)
+            else:
+                raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
         return record
 
     def delete(
@@ -137,9 +136,9 @@ class StudentCRUD:
         record: Student,
     ) -> bool:
         if self.get_by_model(record):
-            session = self.session
-            session.delete(record)
-            session.commit()
-            return True
+            with self.session as session:
+                session.delete(record)
+                session.commit()
+                return True
         else:
             return False
