@@ -84,7 +84,7 @@ class ItemCRUD:
     ) -> Item | None:
 
         with self.session as session:
-            stmt = select(Item).where(Item.name == name)
+            stmt = select(Item).where(col(Item.name) == name)
             stmt = session.exec(stmt)
             return stmt.first()
 

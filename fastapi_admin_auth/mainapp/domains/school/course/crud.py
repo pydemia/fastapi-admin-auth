@@ -84,7 +84,7 @@ class CourseCRUD:
     ) -> Course | None:
 
         with self.session as session:
-            stmt = select(Course).where(Course.name == name)
+            stmt = select(Course).where(col(Course.name) == name)
             stmt = session.exec(stmt)
             return stmt.first()
 
@@ -221,7 +221,7 @@ class CertificateCRUD:
     ) -> Certificate | None:
 
         with self.session as session:
-            stmt = select(Certificate).where(Certificate.name == name)
+            stmt = select(Certificate).where(col(Certificate.name) == name)
             stmt = session.exec(stmt)
             return stmt.first()
 

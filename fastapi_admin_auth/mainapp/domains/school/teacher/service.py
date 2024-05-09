@@ -61,7 +61,7 @@ class TeacherService:
         firstname: str,
         lastname: str,
     ) -> Teacher | None:
-        teacher = self.textbook_crud.get_by_name(firstname, lastname)
+        teacher = self.teacher_crud.get_by_name(firstname, lastname)
         return teacher
 
 
@@ -70,9 +70,9 @@ class TeacherService:
         id_or_entity: int | Teacher,
     ) -> Teacher | None:
         if isinstance(id_or_entity, int):
-            teacher = self.textbook_crud.get_by_id(id_or_entity)
+            teacher = self.teacher_crud.get_by_id(id_or_entity)
         elif isinstance(id_or_entity, Teacher):
-            teacher = self.textbook_crud.get_by_id(id_or_entity.id)
+            teacher = self.teacher_crud.get_by_id(id_or_entity.id)
         else:
             raise HandledException(ResponseCode.ENTITY_ID_INVALID)
 
@@ -85,9 +85,9 @@ class TeacherService:
         page_size: int | None = None,
     ) -> list[Teacher | None]:
         if page:
-            teachers = self.textbook_crud.get_by_range(page=1)
+            teachers = self.teacher_crud.get_by_range(page=1)
         else:
-            teachers = self.textbook_crud.get_all()
+            teachers = self.teacher_crud.get_all()
         return teachers
     
     def update_teacher_description(
@@ -109,7 +109,7 @@ class TeacherService:
         teacher_id: int,
         new_teacher: Teacher,
     ) -> Teacher:
-        old_teacher: Teacher | None = self.textbook_crud.get_by_id(teacher_id)
+        old_teacher: Teacher | None = self.teacher_crud.get_by_id(teacher_id)
         if not old_teacher:
             raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
 

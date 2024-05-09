@@ -80,11 +80,15 @@ class TeacherCRUD:
 
     def get_by_name(
         self,
-        name: str,
+        firstname: str,
+        lastname: str,
     ) -> Teacher | None:
 
         with self.session as session:
-            stmt = select(Teacher).where(Teacher.name == name)
+            stmt = select(Teacher).where(
+                col(Teacher.firstname) == firstname,
+                col(Teacher.lastname) == lastname,
+            )
             stmt = session.exec(stmt)
             return stmt.first()
 

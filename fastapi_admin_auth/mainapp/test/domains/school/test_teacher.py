@@ -41,17 +41,13 @@ def test_create_teacher():
     # Create by Model
     from mainapp.domains.school.teacher.models import Teacher
 
-    teacher_1 = Teacher(firstname="Sophia", lastname="Garcia", description="teacher test1")
-    teacher_2 = Teacher(firstname="Ethan", lastname="Miller", description="teacher test2")
-    teacher_3 = Teacher(firstname="Charlotte", lastname="Wilson", description="teacher test3")
+    teacher_1 = Teacher(firstname="Amelia", lastname="Rose", description="teacher test1")
+    teacher_2 = Teacher(firstname="Oliver", lastname="Brown", description="teacher test2")
+    teacher_3 = Teacher(firstname="Riley", lastname="Sanders", description="teacher test3")
     teacher_4 = Teacher(firstname="Daniel", lastname="Walker", description="teacher test4")
-
-    teacher_a = Teacher(firstname="Scarlett", lastname="Lewis", description="teacher a")
-    teacher_b = Teacher(firstname="Audrey", lastname="Taylor", description="teacher b")
 
     teachers = [
         teacher_1, teacher_2, teacher_3, teacher_4,
-        teacher_a, teacher_b,
     ]
     for teacher in teachers:
         response = test_client.post(

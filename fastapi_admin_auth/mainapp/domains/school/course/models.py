@@ -110,7 +110,6 @@ seed = [
             dict(id=1, firstname="Christopher", lastname="Lee", description="student 1"),
             dict(id=2, firstname="Sarah", lastname="Patel", description="student 2"),
             dict(id=3, firstname="Liam", lastname="Davies", description="student 3"),
-            # dict(id=3, firstname="Liam", lastname="Davies", description="student 3", courses=[2, 3]),
             dict(id=4, firstname="Lucas", lastname="Young", description="student 4"),
             dict(id=5, firstname="Chloe", lastname="Bennett", description="student a"),
             dict(id=6, firstname="Evelyn", lastname="Jones", description="student b"),
@@ -137,10 +136,10 @@ seed = [
     (
         "Course",
         [
-            dict(id=1, name="course 1", description="course_1", certificate_id=1, teacher_id=1, students=[2, 3, 5]),
-            dict(id=2, name="course 2", description="course_2", certificate_id=2, teacher_id=1),
-            dict(id=3, name="course 3", description="course_3", certificate_id=3, teacher_id=4),
-            dict(id=4, name="course 4", description="course_4", certificate_id=4, teacher_id=3),
+            dict(id=1, name="course 1", description="course_1", certificate_id=1, teacher_id=1),
+            dict(id=2, name="course 2", description="course_2", certificate_id=2, teacher_id=1, students=[1]),
+            dict(id=3, name="course 3", description="course_3", certificate_id=3, teacher_id=4, students=[2, 3]),
+            dict(id=4, name="course 4", description="course_4", certificate_id=4, teacher_id=3, students=[1, 3, 4]),
             dict(id=5, name="course 5", description="course_5", certificate_id=5, teacher_id=2, students=[6, 1]),
             # Course(id=4, name="course 3", description="course_4", certificate=cert_4, teacher_id=2),
             # dict(id=1, name="course 1", description="course_1", certificate_id=1, teacher_id=1, students=[0, 5]),

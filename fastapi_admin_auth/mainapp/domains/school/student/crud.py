@@ -80,11 +80,15 @@ class StudentCRUD:
 
     def get_by_name(
         self,
-        name: str,
+        firstname: str,
+        lastname: str,
     ) -> Student | None:
 
         with self.session as session:
-            stmt = select(Student).where(Student.name == name)
+            stmt = select(Student).where(
+                col(Student.firstname) == firstname,
+                col(Student.lastname) == lastname,
+            )
             stmt = session.exec(stmt)
             return stmt.first()
 
@@ -126,10 +130,10 @@ class StudentCRUD:
                 old.sqlmodel_update(dumped)
                 session.add(old)
                 session.commit()
-                session.refresh(record)
+                session.refresh(old)
             else:
                 raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
-        return record
+        return old
 
     def delete(
         self,

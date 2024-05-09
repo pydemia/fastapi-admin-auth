@@ -40,17 +40,13 @@ def test_create_student():
     # Create by Model
     from mainapp.domains.school.student.models import Student
 
-    student_0 = Student(firstname="Lucas", lastname="Young", description="student 0")
-    student_1 = Student(firstname="Christopher", lastname="Lee", description="student 1")
-    student_2 = Student(firstname="Sarah", lastname="Patel", description="student 2")
-    student_3 = Student(firstname="Liam", lastname="Davies", description="student 3")
-
-    student_a = Student(firstname="Chloe", lastname="Bennett", description="student a")
-    student_b = Student(firstname="Evelyn", lastname="Jones", description="student b")
+    student_0 = Student(firstname="Andrew", lastname="Evans", description="student 0")
+    student_1 = Student(firstname="Joseph", lastname="Davis", description="student 1")
+    student_2 = Student(firstname="Christopher", lastname="Robinson", description="student 2")
+    student_3 = Student(firstname="Sofia", lastname="Thompson", description="student 3")
 
     students = [
         student_0, student_1, student_2, student_3,
-        student_a, student_b,
     ]
     for student in students:
         response = test_client.post(

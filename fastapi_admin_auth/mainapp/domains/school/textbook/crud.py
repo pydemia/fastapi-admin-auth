@@ -84,7 +84,7 @@ class TextbookCRUD:
     ) -> Textbook | None:
 
         with self.session as session:
-            stmt = select(Textbook).where(Textbook.name == name)
+            stmt = select(Textbook).where(col(Textbook.name) == name)
             stmt = session.exec(stmt)
             return stmt.first()
 
