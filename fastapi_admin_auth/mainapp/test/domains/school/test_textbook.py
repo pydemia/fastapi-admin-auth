@@ -101,7 +101,9 @@ def test_read_textbook_by_param():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["name"] == textbook_name
+
+    d = body["data"][0]
+    assert d["name"] == textbook_name
 
 @pytest.mark.usefixtures("setup", "teardown")
 @pytest.mark.order(4)
@@ -115,8 +117,8 @@ def test_read_textbook_by_id():
     response = test_client.get(
         "/school/textbooks",
     )
-    textbook_body = response.json()["data"][0]
-    textbook_id = textbook_body["id"]
+    textbook = response.json()["data"][0]
+    textbook_id = textbook["id"]
 
 
     response = test_client.get(
@@ -125,7 +127,9 @@ def test_read_textbook_by_id():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["id"] == textbook_id
+
+    d = body["data"]
+    assert d["id"] == textbook_id
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -152,8 +156,8 @@ def test_put_textbook():
             "name": encoded_textbook_name,
         },
     )
-    textbook_body = response.json()["data"]
-    textbook_id = textbook_body["id"]
+    textbook = response.json()["data"][0]
+    textbook_id = textbook["id"]
 
 
     new_name = "test-updated"
@@ -169,8 +173,10 @@ def test_put_textbook():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["id"] == textbook_id
-    assert body["data"]["name"] == new_name
+
+    d = body["data"]
+    assert d["id"] == textbook_id
+    assert d["name"] == new_name
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -197,8 +203,8 @@ def test_delete_textbook():
             "name": encoded_textbook_name,
         },
     )
-    textbook_body = response.json()["data"]
-    textbook_id = textbook_body["id"]
+    textbook = response.json()["data"][0]
+    textbook_id = textbook["id"]
 
 
     response = test_client.delete(

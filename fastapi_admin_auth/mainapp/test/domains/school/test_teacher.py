@@ -104,8 +104,10 @@ def test_read_teacher_by_param():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["firstname"] == teacher_firstname
-    assert body["data"]["lastname"] == teacher_lastname
+
+    d = body["data"][0]
+    assert d["firstname"] == teacher_firstname
+    assert d["lastname"] == teacher_lastname
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -120,8 +122,8 @@ def test_read_teacher_by_id():
     response = test_client.get(
         "/school/teachers",
     )
-    teacher_body = response.json()["data"][0]
-    teacher_id = teacher_body["id"]
+    teacher = response.json()["data"][0]
+    teacher_id = teacher["id"]
 
 
     response = test_client.get(
@@ -160,8 +162,8 @@ def test_put_teacher():
             "lastname": encoded_teacher_lastname,
         },
     )
-    teacher_body = response.json()["data"]
-    teacher_id = teacher_body["id"]
+    teacher = response.json()["data"][0]
+    teacher_id = teacher["id"]
 
 
     new_firstname = "Richardey"
@@ -178,9 +180,11 @@ def test_put_teacher():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["id"] == teacher_id
-    assert body["data"]["firstname"] == new_firstname
-    assert body["data"]["lastname"] == new_lastname
+
+    d = body["data"]
+    assert d["id"] == teacher_id
+    assert d["firstname"] == new_firstname
+    assert d["lastname"] == new_lastname
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -210,8 +214,8 @@ def test_delete_teacher():
             "lastname": encoded_teacher_lastname,
         },
     )
-    teacher_body = response.json()["data"]
-    teacher_id = teacher_body["id"]
+    teacher = response.json()["data"][0]
+    teacher_id = teacher["id"]
 
 
     response = test_client.delete(

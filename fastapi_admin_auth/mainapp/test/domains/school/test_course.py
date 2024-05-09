@@ -23,7 +23,25 @@ def test_create_course():
     
     test_client = TestClient(app)
 
-    # Create by json
+    # 0: create a teacher and a student
+    teacher_r = test_client.post(
+        "/school/teachers",
+        json={
+            "firstname": "Dummy",
+            "lastname": "Dum",
+        },
+    )
+    teacher_id = teacher_r.json()["data"]["id"]
+    student_r = test_client.post(
+        "/school/students",
+        json={
+            "firstname": "Rummy",
+            "lastname": "Rum",
+        },
+    )
+    student_id = student_r.json()["data"]["id"]
+
+    # Create by json: with certificate
     certificate_body = {
         "name": "test",
         "description": "test_desc",
@@ -32,6 +50,8 @@ def test_create_course():
         "name": "test",
         "description": "test_desc",
         "certificate": certificate_body,
+        "teacher_id": teacher_id,
+        "students": [student_id],
     }
     response = test_client.post(
         "/school/courses",
@@ -42,94 +62,45 @@ def test_create_course():
     assert body["code"] == 1
 
 
-    # Create by Model
-    # from mainapp.domains.school.course.models import Course, Certificate
-    from mainapp.domains.school.course.schema import CreateCourseRequest, CertificateRequest
-
-    course_0 = CreateCourseRequest(
-        name="course 0", description="course_0",
-        certificate=CertificateRequest(name="cert 0", description="cert_0")
-    )
-    course_1 = CreateCourseRequest(
-        name="course 1", description="course_1",
-        certificate=CertificateRequest(name="cert 1", description="cert_1")
-    )
-    course_2 = CreateCourseRequest(
-        name="course 2", description="course_2",
-        certificate=CertificateRequest(name="cert 2", description="cert_2")
-    )
-    course_3 = CreateCourseRequest(
-        name="course 3", description="course_3",
-        certificate=CertificateRequest(name="cert 3", description="cert_3")
-    )
-
-
-    courses = [
-        course_0, course_1, course_2, course_3,
-    ]
-    for course in courses:
-        response = test_client.post(
-            "/school/courses",
-            json=course.model_dump(),
-        )
-
-
     # Create by Model with foreign key
     from mainapp.domains.school.textbook.models import Textbook
 
-    textbook_a = Textbook(name="textbook a", description="textbook_a")
-    textbook_b = Textbook(name="textbook b", description="textbook_b")
-
-    textbooks = [
-        textbook_a, textbook_b,
-    ]
-    for textbook in textbooks:
-        response = test_client.post(
-            "/school/textbooks",
-            json=textbook.model_dump(),
-        )
+    textbook = Textbook(name="textbook testA", description="textbook_testA")
+    response = test_client.post(
+        "/school/textbooks",
+        json=textbook.model_dump(),
+    )
 
     from urllib.parse import quote
-    encoded_textbook_a_name = quote(textbook_a.name)
-    encoded_textbook_b_name = quote(textbook_b.name)
+    encoded_textbook_name = quote(textbook.name)
 
-    textbook_a_response = test_client.get(
+    textbook_r = test_client.get(
         "/school/textbooks",
         params={
-            "name": encoded_textbook_a_name,
+            "name": encoded_textbook_name,
         },
     )
-    textbook_a_model = Textbook.model_validate(textbook_a_response.json()["data"])
+    textbook_model_id = textbook_r.json()["data"][0]["id"]
 
-    textbook_b_response = test_client.get(
-        "/school/textbooks",
-        params={
-            "name": encoded_textbook_b_name,
-        },
+    certificate_body = {
+        "name": "test2",
+        "description": "test_desc2",
+    }
+    course_body = {
+        "name": "test2",
+        "description": "test_desc2",
+        "certificate": certificate_body,
+        "book_id": textbook_model_id,
+        "teacher_id": teacher_id,
+        "students": [student_id],
+    }
+    response = test_client.post(
+        "/school/courses",
+        json=course_body,
     )
-    textbook_b_model = Textbook.model_validate(textbook_b_response.json()["data"])
-
-
-    course_a = CreateCourseRequest(
-        name="course a", description="course_a",
-        book_id=textbook_a_model.id,
-        certificate=CertificateRequest(name="cert a", description="cert_a"),
-    )
-    course_b = CreateCourseRequest(
-        name="course b", description="course_b",
-        book_id=textbook_b_model.id,
-        certificate=CertificateRequest(name="cert a", description="cert_a"),
-    )
-
-    courses = [
-        course_a, course_b,
-    ]
-    for course in courses:
-        response = test_client.post(
-            "/school/courses",
-            json=course.model_dump(),
-        )
-
+    response.raise_for_status()
+    body = response.json()
+    assert body["code"] == 1
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -177,7 +148,9 @@ def test_read_course_by_param():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"][0]["name"] == course_name
+
+    d = body["data"][0]
+    assert d["name"] == course_name
 
 @pytest.mark.usefixtures("setup", "teardown")
 @pytest.mark.order(4)
@@ -191,8 +164,8 @@ def test_read_course_by_id():
     response = test_client.get(
         "/school/courses",
     )
-    course_body = response.json()["data"][0]
-    course_id = course_body["id"]
+    course = response.json()["data"][0]
+    course_id = course["id"]
 
 
     response = test_client.get(
@@ -228,25 +201,27 @@ def test_put_course():
             "name": encoded_course_name,
         },
     )
-    course_body = response.json()["data"]
-    course_id = course_body["id"]
+    course = response.json()["data"][0]
+    course_id = course["id"]
 
     # Update simple values
     new_name = "test-updated"
     new_desc = "updated"
 
-    course_body["name"] = new_name
-    course_body["description"] = new_desc
+    course["name"] = new_name
+    course["description"] = new_desc
 
     response = test_client.put(
         f"/school/courses/{course_id}",
-        json=course_body,
+        json=course,
     )
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["id"] == course_id
-    assert body["data"]["name"] == new_name
+
+    d = body["data"]
+    assert d["id"] == course_id
+    assert d["name"] == new_name
 
 
     # # update One-to-One relations
@@ -276,7 +251,7 @@ def test_put_course():
 #     response = test_client.get(
 #         "/school/courses",
 #     )
-#     course_body = response.json()["data"][0]
+#     course = response.json()["data"][0]
 #     course_id = course_body["id"]
 
 
@@ -319,8 +294,8 @@ def test_delete_course():
             "name": encoded_course_name,
         },
     )
-    course_body = response.json()["data"]
-    course_id = course_body["id"]
+    course = response.json()["data"][0]
+    course_id = course["id"]
 
 
     response = test_client.delete(

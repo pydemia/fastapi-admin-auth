@@ -21,7 +21,7 @@ async def get_students(
     service: StudentService = Depends(StudentService()),
 ):
     if firstname and lastname:
-        student_or_students = service.get_student_by_name(firstname, lastname)
+        student_or_students = [service.get_student_by_name(firstname, lastname)]
     else:
         student_or_students = service.get_students_all()
     return CommonResponse(data=student_or_students)

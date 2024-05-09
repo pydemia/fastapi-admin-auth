@@ -94,6 +94,10 @@ class CourseCRUD:
     ) -> Course:
 
         with self.session as session:
+            # cert = getattr(record, "certificate", None)
+            # if cert:
+            #     session.add(cert)
+
             session.add(record)
             session.commit()
             session.refresh(record)

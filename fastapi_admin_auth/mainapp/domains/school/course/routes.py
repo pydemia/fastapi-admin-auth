@@ -11,6 +11,7 @@ from .schema import (
     MultiCourseResponse,
     CertificateRequest,
 )
+from ..student.service import StudentService
 
 router = APIRouter(
     prefix="/courses",
@@ -19,7 +20,10 @@ router = APIRouter(
 )
 
 
-@router.get("", response_model=MultiCourseResponse)
+@router.get(
+    "",
+    response_model=MultiCourseResponse,
+)
 async def get_courses(
     name: str | None = None,
     service: CourseService = Depends(CourseService()),
@@ -31,7 +35,10 @@ async def get_courses(
     return MultiCourseResponse(data=course_or_courses)
 
 
-@router.get("/{course_id}", response_model=SingleCourseResponse)
+@router.get(
+    "/{course_id}",
+    response_model=SingleCourseResponse,
+)
 async def get_course_by_id(
     course_id: int,
     service: CourseService = Depends(CourseService()),
@@ -41,24 +48,34 @@ async def get_course_by_id(
     return SingleCourseResponse(data=course)
 
 
-@router.post("")
+@router.post(
+    "",
+    response_model=SingleCourseResponse,
+)
 async def add_course(
     body: CreateCourseRequest,
     service: CourseService = Depends(CourseService()),
+    student_service: StudentService = Depends(StudentService())
     ):
-    course = Course(
-        name=body.name,
-        description=body.description,
-        book_id=body.book_id,
-        certificate=Certificate.model_validate(body.certificate.model_dump()),
-    )
+    body_dict = body.model_dump(exclude_unset=True)
+    if body.certificate:
+        body_dict["certificate"] = Certificate.model_validate(body.certificate.model_dump(exclude_unset=True))
+    if body.students:
+        body_dict["students"] = [
+            student_service.get_student_by_id_or_entity(s)
+            for s in body.students
+        ]
+    course = Course(**body_dict)
     course: Course = service.add_new_course(
         course=course
     )
     return CommonResponse(data=course)
 
 
-@router.put("/{course_id}")
+@router.put(
+    "/{course_id}",
+    response_model=SingleCourseResponse,
+)
 async def update_course(
     course_id: int,
     body: UpdateCourseRequest,
@@ -66,10 +83,13 @@ async def update_course(
 ):
     new_course = body
     course = service.update_course(course_id, new_course)
-    return CommonResponse(data=course)
+    return SingleCourseResponse(data=course)
 
 
-@router.delete("/{course_id}")
+@router.delete(
+    "/{course_id}",
+    response_model=CommonResponse,
+)
 async def delete_course(
     course_id: int,
     service: CourseService = Depends(CourseService()),
@@ -84,7 +104,10 @@ async def delete_course(
 
 
 
-@router.get("", response_model=MultiCourseResponse)
+@router.get(
+    "",
+    response_model=CommonResponse,
+)
 async def get_certificates(
     name: str | None = None,
     service: CourseService = Depends(CourseService()),
@@ -93,20 +116,26 @@ async def get_certificates(
         cert_or_certs = [service.get_course(name)]
     else:
         cert_or_certs = service.get_courses_all()
-    return MultiCourseResponse(data=cert_or_certs)
+    return CommonResponse(data=cert_or_certs)
 
 
-@router.get("/{certificate_id}", response_model=SingleCourseResponse)
+@router.get(
+    "/{certificate_id}",
+    response_model=CommonResponse,
+)
 async def get_certificate_by_id(
     certificate_id: int,
     service: CourseService = Depends(CourseService()),
 ):
     course = service.get_course(certificate_id)
     # return CommonResponse(data=course)
-    return SingleCourseResponse(data=course)
+    return CommonResponse(data=course)
 
 
-@router.put("/{certificate_id}")
+@router.put(
+    "/{certificate_id}",
+    response_model=CommonResponse,
+)
 async def update_certificate(
     certificate_id: int,
     body: CertificateRequest,

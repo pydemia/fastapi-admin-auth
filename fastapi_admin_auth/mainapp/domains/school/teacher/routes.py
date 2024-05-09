@@ -21,7 +21,7 @@ async def get_teachers(
     service: TeacherService = Depends(TeacherService()),
 ):
     if firstname and lastname:
-        teacher_or_teachers = service.get_teacher_by_name(firstname, lastname)
+        teacher_or_teachers = [service.get_teacher_by_name(firstname, lastname)]
     else:
         teacher_or_teachers = service.get_teachers_all()
     return CommonResponse(data=teacher_or_teachers)

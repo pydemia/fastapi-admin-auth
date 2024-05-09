@@ -116,7 +116,8 @@ class Database:
         with Session(
             bind=self.engine,
             autocommit=False,
-            autoflush=False,
+            autoflush=True,
+            expire_on_commit=False,
         ) as session:
             yield session
             # try:

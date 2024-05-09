@@ -20,7 +20,7 @@ async def get_textbooks(
     service: TextbookService = Depends(TextbookService()),
 ):
     if name:
-        textbook_or_textbooks = service.get_textbook(name)
+        textbook_or_textbooks = [service.get_textbook(name)]
     else:
         textbook_or_textbooks = service.get_textbooks_all()
     return CommonResponse(data=textbook_or_textbooks)

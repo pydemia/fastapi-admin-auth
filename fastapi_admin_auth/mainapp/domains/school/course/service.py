@@ -120,6 +120,10 @@ class CourseService:
 
         elif isinstance(new_course, UpdateCourseRequest):
             old_course.book_id = new_course.book_id
+            [
+                setattr(old_course, f, getattr(new_course, f))
+                for f in new_course.model_fields
+            ]
             if new_course.cert_id is not None:
                 old_course.cert_id = new_course.cert_id
                 old_course.certificate = Certificate.model_validate(old_course.certificate.model_dump())

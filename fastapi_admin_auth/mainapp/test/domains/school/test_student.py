@@ -102,8 +102,10 @@ def test_read_student_by_param():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["firstname"] == student_firstname
-    assert body["data"]["lastname"] == student_lastname
+
+    d = body["data"][0]
+    assert d["firstname"] == student_firstname
+    assert d["lastname"] == student_lastname
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -118,8 +120,8 @@ def test_read_student_by_id():
     response = test_client.get(
         "/school/students",
     )
-    student_body = response.json()["data"][0]
-    student_id = student_body["id"]
+    student = response.json()["data"][0]
+    student_id = student["id"]
 
 
     response = test_client.get(
@@ -128,7 +130,9 @@ def test_read_student_by_id():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["id"] == student_id
+
+    d = body["data"]
+    assert d["id"] == student_id
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -157,8 +161,8 @@ def test_put_student():
             "lastname": encoded_student_lastname,
         },
     )
-    student_body = response.json()["data"]
-    student_id = student_body["id"]
+    student = response.json()["data"][0]
+    student_id = student["id"]
 
 
     new_firstname = "Johney"
@@ -175,9 +179,11 @@ def test_put_student():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["id"] == student_id
-    assert body["data"]["firstname"] == new_firstname
-    assert body["data"]["lastname"] == new_lastname
+
+    d = body["data"]
+    assert d["id"] == student_id
+    assert d["firstname"] == new_firstname
+    assert d["lastname"] == new_lastname
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -206,8 +212,8 @@ def test_delete_student():
             "lastname": encoded_student_lastname,
         },
     )
-    student_body = response.json()["data"]
-    student_id = student_body["id"]
+    student = response.json()["data"][0]
+    student_id = student["id"]
 
 
     response = test_client.delete(

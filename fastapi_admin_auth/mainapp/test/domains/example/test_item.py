@@ -124,7 +124,7 @@ def test_read_item_by_id():
     response = test_client.get(
         "/example/items",
     )
-    item_body = response.json()["data"][0]
+    item = response.json()["data"][0]
     item_id = item_body["id"]
 
 
@@ -152,7 +152,7 @@ def test_put_item():
     response = test_client.get(
         "/example/items",
     )
-    item_body = response.json()["data"][0]
+    item = response.json()["data"][0]
     item_id = item_body["id"]
 
 
@@ -186,7 +186,7 @@ def test_delete_item():
     response = test_client.get(
         "/example/items",
     )
-    item_body = response.json()["data"][0]
+    item = response.json()["data"][0]
     item_id = item_body["id"]
 
 
