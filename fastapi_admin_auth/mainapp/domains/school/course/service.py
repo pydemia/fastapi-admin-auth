@@ -22,6 +22,8 @@ from .models import Course, Certificate
 from .crud import CourseCRUD, CertificateCRUD
 from .schema import UpdateCourseRequest, CertificateRequest
 
+from ..student.crud import StudentCRUD
+
 
 class CourseService:
     def __init__(self):
@@ -30,10 +32,12 @@ class CourseService:
     def __call__(
         self,
         course_crud: CourseCRUD = Depends(CourseCRUD()),
-        cert_crud: CourseCRUD = Depends(CertificateCRUD()),
+        cert_crud: CertificateCRUD = Depends(CertificateCRUD()),
+        student_crud: StudentCRUD = Depends(StudentCRUD()),
     ):
         self.course_crud = course_crud
         self.cert_crud = cert_crud
+        self.student_crud = student_crud
         return self
 
 
@@ -46,7 +50,7 @@ class CourseService:
                 name=course["name"],
                 description=course.get("description"),
                 book_id=course.get("book_id"),
-                cert_id=course.get("cert_id"),
+                certificate_id=course.get("certificate_id"),
             )
         course = self.course_crud.create(course)
         return course
@@ -80,12 +84,12 @@ class CourseService:
         self,
         page: int | None = None,
         page_size: int | None = None,
-    ) -> list[Course | None]:
+    ) -> list[Course]:
         if page:
             courses = self.course_crud.get_by_range(page=1)
         else:
             courses = self.course_crud.get_all()
-        return courses
+        return [c for c in courses if c is not None]
     
     def update_course_description(
         self,
@@ -115,18 +119,24 @@ class CourseService:
         old_course.name = new_course.name
         old_course.description = new_course.description
         if isinstance(new_course, Course):
-            if old_course.id != new_course.id:
+            if new_course.id is not None and old_course.id != new_course.id:
                 raise HandledException(ResponseCode.ENTITY_NOT_FOUND)
+        
+            for f in new_course.model_fields:
+                setattr(old_course, f, getattr(new_course, f))
 
         elif isinstance(new_course, UpdateCourseRequest):
-            old_course.book_id = new_course.book_id
-            [
-                setattr(old_course, f, getattr(new_course, f))
-                for f in new_course.model_fields
-            ]
-            if new_course.cert_id is not None:
-                old_course.cert_id = new_course.cert_id
-                old_course.certificate = Certificate.model_validate(old_course.certificate.model_dump())
+            for f in new_course.model_fields:
+                if f in ("certificate", "students"):
+                    pass
+                else:
+                    setattr(old_course, f, getattr(new_course, f))
+
+            if new_course.certificate_id is not None:
+                old_course.certificate = self.get_certificate(new_course.certificate_id)
+
+            if new_course.students:
+                old_course.students = self.student_crud.get_by_ids(new_course.students)
 
         course = self.course_crud.update(old_course)
 

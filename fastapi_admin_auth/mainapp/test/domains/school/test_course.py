@@ -174,7 +174,9 @@ def test_read_course_by_id():
     response.raise_for_status()
     body = response.json()
     assert body["code"] == 1
-    assert body["data"]["id"] == course_id
+
+    d = body["data"]
+    assert d["id"] == course_id
 
 
 @pytest.mark.usefixtures("setup", "teardown")
@@ -203,6 +205,10 @@ def test_put_course():
     )
     course = response.json()["data"][0]
     course_id = course["id"]
+
+    # MultiCourseWithStudentResponse
+    course.pop("certificate")
+    course["students"] = [s["id"] for s in course["students"]]
 
     # Update simple values
     new_name = "test-updated"

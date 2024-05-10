@@ -192,9 +192,9 @@
             "dependsOn": [
                 "all-shutdown",
                 "database-launch --stateless",
-                "database-wait-for-ready",
+                "database-wait-for-ready(pg_isready)",
                 "keycloak-launch --with-realm",
-                "keycloak-wait-for-ready"
+                "keycloak-wait-for-ready(curl)"
             ],
             "group": "test"
         },

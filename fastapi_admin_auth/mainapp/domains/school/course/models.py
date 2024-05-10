@@ -13,9 +13,6 @@ if TYPE_CHECKING:
     from ..textbook.models import Textbook
     from ..teacher.models import Teacher
     from ..student.models import Student
-# from mainapp.domains.school.textbook import models as textbook_models
-# from mainapp.domains.school.certificate import models as certificate_models
-
 
 class Certificate(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -48,22 +45,23 @@ class CourseStudentLink(SQLModel, table=True):
         primary_key=True,
     )
 
-
-class Course(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class CourseBase(SQLModel):
     name: str = Field(index=True, unique=True)
     description: str = Field("")
+
+class Course(CourseBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    # name: str = Field(index=True, unique=True)
+    # description: str = Field("")
 
     book_id: int | None = Field(default=None, foreign_key="textbook.id")
     book: Optional["Textbook"] = Relationship()
 
-    # certificate_id: int | None = Field(foreign_key="certificate.id")
     certificate_id: int = Field(foreign_key="certificate.id")
     certificate: "Certificate" = Relationship(
         back_populates="course",
         sa_relationship_kwargs={
-            "cascade": "all",
-            # "cascade": "save-update, delete", # Instruct the ORM how to track changes to local objects
+            "cascade": "all",  # "save-update, delete", # Instruct the ORM how to track changes to local objects
             "lazy": "selectin",
         },
     )
@@ -77,8 +75,6 @@ class Course(SQLModel, table=True):
         back_populates="courses",
         link_model=CourseStudentLink,
         sa_relationship_kwargs={
-            # "cascade": "save-update, delete", # Instruct the ORM how to track changes to local objects
-            # "lazy": "selectin",  # "subquery"
             "lazy": "subquery",
         },
     )
@@ -86,8 +82,6 @@ class Course(SQLModel, table=True):
     # async def __admin_repr__(self, request: Request):
     #     return self.name
 
-# cert_4 = Certificate(id=4, name="cert 4", description="cert_4")
-# teacher_3 = Teacher(id=3, firstname="Charlotte", lastname="Wilson", description="teacher 4")
 
 # seed = [
 #     (

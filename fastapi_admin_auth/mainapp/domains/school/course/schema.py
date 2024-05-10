@@ -3,9 +3,9 @@ from mainapp.core.types.schema.request import BaseRequest
 from mainapp.core.types.schema.response import CommonResponse
 
 from pydantic import model_validator, ValidationError
-# from sqlmodel import SQLModel
 # from ..textbook.schema import TextbookPublic
-from .models import Course, Certificate
+
+from .models import CourseBase, Certificate
 from ..student.models import Student
 
 
@@ -61,12 +61,22 @@ class UpdateCourseRequest(CreateCourseRequest):
 # class MultiCourseResponse(CommonResponse):
 #     data: list[CoursePublic] = []
 
-class CoursePublic(Course):
-    certificate: Certificate
-    students: list[Student] = []
+# class CoursePublic(Course): ...
 
-class SingleCourseResponse(CommonResponse):
+class SingleCourseResponse(CommonResponse): ...
+
+class MultiCourseResponse(CommonResponse): ...
+
+class CoursePublic(CourseBase):
+    id: int
+    certificate: Certificate
+    book_id: int | None
+    certificate_id: int
+    teacher_id: int
+    students: list["Student"] = []
+
+class SingleCourseWithStudentResponse(CommonResponse):
     data: CoursePublic | None = None
 
-class MultiCourseResponse(CommonResponse):
+class MultiCourseWithStudentResponse(CommonResponse):
     data: list[CoursePublic] = []

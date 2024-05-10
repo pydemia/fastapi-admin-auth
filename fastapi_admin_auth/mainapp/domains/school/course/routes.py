@@ -8,7 +8,8 @@ from .schema import (
     CreateCourseRequest,
     UpdateCourseRequest,
     SingleCourseResponse,
-    MultiCourseResponse,
+    MultiCourseWithStudentResponse,
+    SingleCourseWithStudentResponse,
     CertificateRequest,
 )
 from ..student.service import StudentService
@@ -22,7 +23,7 @@ router = APIRouter(
 
 @router.get(
     "",
-    response_model=MultiCourseResponse,
+    response_model=MultiCourseWithStudentResponse,
 )
 async def get_courses(
     name: str | None = None,
@@ -32,12 +33,12 @@ async def get_courses(
         course_or_courses = [service.get_course(name)]
     else:
         course_or_courses = service.get_courses_all()
-    return MultiCourseResponse(data=course_or_courses)
+    return MultiCourseWithStudentResponse(data=course_or_courses)
 
 
 @router.get(
     "/{course_id}",
-    response_model=SingleCourseResponse,
+    response_model=SingleCourseWithStudentResponse,
 )
 async def get_course_by_id(
     course_id: int,
@@ -45,7 +46,7 @@ async def get_course_by_id(
 ):
     course = service.get_course(course_id)
     # return CommonResponse(data=course)
-    return SingleCourseResponse(data=course)
+    return SingleCourseWithStudentResponse(data=course)
 
 
 @router.post(
@@ -69,12 +70,12 @@ async def add_course(
     course: Course = service.add_new_course(
         course=course
     )
-    return CommonResponse(data=course)
+    return SingleCourseResponse(data=course)
 
 
 @router.put(
     "/{course_id}",
-    response_model=SingleCourseResponse,
+    response_model=SingleCourseWithStudentResponse,
 )
 async def update_course(
     course_id: int,
@@ -83,7 +84,7 @@ async def update_course(
 ):
     new_course = body
     course = service.update_course(course_id, new_course)
-    return SingleCourseResponse(data=course)
+    return SingleCourseWithStudentResponse(data=course)
 
 
 @router.delete(
