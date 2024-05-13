@@ -141,6 +141,12 @@ class CourseCRUD:
     ) -> bool:
         if self.get_by_model(record):
             with self.session as session:
+
+                # Remove many-to-many links first
+                for student in record.students:
+                    record.students.remove(student)
+                session.add(record)
+
                 session.delete(record)
                 session.commit()
                 return True
