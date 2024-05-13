@@ -21,6 +21,15 @@ class Student(SQLModel, table=True):
     courses: list["Course"] = Relationship(
         back_populates="students",
         link_model=CourseStudentLink,
+        sa_relationship_kwargs={
+            ## "lazy": "select",
+            "lazy": "selectin",
+            # "lazy": "joined",
+            ## "lazy": "raise",
+            # "lazy": "subquery",
+            # "lazy": "write_only",
+            # "lazy": "dynamic",
+        },
     )
 
 # seed = [

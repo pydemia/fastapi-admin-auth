@@ -75,7 +75,7 @@ class Course(CourseBase, table=True):
         back_populates="courses",
         link_model=CourseStudentLink,
         sa_relationship_kwargs={
-            "lazy": "subquery",
+            "lazy": "selectin",  # "subquery",
         },
     )
 
