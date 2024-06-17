@@ -24,6 +24,7 @@
         "cwd": "${workspaceFolder}/fastapi_admin_auth",
         "console": "internalConsole",
         "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
+        "preLaunchTask": "alembic-revision --apply",
         "justMyCode": false
     },
     {
@@ -40,6 +41,7 @@
       "cwd": "${workspaceFolder}/fastapi_admin_auth",
       "console": "internalConsole",
       "envFile": "${workspaceFolder}/fastapi_admin_auth/.env",
+      "preLaunchTask": "alembic-revision --apply",
       "justMyCode": false,
     },
     {

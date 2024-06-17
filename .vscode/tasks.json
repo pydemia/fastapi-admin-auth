@@ -310,7 +310,7 @@
                 "-m",
                 "alembic",
                 "downgrade",
-                "head",
+                "-1",
             ],
             "options": {
                 "cwd": "${workspaceFolder}/fastapi_admin_auth",

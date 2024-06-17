@@ -20,7 +20,7 @@ $ alembic init mainapp-migrations
   Creating directory '<pwd>/migrations/versions' ...  done
   Generating <pwd>/migrations/script.py.mako ...  done
   Generating <pwd>/migrations/env.py ...  done
-  Generating <pwd>/migrations/README ...  done
+  Generating <pwd>/migrations/README ...  donehttp://localhost:3000/#/flows
   Generating <pwd>/alembic.ini ...  done
   Please edit configuration/connection/logging settings in '<pwd>/alembic.ini' before proceeding.
 ```

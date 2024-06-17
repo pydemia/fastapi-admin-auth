@@ -32,8 +32,9 @@ def prepare_db():
     #     )
     # )
     logging.info("DB: apply migrations...")
-    db.apply_migration()
-    db.insert_seed()
+    
+    # db.apply_migration()
+    # db.insert_seed()
     
     logging.info("DB: setup finished.")
 
