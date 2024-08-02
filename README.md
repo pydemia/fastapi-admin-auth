@@ -30,7 +30,7 @@ app.mount("/subapi", subapi)
 
 * DB migration: `alembic`
 
-App단위 관리: 개발주체가 외부 팀이 될 수도 있음. 대신 관계성 단절 필요.
+App단위 관리: 개발주체가 외부일 경우. 관계성 단절 필요.
 
 ---
 
