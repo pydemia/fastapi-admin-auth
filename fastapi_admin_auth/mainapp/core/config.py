@@ -185,8 +185,7 @@ class AppConfig(AppSettings):
     locale: Locale = Locale.KO
     # jwt: JWTConfig = JWTConfig(algorithm="HS256", public_key=None)
     static_dir: Path = Field(Path(os.getenv("APP__STATIC_DIR", "static")))
-    # mode: AppMode = AppMode(os.getenv("APP_MODE", "all")) # Literal["all", "gencode", "chatbot"]
-
+    domains: list[str] = []
     @field_validator("log_level", mode="before")
     def set_log_level(cls, v):
         import logging

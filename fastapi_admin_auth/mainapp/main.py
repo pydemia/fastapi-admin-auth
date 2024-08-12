@@ -8,17 +8,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from autologging import logged
 from mainapp.core import config
-from mainapp.core.dependencies import (
-    include_routers_by_config,
-)
+from mainapp.core.dependencies import mount_domains
 from mainapp.core.iam.oauth import idp
 from mainapp.core.database import db
-from mainapp.core.health.routes import router as health_router
-from mainapp.core.iam.routes import router as iam_router
-from mainapp.domains import (
-    example,
-    school,
-)
+from mainapp.core.global_exception_handlers import set_global_exception_handlers
+from mainapp.core.middlewares import BackgroundTaskExceptionMiddleware
+# from mainapp.domains import (
+#     example,
+#     school,
+# )
 
 def prepare_db():
     logging.info("DB: creating tables...")
@@ -65,17 +63,6 @@ def create_app() -> FastAPI:
     )
     idp.add_swagger_config(app)
 
-
-    app = include_routers_by_config(
-        app,
-        routers = [
-            health_router,
-            iam_router,
-            example.domain_router,
-            school.domain_router,
-        ]
-    )
-
     origins = ["*"]
     app.add_middleware(
         CORSMiddleware,
@@ -84,6 +71,12 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    app.add_middleware(
+        BackgroundTaskExceptionMiddleware,
+        handlers=app.exception_handlers,
+    )
+    app = set_global_exception_handlers(app)
+    
 
     app.mount(
         "/static",
@@ -98,6 +91,13 @@ def create_app() -> FastAPI:
     @app.get("/iam", include_in_schema=False)
     async def redirect_iam():
         return RedirectResponse(url=config.keyclock_config.server_url)
+
+
+    logging.config.fileConfig("logging.conf", disable_existing_loggers=False,)
+    log_level = os.getenv("APP_PROFILE", os.getenv("LOG_LEVEL", "INFO")).upper()
+    for logger_name in logging.root.manager.loggerDict:
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(log_level)
 
 
     # @app.get("/dashboard/static", include_in_schema=False)
@@ -132,15 +132,34 @@ def create_app() -> FastAPI:
     # from mainapp.domains.school.teacher.admin import TeacherView
     # admin.add_view(TeacherView)
 
-    from mainapp.core.admin import admin, add_admin_views
-    admin = add_admin_views(admin, school.domain_adminviews)
-    admin.mount_to(app)
 
-    logging.config.fileConfig("logging.conf", disable_existing_loggers=False,)
-    log_level = os.getenv("APP_PROFILE", os.getenv("LOG_LEVEL", "INFO")).upper()
-    for logger_name in logging.root.manager.loggerDict:
-        logger = logging.getLogger(logger_name)
-        logger.setLevel(log_level)
+    # app = include_routers_by_config(
+    #     app,
+    #     routers=[
+    #         health_router,
+    #         iam_router,
+    #         example.domain_router,
+    #         school.domain_router,
+    #     ]
+    # )
+    # from mainapp.core.admin import admin, add_admin_views
+    # admin = add_admin_views(admin, example.domain_adminviews)
+    # admin = add_admin_views(admin, school.domain_adminviews)
+    # admin.mount_to(app)
+
+    app = mount_domains(
+        app,
+        # modules=[
+        #     example,
+        #     school,
+        # ]
+        # modules=[
+        #     'example',
+        #     'school',
+        # ]
+        modules=app_config.domains
+    )
+
 
     return app
 

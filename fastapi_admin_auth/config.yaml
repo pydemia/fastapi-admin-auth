@@ -9,6 +9,9 @@ app:
   profile: "development"
   log_level: "debug"
   static_dir: "static"
+  domains:
+    - example
+    - school
   jwt:
     # algorithm: RS256
     algorithm: HS256 # for `use_test_token`

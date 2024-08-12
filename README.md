@@ -1,5 +1,6 @@
 # fastapi-backend
 
+
 ## Requirements
 
 * 분리가능한 App 구조여야 함 -> apps로 분리하고, mount하는 형태로 설계
@@ -71,6 +72,10 @@ App단위 관리: 개발주체가 외부 팀이 될 수도 있음. 대신 관계
 * chat
 * worker
 * etc.
+
+```bash
+./create-condaenv.sh fastapi-app
+```
 
 
 ```bash

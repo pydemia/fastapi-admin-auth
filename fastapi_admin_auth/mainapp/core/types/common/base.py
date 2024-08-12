@@ -93,7 +93,7 @@ class MutableDTO(BaseDTO):
 
 
 class ExtraForbiddenDTO(BaseDTO):
-     model_config = ConfigDict(
+    model_config = ConfigDict(
         dict(
             BaseDTO.model_config,
             **ConfigDict(

@@ -1,10 +1,13 @@
+-r requirements-preinstall.txt
+
 fastapi
 sqlalchemy
 psycopg  # asyncpg
 sqlmodel
 pydantic
+pydantic-settings
 python-dotenv
-# dependency_injector
+dependency_injector
 alembic
 autologging
 python-jose
