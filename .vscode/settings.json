@@ -28,5 +28,12 @@
             "username": "admin",
             "password": "admin"
         }
-    ]
+    ],
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "always"
+        }
+    }
 }
