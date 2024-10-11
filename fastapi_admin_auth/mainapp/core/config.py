@@ -28,7 +28,7 @@ from pydantic_settings.sources import import_yaml
 import yaml
 import re
 
-from mainapp.core.types.enums import Locale
+from mainapp.core.types.enums import Locale, AuthProviderType
 
 __all__ = [
     "AppConfig",
@@ -185,6 +185,7 @@ class AppConfig(AppSettings):
     locale: Locale = Locale.KO
     # jwt: JWTConfig = JWTConfig(algorithm="HS256", public_key=None)
     static_dir: Path = Field(Path(os.getenv("APP__STATIC_DIR", "static")))
+    auth_provider: AuthProviderType = AuthProviderType.KEYCLOAK_BUILTIN
     domains: list[str] = []
     @field_validator("log_level", mode="before")
     def set_log_level(cls, v):

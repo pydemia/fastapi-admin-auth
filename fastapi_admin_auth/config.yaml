@@ -1,4 +1,5 @@
 app:
+  # root_path: "${APP__ROOT_PATH}"
   root_path: ""
   allowed_hosts:
     - "*"
@@ -9,6 +10,7 @@ app:
   profile: "development"
   log_level: "debug"
   static_dir: "static"
+  auth_provider: "keycloak-builtin"  # "keycloak", "keycloak-builtin"
   domains:
     - example
     - school
@@ -79,7 +81,7 @@ keycloak:
   realm: "fastapi-admin-auth"
   scope: "openid profile email"
   timeout: 10
-  callback_uri: "http://localhost:8000/iam/callback"
+  callback_uri: "http://localhost:${APP__PORT}/iam/callback"
   # callback_uri: "/iam/callback"
 
 # websocket:

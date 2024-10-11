@@ -15,6 +15,27 @@ def filter_submodules(module):
     module_path = Path(module.__file__).parent
     return [p.parent.name for p in module_path.glob("*/__init__.py")]
 
+def get_available_router(module: ModuleType) -> ModuleType:
+    try:
+        router = importlib.import_module(".routes", module.__name__).router
+        return router
+    except Exception as e:
+        return
+
+def get_available_models(module: ModuleType) -> ModuleType:
+    try:
+        models = importlib.import_module(".models", module.__name__)
+        return models
+    except Exception as e:
+        return
+
+def get_available_admin(module: ModuleType) -> ModuleType:
+    try:
+        admin = importlib.import_module(".admin", module.__name__)
+        return admin
+    except Exception as e:
+        return
+
 def import_domain_components(module_or_qualname: ModuleType | str):
     """
     Argument
@@ -49,7 +70,7 @@ def import_domain_components(module_or_qualname: ModuleType | str):
     submodules = [importlib.import_module(f".{s}", _module_qualname_) for s in submodule_names]
     
     # import domain routers
-    routers = [importlib.import_module(".routes", s.__name__).router for s in submodules]
+    routers = list(filter(None, [get_available_router(s) for s in submodules]))
 
     # def append_domain_tag(router):
     #     router.tags = [f"{_domain__name_}/{tag}" for tag in router.tags]
@@ -71,7 +92,7 @@ def import_domain_components(module_or_qualname: ModuleType | str):
         domain_router.include_router(router)
 
     # import admin_views
-    admin_modules = [importlib.import_module(".admin", s.__name__) for s in submodules]
+    admin_modules = list(filter(None, [get_available_admin(s) for s in submodules]))
     def is_modelview(attr):
         return isinstance(attr, BaseModelView)
     admin_views = sum(
@@ -84,7 +105,7 @@ def import_domain_components(module_or_qualname: ModuleType | str):
 
 
     # import domain models
-    model_modules = [importlib.import_module(".models", s.__name__) for s in submodules]
+    model_modules = list(filter(None, [get_available_models(s) for s in submodules]))
     def is_model(attr):
         # return isinstance(attr, SQLModel)
         return isinstance(attr, SQLModelMetaclass) and attr != SQLModel

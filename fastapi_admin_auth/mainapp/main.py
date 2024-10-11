@@ -2,7 +2,7 @@ import os
 import logging.config
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -84,9 +84,14 @@ def create_app() -> FastAPI:
         name="static",
     )
 
+    # @app.get("/", include_in_schema=False)
+    # async def redirect_root(request: Request):
+    #     return RedirectResponse(url=f"{ROOT_PATH}/docs")
+
     @app.get("/", include_in_schema=False)
-    async def redirect_root():
-        return RedirectResponse(url=f"{ROOT_PATH}/docs")
+    async def redirect_root(request: Request):
+        return RedirectResponse(url=f'{request.scope.get("root_path")}/dashboard')
+        # return RedirectResponse(url=f'/dashboard')
 
     @app.get("/iam", include_in_schema=False)
     async def redirect_iam():

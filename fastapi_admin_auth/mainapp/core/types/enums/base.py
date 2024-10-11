@@ -14,6 +14,7 @@ __all__ = [
     "Locale",
     "LogLevel",
     "AppMode",
+    "AuthProviderType"
 ]
 
 
@@ -134,3 +135,8 @@ class AppMode(BaseEnum):
     ALL = "all"
     GENCODE = "gencode"
     CHATBOT = "chatbot"
+
+
+class AuthProviderType(BaseEnum):
+    KEYCLOAK = "keycloak"
+    KEYCLOAK_BUILTIN = "keycloak-builtin"

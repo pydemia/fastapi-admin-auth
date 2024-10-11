@@ -7,16 +7,20 @@ from mainapp.core.database import db
 
 from typing import Optional, Any
 
+from fastapi_keycloak.model import KeycloakToken
+
 from starlette.datastructures import URL
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 from starlette_admin import BaseAdmin
 from starlette_admin.auth import (
+    AdminConfig,
     AdminUser,
     AuthProvider,
     login_not_required,
 )
+from starlette_admin.exceptions import FormValidationError, LoginFailed
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware, AuthenticationBackend
@@ -27,6 +31,7 @@ from starlette_admin.views import BaseView  # for typing: childs: BaseModelView,
 from starlette_admin.contrib.sqla import ModelView
 from starlette_admin import action, row_action
 from mainapp.core.iam.oauth import idp, OIDCUser
+from mainapp.core.types.enums import AuthProviderType
 
 
 # from authlib.integrations.starlette_client.apps import StarletteOAuth2App
@@ -47,6 +52,7 @@ from mainapp.core.iam.oauth import idp, OIDCUser
 # )
 # oauth: StarletteOAuth2App
 from mainapp.core.iam.oauth import oauth_client
+from mainapp.core.config import app_config
 
 
 class KeycloakAuthProvider(AuthProvider):
@@ -61,7 +67,8 @@ class KeycloakAuthProvider(AuthProvider):
         oidc_user: OIDCUser = OIDCUser.model_validate(user)
         return AdminUser(
             username=oidc_user.preferred_username,
-            photo_url="http://localhost:8000/static/dashboard/icon-user.svg",
+            # photo_url="http://localhost:8000/static/dashboard/icon-user.svg",
+            photo_url="/static/dashboard/icon-user.svg",
         )
         # return AdminUser(
         #     username=user["name"],
@@ -136,6 +143,77 @@ class KeycloakAuthProvider(AuthProvider):
             )
         )
 
+    # To use built-in login UI
+
+class KeycloakBuiltInUIAuthProvider(AuthProvider):
+
+    async def is_authenticated(self, request: Request) -> bool:
+        if request.session.get("user", None) is not None:
+            request.state.user = request.session.get("user")
+        if request.session.get("Authorization") is not None:
+            return idp.token_is_valid(request.session.get("Authorization").rsplit("Bearer ")[-1])
+        return False
+
+
+    def get_admin_user(self, request: Request) -> Optional[AdminUser]:
+        user = request.state.user
+        oidc_user: OIDCUser = OIDCUser.model_validate(user)
+        return AdminUser(
+            username=oidc_user.preferred_username,
+            # photo_url="http://localhost:8000/static/dashboard/icon-user.svg",
+            photo_url="/static/dashboard/icon-user.svg",
+        )
+        # return AdminUser(
+        #     username=user["name"],
+        #     photo_url=user["picture"],
+        # )
+
+    async def login(
+        self,
+        username: str,
+        password: str,
+        remember_me: bool,
+        request: Request,
+        response: Response,
+    ) -> Response:
+        if len(username) < 3:
+            """Form data validation"""
+            raise FormValidationError(
+                {"username": "Ensure username has at least 03 characters"}
+            )
+
+        try:
+            token: KeycloakToken = idp.user_login(
+                username=username,
+                password=password,
+            )
+            bearer_header = str(token)
+            request.session.update({
+                "Authorization": bearer_header,
+                "user": idp._decode_token(token.access_token),
+            })
+            return response
+
+        except Exception as e:
+            raise LoginFailed(e)
+
+
+    def get_admin_config(self, request: Request) -> AdminConfig:
+        user = request.state.user  # Retrieve current user
+        # Update app title according to current_user
+        custom_app_title = "Hello, " + user["name"] + "!"
+        # Update logo url according to current_user
+        custom_logo_url = None
+        if user.get("company_logo_url", None):
+            custom_logo_url = request.url_for("static", path=user["company_logo_url"])
+        return AdminConfig(
+            app_title=custom_app_title,
+            logo_url=custom_logo_url,
+        )
+
+    async def logout(self, request: Request, response: Response) -> Response:
+        request.session.clear()
+        return response
 
 # from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.authentication import (
@@ -181,32 +259,73 @@ class KeycloakAuthBackend(AuthenticationBackend):
 
 
 SECRET = "1234567890"
-admin = Admin(
-    db.engine,
-    title="FastAPI-SQLModel Admin",
-    base_url="/dashboard",
-    route_name="dashboard",
-    statics_dir="mainapp/static/dashboard",
-    templates_dir="mainapp/templates/dashboard",
-    # logo_url="`https`://preview.tabler.io/static/logo-white.svg",
-    # logo_url="statics/logo-fastapi.png",
-    logo_url="http://localhost:8000/static/dashboard/logo-fastapi.png",
-    login_logo_url="`https`://preview.tabler.io/static/logo.svg",
-    # index_view=CustomView(label="Home", icon="fa fa-home", path="/home", template_path="home.html"),
-    auth_provider=KeycloakAuthProvider(
-        login_path="/sign-in",
-        logout_path="/sign-out",
-    ),
-    middlewares=[
-        Middleware(AuthenticationMiddleware, backend=KeycloakAuthBackend()),
-        Middleware(SessionMiddleware, secret_key=""),
-    ],
-        # MiddleWare(AuthenticationMiddleware, backend=BasicAuthBackend())
-    # middlewares=[Middleware(SessionMiddleware)],
-    debug=True,
-    # i18n_config = I18nConfig(default_locale="en")
-)
 
+def get_admin():
+
+    debug_on = str(app_config.log_level).upper() == "DEBUG"
+
+    if app_config.auth_provider == AuthProviderType.KEYCLOAK_BUILTIN:
+
+        admin = Admin(
+            db.engine,
+            title="FastAPI-SQLModel Admin",
+            # base_url=f"{app_config.root_path}/dashboard",
+            base_url="/dashboard",
+            route_name="dashboard",
+            statics_dir="mainapp/static/dashboard",
+            templates_dir="mainapp/templates/dashboard",
+            # logo_url="`https`://preview.tabler.io/static/logo-white.svg",
+            # logo_url="statics/logo-fastapi.png",
+            # logo_url="http://localhost:8000/static/dashboard/logo-fastapi.png",
+            logo_url="/static/dashboard/logo-fastapi.png",
+            login_logo_url="`https`://preview.tabler.io/static/logo.svg",
+            # index_view=CustomView(label="Home", icon="fa fa-home", path="/home", template_path="home.html"),
+            auth_provider=KeycloakBuiltInUIAuthProvider(
+                login_path="/sign-in",
+                logout_path="/sign-out",
+            ),
+            middlewares=[
+                Middleware(AuthenticationMiddleware, backend=KeycloakAuthBackend()),
+                Middleware(SessionMiddleware, secret_key=""),
+            ],
+                # MiddleWare(AuthenticationMiddleware, backend=BasicAuthBackend())
+            # middlewares=[Middleware(SessionMiddleware)],
+            debug=debug_on,
+            # i18n_config = I18nConfig(default_locale="en")
+        )
+
+    # if app_config.auth_provider == AuthProviderType.KEYCLOAK:
+    else:
+
+        admin = Admin(
+            db.engine,
+            title="FastAPI-SQLModel Admin",
+            # base_url=f"{app_config.root_path}/dashboard",
+            base_url="/dashboard",
+            route_name="dashboard",
+            statics_dir="mainapp/static/dashboard",
+            templates_dir="mainapp/templates/dashboard",
+            # logo_url="`https`://preview.tabler.io/static/logo-white.svg",
+            # logo_url="statics/logo-fastapi.png",
+            # logo_url="http://localhost:8000/static/dashboard/logo-fastapi.png",
+            logo_url="/static/dashboard/logo-fastapi.png",
+            login_logo_url="`https`://preview.tabler.io/static/logo.svg",
+            # index_view=CustomView(label="Home", icon="fa fa-home", path="/home", template_path="home.html"),
+            auth_provider=KeycloakAuthProvider(
+                login_path="/sign-in",
+                logout_path="/sign-out",
+            ),
+            middlewares=[
+                Middleware(AuthenticationMiddleware, backend=KeycloakAuthBackend()),
+                Middleware(SessionMiddleware, secret_key=""),
+            ],
+                # MiddleWare(AuthenticationMiddleware, backend=BasicAuthBackend())
+            # middlewares=[Middleware(SessionMiddleware)],
+            debug=debug_on,
+            # i18n_config = I18nConfig(default_locale="en")
+        )
+    
+    return admin
 
 
 from fastapi.security import OAuth2PasswordBearer

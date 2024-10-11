@@ -8,7 +8,7 @@ from mainapp.core.health.routes import router as health_router
 from mainapp.core.iam.routes import router as iam_router
 
 from starlette_admin.views import BaseView
-from mainapp.core.admin import admin, add_admin_views
+from mainapp.core.admin import get_admin, add_admin_views
 
 
 @logged
@@ -31,6 +31,7 @@ def add_admin_view_by_config(
 ) -> FastAPI:
 
     # for admin_view in admin_views:
+    admin = get_admin()
     app_admin = add_admin_views(admin, admin_views)
     app_admin.mount_to(app)
 
